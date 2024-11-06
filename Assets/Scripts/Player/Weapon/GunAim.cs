@@ -23,7 +23,7 @@ public class GunAim : MonoBehaviour
         {
             if (transform.localScale.x < 0) transform.localScale = new Vector3(transform.localScale.x * (-1), transform.localScale.y, transform.localScale.z);
         }
-        Debug.Log(angle);
+
         // Rotate the gun point to face the mouse
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
