@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponManager : MonoBehaviour
+public class GunManager : MonoBehaviour
 {
-    public GameObject[] weaponPrefabs;  // Array of available weapon prefabs
+    public GameObject[] weaponPrefabs;          // Array of available guns
 
     private GameObject currentWeapon;   // Holds the currently equipped weapon
     private int currentWeaponIndex = 0;
@@ -20,15 +19,19 @@ public class WeaponManager : MonoBehaviour
 
     void Update()
     {
-        // Example of switching weapons with number keys
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { EquipWeapon(0); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { EquipWeapon(1); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { EquipWeapon(2); }
+        if (Input.GetMouseButton(0))  // Fire when the left mouse button is held
+        {
+            currentWeapon.GetComponent<Gun>().Fire();
+        }
+
+        // Switch guns with number keys (1, 2, 3, etc.)
+        if (Input.GetKeyDown(KeyCode.Alpha1)) EquipWeapon(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) EquipWeapon(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) EquipWeapon(2);
     }
 
-    public void EquipWeapon(int index)
+    void EquipWeapon(int index)
     {
-        Debug.Log(index);
         if (index >= 0 && index < weaponPrefabs.Length)
         {
             // Destroy the current weapon if it exists
@@ -46,5 +49,4 @@ public class WeaponManager : MonoBehaviour
             currentWeaponIndex = index;
         }
     }
-
 }
