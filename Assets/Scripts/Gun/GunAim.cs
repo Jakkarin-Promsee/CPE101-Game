@@ -8,7 +8,6 @@ public class GunAim : MonoBehaviour
     {
         // Get mouse position in world space
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        // mousePosition.z = -90;  // Ignore Z axis for 2D
 
         // Calculate direction to the mouse
         Vector3 direction = mousePosition - transform.position;

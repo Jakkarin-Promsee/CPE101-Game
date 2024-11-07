@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Speed of the player
-    public float dashRate = 4f;
-    public float dashDistance = 5f; // Set the desired dash distance
-    public float dashSpeed = 20f;   // Speed of the dash
-    private bool isDashing = false;
-    private Vector3 dashTarget;
-    public float nextDashTime = 0f; // To handle fire rate
     public Camera mainCamera;    // Reference to the main camera
 
+    // Movemet speed of the player, Max (moveSpeed,moveSpeed) * 1second
+    public float moveSpeed = 5f;
+
+    public float dashCd = 4f; // Dash Colldown
+    public float dashDistance = 5f; // Dash Distant 
+    public float dashSpeed = 20f; // Dash Speed
+
+
+    public bool isforce = false;
+    private bool isDashing = false;
+    private Vector3 dashTarget;
+    public float nextDashTime = 0f;
     private Rigidbody2D rb;
     private Vector2 movement;
 
@@ -34,8 +39,14 @@ public class PlayerMovement : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > nextDashTime) Dash();
-        // Handle the dash movement
+        // Check 'space' and 'right click'
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(1)) && Time.time > nextDashTime)
+        {
+            nextDashTime = Time.time + dashCd;
+            Dash();
+        }
+
+        // Add dash movement to mouse position with dash distance
         if (isDashing)
         {
             transform.position = Vector3.MoveTowards(transform.position, dashTarget, dashSpeed * Time.deltaTime);
@@ -51,8 +62,10 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Move the player
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        // Move the player on keyboard position
+        // if (!isforce) rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        if (!isforce) rb.velocity = movement * moveSpeed; // Move the player with velocity
+        else isforce = false;
 
         // Update camera position to follow the player
         if (mainCamera != null)
@@ -63,9 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Dash()
     {
-        nextDashTime = Time.time + dashRate;
-
-        // Get mouse position in world space
+        // Get mouse position in the screen
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = transform.position.z; // Ensure Z axis is consistent
 

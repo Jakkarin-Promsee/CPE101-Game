@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
-    public int hp;
+    public float hp = 100;
+
     void Start()
     {
 
@@ -12,6 +13,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
+        if (hp <= 0) Destroy(gameObject);
     }
 }

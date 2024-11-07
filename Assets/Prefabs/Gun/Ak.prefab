@@ -610,7 +610,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: 77d70709832b03a48a683b5ac8423a6b, type: 3}
   gunPoint: {fileID: 8664728025803614875}
+  damage: 20
   fireRate: 0.2
+  recoil: 50
+  knockback: 100
+  player: {fileID: 0}
+  nextFireTime: 0
 --- !u!1 &7784478946825294697
 GameObject:
   m_ObjectHideFlags: 0
