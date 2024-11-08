@@ -37,4 +37,14 @@ public class ShotgunBullet : Bullet
             Instantiate(this, pos, Quaternion.Euler(0, 0, buffer_angle + angle + ran));
         }
     }
+
+    // For the Bullet script
+    protected override void OnTriggerEnter2D(Collider2D other)
+    {
+        base.OnTriggerEnter2D(other);
+        if (other.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);  // Destroy the bullet after collision
+        }
+    }
 }

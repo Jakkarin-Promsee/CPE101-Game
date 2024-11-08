@@ -30,23 +30,16 @@ public class Bullet : MonoBehaviour
         transform.Translate(direction * speed * Time.deltaTime);  // Move the bullet
     }
 
-    // For the Bullet script
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
+        other.gameObject.GetComponent<EnemyController>().takeDamage(damage);
 
-        // if (other.CompareTag("Player")) Debug.Log("Touch player");
-        if (other.CompareTag("Enemy"))
-        {
-            Debug.Log("Bullet hit the target!");
-            other.gameObject.GetComponent<EnemyController>().hp -= damage;
-            float angle = transform.rotation.eulerAngles.z;
-            float angleInRadians = angle * Mathf.Deg2Rad;
-            Vector2 knockbackDirection = new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
-            Debug.Log(angle);
-            other.gameObject.GetComponent<Rigidbody2D>().AddForce(other.gameObject.GetComponent<Rigidbody2D>().mass / 10 * knockbackDirection * knockback, ForceMode2D.Impulse);
+        float angle = transform.rotation.eulerAngles.z;
+        float angleInRadians = angle * Mathf.Deg2Rad;
+        Vector2 knockbackDirection = new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
+        other.gameObject.GetComponent<Rigidbody2D>().AddForce(other.gameObject.GetComponent<Rigidbody2D>().mass / 10 * knockbackDirection * knockback, ForceMode2D.Impulse);
 
-            // Handle damage or other logic here
-            Destroy(gameObject);  // Destroy the bullet after collision
-        }
+        GameObject Explosion = Instantiate(explosionPrefab, (transform.position + other.transform.position) / 2, Quaternion.Euler(0, 0, angle));
+        Destroy(Explosion, 0.2f);
     }
 }

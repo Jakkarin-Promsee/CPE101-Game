@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: -9031995342618467474}
   - component: {fileID: 8998959967351138173}
   m_Layer: 0
-  m_Name: Rifle Bullet
+  m_Name: Ak Bullet
   m_TagString: Respawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.24492, y: 0.000000030978, z: -1.0011}
-  m_LocalScale: {x: 5, y: 5, z: 2.0394}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 2.0394}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5426807507009644674}
@@ -215,10 +215,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b501d8cc4c308eb4ebcd2807923b579b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 15
-  speed: 80
+  speed: 12
   lifespan: 20
-  explosionPrefab: {fileID: 0}
+  explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}
+  damage: 15
+  knockback: 0
 --- !u!61 &8998959967351138173
 BoxCollider2D:
   m_ObjectHideFlags: 0
