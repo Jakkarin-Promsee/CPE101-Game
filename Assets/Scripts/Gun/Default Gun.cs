@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pistol : Gun
+public class DefaultGun : Gun
 {
     public override void Fire()
     {

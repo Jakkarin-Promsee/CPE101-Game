@@ -125,7 +125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 725384655078557374}
   - component: {fileID: 5814123010344890352}
-  - component: {fileID: -8612123532823428209}
+  - component: {fileID: 5489632865579385423}
   m_Layer: 0
   m_Name: Magic orb
   m_TagString: Untagged
@@ -205,7 +205,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-8612123532823428209
+--- !u!114 &5489632865579385423
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,15 +214,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7102781951068588039}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c8f25a3d02e9de40942df3c4becd820, type: 3}
+  m_Script: {fileID: 11500000, guid: af3b8fcd8278f3d4787a5499d9cdd788, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6226276864569040743, guid: ecc621e25dcfc1642a7450cc11fe8b60, type: 3}
+  weapon: {fileID: 11400000, guid: be8a5afe3d2045e45bf57e396e347753, type: 2}
   gunPoint: {fileID: 3110681354327031560}
-  damage: 10
-  fireRate: 0.4
-  recoil: 0
-  knockback: 0.2
   player: {fileID: 0}
   nextFireTime: 0
 --- !u!1 &7190414304713363273

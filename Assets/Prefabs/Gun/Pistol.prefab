@@ -514,7 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 725384655078557374}
   - component: {fileID: 5814123010344890352}
-  - component: {fileID: 4381660813370345900}
+  - component: {fileID: 7897398215638145908}
   m_Layer: 0
   m_Name: Pistol
   m_TagString: Untagged
@@ -598,7 +598,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4381660813370345900
+--- !u!114 &7897398215638145908
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -610,12 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3b8fcd8278f3d4787a5499d9cdd788, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6226276864569040743, guid: 6dc3d592f481ac04cbefba3ad4aa31c3, type: 3}
+  weapon: {fileID: 11400000, guid: 6fe9a7b3f7c20554fbf886e70b8d1c9a, type: 2}
   gunPoint: {fileID: 8664728025803614875}
-  damage: 10
-  fireRate: 0.4
-  recoil: 2
-  knockback: 2
   player: {fileID: 0}
   nextFireTime: 0
 --- !u!1 &7707469049933866919

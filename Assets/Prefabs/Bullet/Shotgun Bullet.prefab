@@ -93,8 +93,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6622850973220064165}
-  - component: {fileID: 7666253658024015619}
   - component: {fileID: -5078217302993495434}
+  - component: {fileID: -571596355532585283}
   m_Layer: 0
   m_Name: Shotgun Bullet
   m_TagString: Untagged
@@ -119,26 +119,6 @@ Transform:
   - {fileID: 7518205321187132836}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7666253658024015619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6226276864569040743}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 457b0aadc6682e84c913a554e50ed4f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 20
-  lifespan: 0.1
-  explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}
-  damage: 10
-  knockback: 0
-  pelletCount: 7
-  spreadAngle: 15
-  pos: {x: 13.790897, y: 9.853767, z: -4}
 --- !u!58 &-5078217302993495434
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -174,6 +154,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &-571596355532585283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226276864569040743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 457b0aadc6682e84c913a554e50ed4f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bullet: {fileID: 11400000, guid: e88e14fae6a2939448edbead3021ad19, type: 2}
+  damage: 0
+  knockback: 0
+  pelletCount: 5
+  spreadAngle: 15
+  pos: {x: 0, y: 0, z: 0}
 --- !u!1 &8984810678926882979
 GameObject:
   m_ObjectHideFlags: 0
