@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GunAim : MonoBehaviour
+public class WeaponAim : MonoBehaviour
 {
     void Update()
     {
