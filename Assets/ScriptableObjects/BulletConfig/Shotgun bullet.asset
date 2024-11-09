@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Shotgun bullet
   m_EditorClassIdentifier: 
   isMoveThroughObject: 0
-  speed: 10
-  lifespan: 20
+  speed: 30
+  lifespan: 0.1
   explosionPrefab: {fileID: 0}

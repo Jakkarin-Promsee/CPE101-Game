@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ak
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: 77d70709832b03a48a683b5ac8423a6b, type: 3}
-  damage: 10
+  damage: 15
   fireRate: 0.2
-  recoil: 1
-  knockback: 1
+  recoil: 20
+  knockback: 4

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 817b88dcc5db7df4d924e86217365dce, type: 3}
   m_Name: Magic orb Bullet
   m_EditorClassIdentifier: 
-  isMoveThroughObject: 0
-  speed: 10
+  isMoveThroughObject: 1
+  speed: 6
   lifespan: 20
   explosionPrefab: {fileID: 0}

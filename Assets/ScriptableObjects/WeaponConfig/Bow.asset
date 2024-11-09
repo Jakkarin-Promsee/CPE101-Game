@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf7d1bd5cd058f74fbe97e9963cb6ca7, type: 3}
   m_Name: Bow
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 0}
-  damage: 10
-  fireRate: 0.2
-  recoil: 1
-  knockback: 1
+  bulletPrefab: {fileID: 6226276864569040743, guid: cf86a55df758e1447aaf5f0a2cef61f0, type: 3}
+  damage: 15
+  fireRate: 0.5
+  recoil: 2
+  knockback: 4
