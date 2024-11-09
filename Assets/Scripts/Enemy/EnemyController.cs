@@ -39,10 +39,8 @@ public class EnemyController : MonoBehaviour
 
         while (elapsed < duration)
         {
-
             yield return new WaitForSeconds(burntime);
             TakeDamage(damage);
-
             elapsed += burntime;
         }
 

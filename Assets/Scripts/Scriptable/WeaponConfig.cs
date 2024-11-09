@@ -9,6 +9,8 @@ public class WeaponConfig : ScriptableObject
     public float damage = 10f;
     public float fireRate = 0.2f;
     public float recoil = 1f;
+    public float recoilTime = 0.1f;
     public float knockback = 1f;
+    public float knockbackTime = 0.1f;
 
 }

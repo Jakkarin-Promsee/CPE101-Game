@@ -17,9 +17,10 @@ public class PlayerMovement : MonoBehaviour
     public bool isforce = false;
     private bool isDashing = false;
     private Vector3 dashTarget;
-    public float nextDashTime = 0f;
+    private float nextDashTime = 0f;
     private Rigidbody2D rb;
     private Vector2 movement;
+    private float nextMovement = 0f;
 
     void Start()
     {
@@ -36,39 +37,35 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Get input for WASD or arrow keys
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
-        // Check 'space' and 'right click'
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(1)) && Time.time > nextDashTime)
         {
             nextDashTime = Time.time + dashCd;
             Dash();
         }
 
-        // Add dash movement to mouse position with dash distance
         if (isDashing)
         {
             transform.position = Vector3.MoveTowards(transform.position, dashTarget, dashSpeed * Time.deltaTime);
 
-            // Stop dashing once we reach the target
             if (Vector3.Distance(transform.position, dashTarget) < 0.1f)
-            {
                 isDashing = false;
-            }
-
         }
+    }
+
+    public void Recoil(Vector3 force, float time)
+    {
+        nextMovement = Time.time + time;
+        rb.AddForce(force, ForceMode2D.Impulse);
     }
 
     void FixedUpdate()
     {
-        // Move the player on keyboard position
-        // if (!isforce) rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-        if (!isforce) rb.velocity = movement * moveSpeed; // Move the player with velocity
-        else isforce = false;
+        if (Time.time > nextMovement)
+            rb.velocity = movement * moveSpeed;
 
-        // Update camera position to follow the player
         if (mainCamera != null)
         {
             mainCamera.transform.position = new Vector3(rb.position.x, rb.position.y, mainCamera.transform.position.z);
@@ -77,14 +74,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Dash()
     {
-        // Get mouse position in the screen
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = transform.position.z; // Ensure Z axis is consistent
+        mousePosition.z = transform.position.z;
 
-        // Calculate direction to the mouse and normalize it
         Vector3 direction = (mousePosition - transform.position).normalized;
-
-        // Set the dash target position
         dashTarget = transform.position + direction * dashDistance;
         isDashing = true;
     }

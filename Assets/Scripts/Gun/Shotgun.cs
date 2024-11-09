@@ -13,6 +13,6 @@ public class Shotgun : Gun
             shotgunBullet.FirePellets(0);  // Fire multiple pellets
         }
 
-        base.Fire();  // Shotgun logic: Fire multiple bullets at once
+        base.Fire();
     }
 }

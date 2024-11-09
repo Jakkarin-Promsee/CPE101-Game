@@ -4,31 +4,19 @@ using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
-    public GameObject[] weaponPrefabs;  // Array of ranged weapon prefabs
+    public GameObject[] weaponPrefabs;
+    public enum WeaponType { Gun, Melee }
 
-    // Tempo variable
-    private GameObject currentWeapon;   // Holds the currently equipped weapon
-
-
+    public WeaponType currentWeaponType;
+    private GameObject currentWeapon;
     private int currentWeaponIndex = 0;
     private Transform playerTransform;
-
-    //  ! Melee add
-    // Weapon types
-    public enum WeaponType
-    {
-        Gun, Melee
-    }
-    // Store current weapon type
-    public WeaponType currentWeaponType;
-    //  ! Melee add
-
 
     void Start()
     {
 
-        playerTransform = this.GetComponent<Transform>(); // Initilize variable
-        EquipWeapon(currentWeaponIndex);  // Initilize weapon at first
+        playerTransform = gameObject.GetComponent<Transform>();
+        EquipWeapon(currentWeaponIndex);
     }
 
     void Update()
@@ -71,12 +59,11 @@ public class WeaponManager : MonoBehaviour
             // Instantiate the new weapon as a child of the player at position (0,0)
             currentWeapon = Instantiate(weaponPrefabs[index], playerTransform.position, Quaternion.identity, playerTransform);
 
-            // !Melee add
             // Weapon setup
             if (currentWeapon.GetComponent<Gun>())
             {
-                currentWeaponType = WeaponType.Gun;
                 // Link player object to weapon
+                currentWeaponType = WeaponType.Gun;
                 currentWeapon.GetComponent<Gun>().player = gameObject;
             }
             else if (currentWeapon.GetComponent<Melee>())
@@ -84,11 +71,11 @@ public class WeaponManager : MonoBehaviour
                 currentWeaponType = WeaponType.Melee;
                 SetUpMeleeWeapon();
             }
-            // !Melee add
+
             // Add weaponAim component, aim weapon to mouse position
+            // And set weapon layer to -3
             currentWeapon.AddComponent<WeaponAim>();
             currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
-
 
             // Update the current weapon index
             currentWeaponIndex = index;
@@ -107,7 +94,7 @@ public class WeaponManager : MonoBehaviour
         currentWeapon.transform.SetParent(weaponPivot.transform);
 
         // Position the weapon correctly
-        currentWeapon.transform.localPosition = Vector3.zero;
+        currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
 
         // Add WeaponAim script to the pivot (to control aiming)
         weaponPivot.AddComponent<WeaponAim>();

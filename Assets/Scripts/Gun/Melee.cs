@@ -8,15 +8,17 @@ public class Melee : MonoBehaviour
     Animator animator;
     public float delay = 0.3f;
     private bool attackBlocked = false;
-    internal GameObject weaponPivot;    
+    internal GameObject weaponPivot;
     public float damage = 10f; // Temp damage
 
-    private void Start() {
+    private void Start()
+    {
         animator = GetComponent<Animator>();
         meleeCollider = GetComponent<Collider2D>();
     }
-    public void Swing(){
-        if(attackBlocked) return;
+    public void Swing()
+    {
+        if (attackBlocked) return;
         // Prevent another attack for some period of time
         animator.SetTrigger("swordSwing");
         meleeCollider.enabled = true;
@@ -24,16 +26,18 @@ public class Melee : MonoBehaviour
         StartCoroutine(DelaySwing());
     }
 
-    public IEnumerator DelaySwing(){
+    public IEnumerator DelaySwing()
+    {
         yield return new WaitForSeconds(delay);
         // Enable attack again after delay
         meleeCollider.enabled = false;
         attackBlocked = false;
     }
 
-    protected virtual void OnTriggerEnter2D(Collider2D other){
-        if(other.tag == "Enemy"){
-            print("Im dealing damage");
+    protected virtual void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Enemy")
+        {
             other.gameObject.GetComponent<EnemyController>().TakeDamage(damage);
         }
     }
