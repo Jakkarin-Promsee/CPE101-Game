@@ -15,7 +15,8 @@ public class WeaponManager : MonoBehaviour
 
     //  ! Melee add
     // Weapon types
-    public enum WeaponType{
+    public enum WeaponType
+    {
         Gun, Melee
     }
     // Store current weapon type
@@ -36,10 +37,12 @@ public class WeaponManager : MonoBehaviour
         {
             // currentWeapon.GetComponent<Gun>().Fire();
             // ! Melee add
-            if(currentWeaponType == WeaponType.Gun){
+            if (currentWeaponType == WeaponType.Gun)
+            {
                 currentWeapon.GetComponent<Gun>().Fire();
             }
-            else if(currentWeaponType == WeaponType.Melee){
+            else if (currentWeaponType == WeaponType.Melee)
+            {
                 currentWeapon.GetComponent<Melee>().Swing();
             }
             // ! Melee add
@@ -70,11 +73,14 @@ public class WeaponManager : MonoBehaviour
 
             // !Melee add
             // Weapon setup
-            if(currentWeapon.GetComponent<Gun>()){
+            if (currentWeapon.GetComponent<Gun>())
+            {
                 currentWeaponType = WeaponType.Gun;
                 // Link player object to weapon
                 currentWeapon.GetComponent<Gun>().player = gameObject;
-            }else if(currentWeapon.GetComponent<Melee>()){
+            }
+            else if (currentWeapon.GetComponent<Melee>())
+            {
                 currentWeaponType = WeaponType.Melee;
                 SetUpMeleeWeapon();
             }
@@ -89,7 +95,8 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    void SetUpMeleeWeapon(){
+    void SetUpMeleeWeapon()
+    {
         GameObject weaponPivot = new GameObject("WeaponPivot");
         weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
 

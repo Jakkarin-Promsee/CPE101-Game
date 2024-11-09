@@ -2767,14 +2767,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 122267446}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.0069740135, z: 0, w: 0.9999757}
   m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 0.48, y: 0.48, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 750285745}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -0.799, z: 0}
 --- !u!114 &122267450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2788,7 +2788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420031}
-  moveSpeed: 4
+  moveSpeed: 3.5
   dashCd: 2
   dashDistance: 2
   dashSpeed: 30
@@ -21365,6 +21365,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8315658560390066296, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 122267449}
     - target: {fileID: 8416368581815251967, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_Name
       value: EnemySample (1)
@@ -36754,6 +36758,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8315658560390066296, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 122267449}
     - target: {fileID: 8416368581815251967, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_Name
       value: EnemySample (2)
@@ -38469,6 +38477,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8315658560390066296, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 122267449}
     - target: {fileID: 8416368581815251967, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_Name
       value: EnemySample
