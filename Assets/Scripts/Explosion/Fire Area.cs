@@ -1,18 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class FireAre : MonoBehaviour
+public class FireArea : Explosion
 {
-    // Start is called before the first frame update
-    void Start()
+    public float areaDuration = 5f;
+    public float burnDamage = 3f;
+    public float burnRate = 0.3f;
+
+    private float nextBurn = 0;
+    protected override void Start()
     {
-        
+        Destroy(gameObject, areaDuration);
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void OnTriggerEnter2D(Collider2D other)
     {
-        
+        if (other.CompareTag("Enemy") && Time.time > nextBurn)
+        {
+            nextBurn = Time.time + burnRate;
+            other.gameObject.GetComponent<EnemyController>().TakeDamage(burnDamage);
+        }
     }
 }

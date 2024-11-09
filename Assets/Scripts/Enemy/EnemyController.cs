@@ -22,10 +22,30 @@ public class EnemyController : MonoBehaviour
         if (hp <= 0) Destroy(gameObject);
     }
 
-    public void takeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         hp -= damage;
         StartCoroutine(FlashWhite());
+    }
+
+    public void ApplyBurnEffect(float damage, float duration, float burntime)
+    {
+        StartCoroutine(BurnCoroutine(damage, duration, burntime));
+    }
+
+    private IEnumerator BurnCoroutine(float damage, float duration, float burntime)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+
+            yield return new WaitForSeconds(burntime);
+            TakeDamage(damage);
+
+            elapsed += burntime;
+        }
+
     }
 
     private IEnumerator FlashWhite()

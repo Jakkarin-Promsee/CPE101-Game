@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
-        
+        Destroy(gameObject, 0.2f);
     }
 
-    // Update is called once per frame
-    void Update()
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        
     }
 }

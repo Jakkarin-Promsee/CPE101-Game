@@ -32,7 +32,7 @@ public class Bullet : MonoBehaviour
         {
 
 
-            other.gameObject.GetComponent<EnemyController>().takeDamage(damage);
+            other.gameObject.GetComponent<EnemyController>().TakeDamage(damage);
 
             float angle = transform.rotation.eulerAngles.z;
             float angleInRadians = angle * Mathf.Deg2Rad;
@@ -41,8 +41,7 @@ public class Bullet : MonoBehaviour
 
             if (bullet.explosionPrefab)
             {
-                GameObject Explosion = Instantiate(bullet.explosionPrefab, (transform.position + other.transform.position) / 2, Quaternion.Euler(0, 0, angle));
-                Destroy(Explosion, 0.2f);
+                Instantiate(bullet.explosionPrefab, (transform.position + other.transform.position) / 2, Quaternion.Euler(0, 0, angle));
             }
         }
     }
