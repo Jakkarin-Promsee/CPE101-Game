@@ -2846,6 +2846,8 @@ MonoBehaviour:
   - {fileID: 7102781951068588039, guid: 4e77c0e2f19af9341a9c019c813f2af8, type: 3}
   - {fileID: 7102781951068588039, guid: 8c6467a729ddf33408ad11aab4a7cc2e, type: 3}
   - {fileID: 7102781951068588039, guid: 11b19ca585e1c4c4a96783dd4079cb36, type: 3}
+  - {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
+  currentWeaponType: 0
 --- !u!1001 &124487001
 PrefabInstance:
   m_ObjectHideFlags: 0
