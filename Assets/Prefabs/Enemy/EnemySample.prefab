@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4701016208378689510}
   - component: {fileID: 510082309835593629}
   - component: {fileID: 2885159481664506723}
-  - component: {fileID: 8315658560390066296}
+  - component: {fileID: 1904385643242558053}
   m_Layer: 0
   m_Name: EnemySample
   m_TagString: Enemy
@@ -165,7 +165,7 @@ MonoBehaviour:
   hp: 100
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.1
---- !u!114 &8315658560390066296
+--- !u!114 &1904385643242558053
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,11 +177,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1989f3676a1976947adeb42f040f6d9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
   player: {fileID: 0}
-  chaseRange: 10
-  meleeRange: 2
-  rangedAttackRange: 6
-  retreatThreshold: 20
-  moveSpeed: 3
-  attackRate: 1
+  currentState: 0
+  eyeRange: 10
+  chaseRange: 6
+  attackRange: 8
+  attackRate: 4
+  moveSpeed: 2.5
+  frictionCoefficient: 1
+  patrolSpeed: 1.5
+  patrolLength: 1
+  patrolCD: 5
+  stoppingDistance: 0.1
+  circleDistance: 3
+  circleMoveSpeed: 2
+  circleDuration: 1
+  circleCD: 4
