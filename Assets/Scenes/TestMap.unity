@@ -10086,8 +10086,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 122267449}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
-      propertyPath: circleCD
+      propertyPath: dodgeCD
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: attackCD
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: circleCD
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: eyeRange
@@ -10098,6 +10106,14 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: dodgeAngle
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: dodgeRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: attackRange
       value: 10
       objectReference: {fileID: 0}
@@ -10106,8 +10122,16 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: patrolLength
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: randomMoveCD
-      value: 4
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: dodgeDuration
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: circleDuration
@@ -10123,15 +10147,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: randomMoveLength
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.84
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.57
+      value: 4.38
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.z
