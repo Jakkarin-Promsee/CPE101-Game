@@ -30,8 +30,7 @@ public class EnemyActionController : MonoBehaviour
     public float moveFrictionCoefficient = 1f;
     public float moveLeastStoppingDistance = 0.1f;
     ///////
-    private float _nextMovementTime = 0f;
-    private bool _nextMovementState = false;
+    private bool _nextMovementState = true;
 
     // Patrol Status
     [Header("PatrolSetting Setting")]
@@ -39,8 +38,7 @@ public class EnemyActionController : MonoBehaviour
     public float patrolSpeed = 1.5f;
     public float patrolLength = 2f;
     ///////
-    private bool _nextPatrolState = false;
-    private float _nextPatrolTime = 0f;
+    private bool _nextPatrolState = true;
     private bool _patrolGotoTaget = true;
     private bool _isPatrolFinish = true;
     private Vector3 _patrolSponPosition;
@@ -55,9 +53,9 @@ public class EnemyActionController : MonoBehaviour
     public float circleRadius = 3f;
     ///////
     private bool _isCircleMove = false;
-    private float _nextCircleTime = 0f;
+    private bool _nextCircleState = true;
+    private bool _nextCircleDurationState = true;
     private float _circleFaceAngle = 0f;
-    private float _nextCircleDurationTime = 0f;
     private float _circleOffsetRadius = 0f;
     private bool _isCircleCW = true;
     bool _isCircleReversePhase = false;
@@ -102,12 +100,13 @@ public class EnemyActionController : MonoBehaviour
         // Random activate time
         // _nextPatrolTime = Random.Range(0, 11) / 2;
         _nextAttackTime = Random.Range(0, 11) / 2;
-        _nextCircleTime = Random.Range(0, 11) / 2;
+        // _nextCircleTime = Random.Range(0, 11) / 2;
         _nextRandomMoveTime = Random.Range(0, 11) / 2;
         _nextDodgeTime = Random.Range(0, 11) / 2;
 
         StartCoroutine(CountMoveState(0f));
         StartCoroutine(CountPatrolCD((float)Random.Range(0, 11) / 2));
+        StartCoroutine(CountCircleCD((float)Random.Range(0, 11) / 2));
     }
 
     public void TakeKnockback(Vector3 force, float knockbackTime)
@@ -144,6 +143,20 @@ public class EnemyActionController : MonoBehaviour
         _nextPatrolState = false;
         yield return new WaitForSeconds(_cd);
         _nextPatrolState = true;
+    }
+
+    private IEnumerator CountCircleCD(float _cd)
+    {
+        _nextCircleState = false;
+        yield return new WaitForSeconds(_cd);
+        _nextCircleState = true;
+    }
+
+    private IEnumerator CountCircleDurationCD(float _cd)
+    {
+        _nextCircleDurationState = false;
+        yield return new WaitForSeconds(_cd);
+        _nextCircleDurationState = true;
     }
 
     private void CheckForPlayer()
@@ -229,13 +242,13 @@ public class EnemyActionController : MonoBehaviour
         if (!_isRandomMove && distanceToPlayer < chaseRange)
         {
             // If first active state
-            if (Time.time > _nextCircleTime)
+            if (_nextCircleState)
             {
+                _nextCircleState = false;
                 Debug.Log("Circle move begin");
 
                 // Initial time manager control params
-                _nextCircleDurationTime = Time.time + circleDuration * Random.Range(7, 16) / 10;
-                _nextCircleTime = _nextCircleDurationTime + circleCD * Random.Range(7, 16) / 10;
+                StartCoroutine(CountCircleDurationCD(circleDuration * Random.Range(7, 16) / 10));
 
                 _isCircleMove = true;
 
@@ -302,7 +315,7 @@ public class EnemyActionController : MonoBehaviour
         if (_isCircleCW)
             _circleFaceAngle -= Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
         else
-            _circleFaceAngle += Time.fixedDeltaTime / 3; // Update the angle over time
+            _circleFaceAngle += Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
 
         float x = Mathf.Cos(_circleFaceAngle) * circleRadius;
         float y = Mathf.Sin(_circleFaceAngle) * circleRadius;
@@ -316,18 +329,17 @@ public class EnemyActionController : MonoBehaviour
         if (_nextMovementState)
             rb.velocity = direction * circleSpeed;
 
-        if (Time.time > _nextCircleDurationTime)
+        if (_nextCircleDurationState)
         {
             if (!_isCircleReversePhase)
             {
                 _isCircleReversePhase = true;
                 _isCircleCW = !_isCircleCW;
-                _nextCircleDurationTime = Time.time + circleDuration;
-                _nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
+                StartCoroutine(CountCircleDurationCD(circleDuration));
             }
             else
             {
-                _nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
+                StartCoroutine(CountCircleCD(circleCD * Random.Range(7, 16) / 10));
                 _isCircleMove = false;
                 _isCircleReversePhase = false;
                 _currentState = State.Chase;
