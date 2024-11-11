@@ -31,6 +31,7 @@ public class EnemyActionController : MonoBehaviour
     public float moveLeastStoppingDistance = 0.1f;
     public float _wallCheckTime = 0.5f;
     ///////
+    private bool _isCheckingWall = false;
     private Vector3 _lastThisPosition;
     private bool _nextMovementState = true;
     private bool _forceEnd = false;
@@ -138,8 +139,6 @@ public class EnemyActionController : MonoBehaviour
         yield return new WaitForSeconds(_waitTime);
         _nextMovementState = true;
     }
-
-    private bool _isCheckingWall = false;
 
     private void CheckWall()
     {
@@ -425,6 +424,4 @@ public class EnemyActionController : MonoBehaviour
             }
         }
     }
-
-
 }
