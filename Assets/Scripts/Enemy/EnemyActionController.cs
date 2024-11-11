@@ -13,74 +13,77 @@ public class EnemyActionController : MonoBehaviour
     // Pattern status
     public enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     ///////
-    public State currentState;
+    private State _currentState;
 
     // Attack status
     [Header("General Setting. \n[eyeRange > attackRange > chaseRange]")]
+    public float attackCD = 4f;
     public float eyeRange = 10f;
     public float attackRange = 8f;
     public float chaseRange = 5f;
-    public float attackCD = 4f;
     ///////
-    private float nextAttackTime = 0f;
+    private float _nextAttackTime = 0f;
 
     // Movemet status
     [Header("Movement Setting")]
     public float moveSpeed = 2.5f;
-    public float frictionCoefficient = 1f;
-    public float stoppingDistance = 0.1f;
+    public float moveFrictionCoefficient = 1f;
+    public float moveLeastStoppingDistance = 0.1f;
     ///////
-    private float nextMovement = 0f;
+    private float _nextMovementTime = 0f;
 
     // Patrol Status
     [Header("PatrolSetting Setting")]
+    public float patrolCD = 3f;
     public float patrolSpeed = 1.5f;
     public float patrolLength = 2f;
-    public float patrolCD = 3f;
     ///////
-    private bool gotoTaget = true;
-    private bool patrolFinish = true;
-    private float nextPatrolTime = 0f;
-    private Vector3 sponPosition;
-    private Vector3 patrolTarget;
+    private float _nextPatrolTime = 0f;
+    private bool _patrolGotoTaget = true;
+    private bool _isPatrolFinish = true;
+    private Vector3 _patrolSponPosition;
+    private Vector3 _patrolTargetPosition;
 
     // Circle status
     [Header("Circle movement Setting. \n[chaseRange > circleRadius]")]
-    public float circleMoveSpeed = 2f;
-    public float circleRadius = 3f;
-    public float circleDuration = 2f;
     public float circleCD = 4f;
+    public float circleDuration = 2f;
+    public float circleSpeed = 2f;
+    public float circleAngularSpeed = 0.3f;
+    public float circleRadius = 3f;
     ///////
-    private bool isCircleMove = false;
-    private float angleCircle = 0f;
-    private float nextCircleTime = 0f;
-    private float durationCircleTime = 0f;
-    private float offsetCircleRadius = 0f;
-    private bool randomCircleCW = true;
+    private bool _isCircleMove = false;
+    private float _nextCircleTime = 0f;
+    private float _circleFaceAngle = 0f;
+    private float _nextCircleDurationTime = 0f;
+    private float _circleOffsetRadius = 0f;
+    private bool _isCircleCW = true;
+    bool _isCircleReversePhase = false;
 
     // Random move status
     [Header("Random movement Setting")]
     public float randomMoveCD = 3f;
-    public float randomMoveLength = 2f;
     public float randomMoveSpeed = 2f;
+    public float randomMoveLength = 2f;
     ///////
-    private bool isRandomMove = false;
-    private float nextRandomMoveTime = 0f;
-    private bool randomMoveGotoTaget = true;
-    private bool randomMoveFinish = true;
-    private Vector3 randomMoveTarget;
-    private Vector3 randomMoveBase;
-    private Vector3 lastPos;
-    private float wallCheckTime = 0.5f;
-    private float nextWallCheckTime = 0f;
-    private bool isFirstRandomMove = true;
+    private bool _isRandomMove = false;
+    private float _nextRandomMoveTime = 0f;
+    private bool _randomMoveGotoTaget = true;
+    private bool _isRandomMoveFinish = true;
+    private Vector3 _randomMoveTargetPosition;
+    private Vector3 _randomMoveBasePosition;
+    private Vector3 _lastThisPosition;
+    private float _wallCheckTime = 0.5f;
+    private float _nextWallCheckTime = 0f;
+    private bool _isFirstRandomMove = true;
 
     // Dodge status
     [Header("Dodge movement Setting")]
-    public float dodgeRange = 2f;
     public float dodgeCD = 5f;
+    public float dodgeRange = 2f;
+
     ///////
-    private float nextDodgeTime = 0f;
+    private float _nextDodgeTime = 0f;
 
     // The others
     private Rigidbody2D rb;
@@ -88,23 +91,23 @@ public class EnemyActionController : MonoBehaviour
 
     void Start()
     {
-        currentState = State.Idle;
+        _currentState = State.Idle;
         rb = GetComponent<Rigidbody2D>();
-        sponPosition = transform.position;
+        _patrolSponPosition = transform.position;
 
-        randomMoveTarget = transform.position;
+        _randomMoveTargetPosition = transform.position;
 
         // Random activate time
-        nextPatrolTime = Random.Range(0, 11) / 2;
-        nextAttackTime = Random.Range(0, 11) / 2;
-        nextCircleTime = Random.Range(0, 11) / 2;
-        nextRandomMoveTime = Random.Range(0, 11) / 2;
-        nextDodgeTime = Random.Range(0, 11) / 2;
+        _nextPatrolTime = Random.Range(0, 11) / 2;
+        _nextAttackTime = Random.Range(0, 11) / 2;
+        _nextCircleTime = Random.Range(0, 11) / 2;
+        _nextRandomMoveTime = Random.Range(0, 11) / 2;
+        _nextDodgeTime = Random.Range(0, 11) / 2;
     }
 
     public void TakeKnockback(Vector3 force, float knockbackTime)
     {
-        nextMovement = Time.time + knockbackTime;
+        _nextMovementTime = Time.time + knockbackTime;
         float mass = gameObject.GetComponent<Rigidbody2D>().mass;
         gameObject.GetComponent<Rigidbody2D>().AddForce(force * mass, ForceMode2D.Impulse);
     }
@@ -113,7 +116,7 @@ public class EnemyActionController : MonoBehaviour
     {
         ApplyFriction();
 
-        switch (currentState)
+        switch (_currentState)
         {
             case State.Idle: Patrol(); CheckForPlayer(); break;
             case State.Chase: CheckAttack(); CheckForPlayer(); ChasePlayer(); break;
@@ -128,54 +131,54 @@ public class EnemyActionController : MonoBehaviour
     {
         if (Vector3.Distance(transform.position, player.transform.position) < eyeRange)
         {
-            currentState = State.Chase;
+            _currentState = State.Chase;
         }
         else
         {
-            currentState = State.Idle;
+            _currentState = State.Idle;
         }
     }
 
     private void ApplyFriction()
     {
         // Calculate the friction force
-        Vector2 frictionForce = -rb.velocity * frictionCoefficient;
+        Vector2 frictionForce = -rb.velocity * moveFrictionCoefficient;
         rb.AddForce(rb.mass * frictionForce);
     }
 
     private void Patrol()
     {
-        if (patrolFinish)
+        if (_isPatrolFinish)
         {
-            if (Time.time > nextPatrolTime)
+            if (Time.time > _nextPatrolTime)
             {
                 int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
                 float vector = Random.Range(6, 10) * patrolLength / 10;
-                if (moveDir == 0) patrolTarget = sponPosition + new Vector3(0, -vector, 0);
-                else if (moveDir == 1) patrolTarget = sponPosition + new Vector3(0, vector, 0);
-                else if (moveDir == 2) patrolTarget = sponPosition + new Vector3(-vector, 0, 0);
-                else if (moveDir == 3) patrolTarget = sponPosition + new Vector3(vector, 0, 0);
+                if (moveDir == 0) _patrolTargetPosition = _patrolSponPosition + new Vector3(0, -vector, 0);
+                else if (moveDir == 1) _patrolTargetPosition = _patrolSponPosition + new Vector3(0, vector, 0);
+                else if (moveDir == 2) _patrolTargetPosition = _patrolSponPosition + new Vector3(-vector, 0, 0);
+                else if (moveDir == 3) _patrolTargetPosition = _patrolSponPosition + new Vector3(vector, 0, 0);
 
-                patrolFinish = false;
-                gotoTaget = true;
+                _isPatrolFinish = false;
+                _patrolGotoTaget = true;
             }
         }
         else
         {
-            if (Time.time > nextMovement)
-                rb.velocity = (patrolTarget - transform.position).normalized * patrolSpeed;
+            if (Time.time > _nextMovementTime)
+                rb.velocity = (_patrolTargetPosition - transform.position).normalized * patrolSpeed;
 
-            if (Vector3.Distance(transform.position, patrolTarget) < stoppingDistance && gotoTaget)
+            if (Vector3.Distance(transform.position, _patrolTargetPosition) < moveLeastStoppingDistance && _patrolGotoTaget)
             {
-                gotoTaget = false;
-                patrolTarget = sponPosition;
+                _patrolGotoTaget = false;
+                _patrolTargetPosition = _patrolSponPosition;
             }
 
-            if (Vector3.Distance(transform.position, sponPosition) < stoppingDistance && !gotoTaget)
+            if (Vector3.Distance(transform.position, _patrolSponPosition) < moveLeastStoppingDistance && !_patrolGotoTaget)
             {
-                patrolFinish = true;
-                gotoTaget = true;
-                nextPatrolTime = Time.time + patrolCD * Random.Range(5, 16) / 10;
+                _isPatrolFinish = true;
+                _patrolGotoTaget = true;
+                _nextPatrolTime = Time.time + patrolCD * Random.Range(5, 16) / 10;
             }
         }
     }
@@ -184,14 +187,14 @@ public class EnemyActionController : MonoBehaviour
     {
         Debug.Log("pwefffff");
 
-        currentState = State.Chase;
+        _currentState = State.Chase;
     }
 
     private void CheckAttack()
     {
-        if (Time.time > nextAttackTime && Vector3.Distance(transform.position, player.position) < attackRange)
+        if (Time.time > _nextAttackTime && Vector3.Distance(transform.position, player.position) < attackRange)
         {
-            nextAttackTime = Time.time + attackCD;
+            _nextAttackTime = Time.time + attackCD;
             Attack();
         }
 
@@ -201,64 +204,64 @@ public class EnemyActionController : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (!isRandomMove && distanceToPlayer < chaseRange)
+        if (!_isRandomMove && distanceToPlayer < chaseRange)
         {
             // If first active state
-            if (Time.time > nextCircleTime)
+            if (Time.time > _nextCircleTime)
             {
                 Debug.Log("Circle move begin");
 
                 // Initial time manager control params
-                durationCircleTime = Time.time + circleDuration * Random.Range(7, 16) / 10;
-                nextCircleTime = durationCircleTime + circleCD * Random.Range(7, 16) / 10;
+                _nextCircleDurationTime = Time.time + circleDuration * Random.Range(7, 16) / 10;
+                _nextCircleTime = _nextCircleDurationTime + circleCD * Random.Range(7, 16) / 10;
 
-                isCircleMove = true;
+                _isCircleMove = true;
 
                 // Complex random
-                offsetCircleRadius = Random.Range(-15, 5) / 10 * circleRadius;
-                randomCircleCW = (Random.Range(0, 2) == 0) ? true : false;
-                if (chaseRange + offsetCircleRadius > chaseRange) offsetCircleRadius = chaseRange;
+                _circleOffsetRadius = Random.Range(-15, 5) / 10 * circleRadius;
+                _isCircleCW = (Random.Range(0, 2) == 0) ? true : false;
+                if (chaseRange + _circleOffsetRadius > chaseRange) _circleOffsetRadius = chaseRange;
 
                 // Set angle direction
                 Vector2 distanceVector = transform.position - player.position;
-                angleCircle = Mathf.Atan2(distanceVector.y, distanceVector.x);
+                _circleFaceAngle = Mathf.Atan2(distanceVector.y, distanceVector.x);
 
-                currentState = State.Circle;
+                _currentState = State.Circle;
                 return;
             }
             // If in the circle movement duration
-            else if (isCircleMove)
+            else if (_isCircleMove)
             {
-                currentState = State.Circle;
+                _currentState = State.Circle;
                 return;
             }
         }
 
-        if (!isCircleMove && distanceToPlayer < chaseRange)
+        if (!_isCircleMove && distanceToPlayer < chaseRange)
         {
             // If first active state
-            if (Time.time > nextRandomMoveTime)
+            if (Time.time > _nextRandomMoveTime)
             {
                 Debug.Log("Random move begin");
 
-                nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(7, 16) / 10;
+                _nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(7, 16) / 10;
 
-                isRandomMove = true;
-                randomMoveFinish = true;
+                _isRandomMove = true;
+                _isRandomMoveFinish = true;
 
-                currentState = State.Random;
+                _currentState = State.Random;
                 return;
 
             }
             // If in the random movement duration
-            else if (isRandomMove)
+            else if (_isRandomMove)
             {
-                currentState = State.Random;
+                _currentState = State.Random;
                 return;
             }
         }
 
-        if (Time.time > nextDodgeTime && distanceToPlayer < dodgeRange)
+        if (Time.time > _nextDodgeTime && distanceToPlayer < dodgeRange)
         {
 
         }
@@ -266,23 +269,21 @@ public class EnemyActionController : MonoBehaviour
         if (distanceToPlayer > chaseRange)
         {
             // Keep moving towards player in chase state
-            if (Time.time > nextMovement)
+            if (Time.time > _nextMovementTime)
                 rb.velocity = (player.position - transform.position).normalized * moveSpeed;
         }
     }
 
-
-    bool isReverseCirclePhase = false;
     void CirclePlayer()
     {
         // Calculate the next position on the orbit path
-        if (randomCircleCW)
-            angleCircle -= Time.fixedDeltaTime / 3; // Update the angle over time
+        if (_isCircleCW)
+            _circleFaceAngle -= Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
         else
-            angleCircle += Time.fixedDeltaTime / 3; // Update the angle over time
+            _circleFaceAngle += Time.fixedDeltaTime / 3; // Update the angle over time
 
-        float x = Mathf.Cos(angleCircle) * circleRadius;
-        float y = Mathf.Sin(angleCircle) * circleRadius;
+        float x = Mathf.Cos(_circleFaceAngle) * circleRadius;
+        float y = Mathf.Sin(_circleFaceAngle) * circleRadius;
 
         // Determine the target position based on the player's position and angle
         Vector3 circlePosition = new Vector3(player.position.x + x, player.position.y + y, 0);
@@ -290,83 +291,83 @@ public class EnemyActionController : MonoBehaviour
         // Calculate the velocity to move towards the orbit position
         Vector3 direction = (circlePosition - transform.position).normalized;
 
-        if (Time.time > nextMovement)
-            rb.velocity = direction * circleMoveSpeed;
+        if (Time.time > _nextMovementTime)
+            rb.velocity = direction * circleSpeed;
 
-        if (Time.time > durationCircleTime)
+        if (Time.time > _nextCircleDurationTime)
         {
-            if (!isReverseCirclePhase)
+            if (!_isCircleReversePhase)
             {
-                isReverseCirclePhase = true;
-                randomCircleCW = !randomCircleCW;
-                durationCircleTime = Time.time + circleDuration;
-                nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
+                _isCircleReversePhase = true;
+                _isCircleCW = !_isCircleCW;
+                _nextCircleDurationTime = Time.time + circleDuration;
+                _nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
             }
             else
             {
-                nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
-                isCircleMove = false;
-                isReverseCirclePhase = false;
-                currentState = State.Chase;
+                _nextCircleTime = Time.time + circleCD * Random.Range(7, 16) / 10;
+                _isCircleMove = false;
+                _isCircleReversePhase = false;
+                _currentState = State.Chase;
             }
 
         }
     }
     private void RandomMove()
     {
-        if (randomMoveFinish)
+        if (_isRandomMoveFinish)
         {
-            randomMoveBase = transform.position;
+            _randomMoveBasePosition = transform.position;
 
             int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
             float vector = Random.Range(6, 15) * randomMoveLength / 10;
-            if (moveDir == 0) randomMoveTarget = randomMoveBase + new Vector3(0, -vector, 0);
-            else if (moveDir == 1) randomMoveTarget = randomMoveBase + new Vector3(0, vector, 0);
-            else if (moveDir == 2) randomMoveTarget = randomMoveBase + new Vector3(-vector, 0, 0);
-            else if (moveDir == 3) randomMoveTarget = randomMoveBase + new Vector3(vector, 0, 0);
+            if (moveDir == 0) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(0, -vector, 0);
+            else if (moveDir == 1) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(0, vector, 0);
+            else if (moveDir == 2) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(-vector, 0, 0);
+            else if (moveDir == 3) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vector, 0, 0);
 
-            isFirstRandomMove = true;
-            randomMoveFinish = false;
-            randomMoveGotoTaget = true;
+            _isFirstRandomMove = true;
+            _isRandomMoveFinish = false;
+            _randomMoveGotoTaget = true;
         }
         else
         {
             bool forceEnd = false;
 
-            if (isFirstRandomMove)
+            if (_isFirstRandomMove)
             {
-                isFirstRandomMove = false;
-                nextWallCheckTime = Time.time + wallCheckTime;
-                lastPos = transform.position;
+                _isFirstRandomMove = false;
+                _nextWallCheckTime = Time.time + _wallCheckTime;
+                _lastThisPosition = transform.position;
             }
-            else if (Time.time > nextWallCheckTime)
+            else if (Time.time > _nextWallCheckTime)
             {
-                nextWallCheckTime = Time.time + wallCheckTime;
+                _nextWallCheckTime = Time.time + _wallCheckTime;
 
-                if (lastPos == transform.position)
+                if (_lastThisPosition == transform.position)
                 {
                     Debug.Log("Found Wall");
                     forceEnd = true;
                 }
 
-                lastPos = transform.position;
+                _lastThisPosition = transform.position;
             }
 
-            if (Time.time > nextMovement)
-                rb.velocity = (randomMoveTarget - transform.position).normalized * randomMoveSpeed;
+            if (Time.time > _nextMovementTime)
+                rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * randomMoveSpeed;
 
-            if (Vector3.Distance(transform.position, randomMoveTarget) < stoppingDistance && randomMoveGotoTaget)
+            if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && _randomMoveGotoTaget)
             {
-                randomMoveGotoTaget = false;
-                randomMoveTarget = randomMoveBase;
+                _randomMoveGotoTaget = false;
+                _randomMoveTargetPosition = _randomMoveBasePosition;
             }
 
-            if ((Vector3.Distance(transform.position, randomMoveTarget) < stoppingDistance && !randomMoveGotoTaget) || forceEnd)
+            if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && !_randomMoveGotoTaget) || forceEnd)
             {
-                nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(5, 16) / 10;
-                isRandomMove = false;
+                _nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(5, 16) / 10;
+                _isRandomMove = false;
 
-                currentState = State.Chase;
+                _currentState = State.Chase;
             }
         }
     }
