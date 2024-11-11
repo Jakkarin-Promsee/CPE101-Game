@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Rocket launcher
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: cd6cc4057a0995a44ade1cf7cdb61e63, type: 3}
-  damage: 10
+  damage: 30
   fireRate: 1
-  recoil: 70
-  knockback: 3
+  recoil: 20
+  recoilTime: 0.15
+  knockback: 5
+  knockbackTime: 0.1

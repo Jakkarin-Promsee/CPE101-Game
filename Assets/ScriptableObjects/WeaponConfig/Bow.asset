@@ -15,5 +15,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6226276864569040743, guid: cf86a55df758e1447aaf5f0a2cef61f0, type: 3}
   damage: 15
   fireRate: 0.5
-  recoil: 2
-  knockback: 4
+  recoil: 1
+  recoilTime: 0.1
+  knockback: 1.5
+  knockbackTime: 0.1

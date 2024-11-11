@@ -180,16 +180,21 @@ MonoBehaviour:
   player: {fileID: 0}
   currentState: 0
   eyeRange: 10
-  chaseRange: 6
   attackRange: 8
-  attackRate: 4
+  chaseRange: 6
+  attackCD: 4
   moveSpeed: 2.5
   frictionCoefficient: 1
+  stoppingDistance: 0.1
   patrolSpeed: 1.5
   patrolLength: 1
   patrolCD: 5
-  stoppingDistance: 0.1
-  circleDistance: 3
   circleMoveSpeed: 2
+  circleRadius: 3
   circleDuration: 1
   circleCD: 4
+  randomMoveCD: 3
+  randomMoveLength: 2
+  randomMoveSpeed: 2
+  dodgeRange: 2
+  dodgeCD: 5

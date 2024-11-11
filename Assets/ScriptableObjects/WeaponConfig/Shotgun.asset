@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: b9a46c9b93656d0418df82f955e88ed8, type: 3}
-  damage: 10
+  damage: 15
   fireRate: 0.7
-  recoil: 60
+  recoil: 15
+  recoilTime: 0.1
   knockback: 10
+  knockbackTime: 0.1
