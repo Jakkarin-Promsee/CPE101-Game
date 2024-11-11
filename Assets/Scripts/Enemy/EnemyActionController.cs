@@ -72,6 +72,9 @@ public class EnemyActionController : MonoBehaviour
         currentState = State.Idle;
         rb = GetComponent<Rigidbody2D>();
         sponPosition = transform.position;
+        // ! Test
+        this.player = GameObject.FindWithTag("Player").transform;
+        // ! Test
 
         // Random activate time
         nextPatrolTime = Random.Range(0, 11) / 5;
@@ -164,7 +167,9 @@ public class EnemyActionController : MonoBehaviour
     private void Attack()
     {
         nextAttackTime = Time.time + attackRate * Random.Range(8, 11) / 10;
-        Debug.Log("pwefffff");
+        // ! Test
+        // Debug.Log("pwefffff");
+        // ! Test
 
         currentState = State.Chase;
     }

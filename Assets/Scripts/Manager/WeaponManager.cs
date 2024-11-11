@@ -12,29 +12,28 @@ public class WeaponManager : MonoBehaviour
     private int currentWeaponIndex = 0;
     private Transform playerTransform;
 
-    void Start()
+    private void Start()
     {
 
         playerTransform = gameObject.GetComponent<Transform>();
         EquipWeapon(currentWeaponIndex);
     }
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetMouseButton(0)) // Check 'left hold'
-        {
-            // currentWeapon.GetComponent<Gun>().Fire();
-            // ! Melee add
-            if (currentWeaponType == WeaponType.Gun)
-            {
-                currentWeapon.GetComponent<Gun>().Fire();
-            }
-            else if (currentWeaponType == WeaponType.Melee)
-            {
-                currentWeapon.GetComponent<Melee>().Swing();
-            }
-            // ! Melee add
-        }
+        // ! Test
+        // if (Input.GetMouseButton(0)) // Check 'left hold'
+        // {
+        //     if (currentWeaponType == WeaponType.Gun)
+        //     {
+        //         currentWeapon.GetComponent<Gun>().Fire();
+        //     }
+        //     else if (currentWeaponType == WeaponType.Melee)
+        //     {
+        //         currentWeapon.GetComponent<Melee>().Swing();
+        //     }
+        // }
+        // ! Test
 
         // Switch guns with number keys (1, 2, 3, etc.)
         if (Input.GetKeyDown(KeyCode.Alpha1)) EquipWeapon(0);

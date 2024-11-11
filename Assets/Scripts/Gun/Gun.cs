@@ -11,6 +11,15 @@ public class Gun : MonoBehaviour
     public GameObject player;
     public float nextFireTime = 0f;
 
+    // ! Test
+    private void Update() {
+        // Normal attack
+        if (Input.GetMouseButton(0)){
+            Fire();
+        }
+    }
+    // ! Test
+
     public virtual void Fire()
     {
         if (Time.time > nextFireTime)

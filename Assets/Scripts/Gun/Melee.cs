@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Melee : MonoBehaviour
 {
-    Collider2D meleeCollider;
+    private Collider2D meleeCollider;
     Animator animator;
-    public float delay = 0.3f;
-    private bool attackBlocked = false;
+    public float swingDelay = 0.3f;
+    private bool preventSwing = false;
     internal GameObject weaponPivot;
     public float damage = 10f; // Temp damage
 
@@ -16,22 +16,43 @@ public class Melee : MonoBehaviour
         animator = GetComponent<Animator>();
         meleeCollider = GetComponent<Collider2D>();
     }
+
+    // ! Test
+    private void Update() {
+        // Normal Attack
+        if (Input.GetMouseButton(0)){
+            Swing();
+        }
+    }
+    // ! Test
+
     public void Swing()
     {
-        if (attackBlocked) return;
+        if (preventSwing) return;
         // Prevent another attack for some period of time
         animator.SetTrigger("swordSwing");
         meleeCollider.enabled = true;
-        attackBlocked = true;
+        preventSwing = true;
         StartCoroutine(DelaySwing());
     }
 
-    public IEnumerator DelaySwing()
+    // ! Test
+    public void Reflect(){
+        // If player's shield still exist, allow
+        // Set blocking state
+        // Play blocking animation
+        // Change direction of incoming bullets to mouse position, and minus shield by 1
+        // Start skill duration (3 secs)
+        // Set skill cooldown(10 secs)
+    }
+    // ! Test
+
+    private IEnumerator DelaySwing()
     {
-        yield return new WaitForSeconds(delay);
-        // Enable attack again after delay
+        yield return new WaitForSeconds(swingDelay);
+        // Enable attack again after Swing Delay
         meleeCollider.enabled = false;
-        attackBlocked = false;
+        preventSwing = false;
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
