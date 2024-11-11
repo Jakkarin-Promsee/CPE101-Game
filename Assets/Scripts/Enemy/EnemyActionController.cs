@@ -38,6 +38,7 @@ public class EnemyActionController : MonoBehaviour
     public float patrolSpeed = 1.5f;
     public float patrolLength = 2f;
     ///////
+    private bool _nextPatrolState = false;
     private float _nextPatrolTime = 0f;
     private bool _patrolGotoTaget = true;
     private bool _isPatrolFinish = true;
@@ -98,11 +99,13 @@ public class EnemyActionController : MonoBehaviour
         _randomMoveTargetPosition = transform.position;
 
         // Random activate time
-        _nextPatrolTime = Random.Range(0, 11) / 2;
+        // _nextPatrolTime = Random.Range(0, 11) / 2;
         _nextAttackTime = Random.Range(0, 11) / 2;
         _nextCircleTime = Random.Range(0, 11) / 2;
         _nextRandomMoveTime = Random.Range(0, 11) / 2;
         _nextDodgeTime = Random.Range(0, 11) / 2;
+
+        StartCoroutine(CountPatrolCD((float)Random.Range(0, 11) / 2));
     }
 
     public void TakeKnockback(Vector3 force, float knockbackTime)
@@ -125,6 +128,13 @@ public class EnemyActionController : MonoBehaviour
             case State.Random: RandomMove(); break;
                 // case State.Dodge: Dodge(); break;
         }
+    }
+
+    private IEnumerator CountPatrolCD(float _cd)
+    {
+        _nextPatrolState = false;
+        yield return new WaitForSeconds(_cd);
+        _nextPatrolState = true;
     }
 
     private void CheckForPlayer()
@@ -150,8 +160,11 @@ public class EnemyActionController : MonoBehaviour
     {
         if (_isPatrolFinish)
         {
-            if (Time.time > _nextPatrolTime)
+            if (_nextPatrolState)
             {
+                Debug.Log("Patrol begin");
+                _nextPatrolState = false;
+
                 int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
                 float vector = Random.Range(6, 10) * patrolLength / 10;
                 if (moveDir == 0) _patrolTargetPosition = _patrolSponPosition + new Vector3(0, -vector, 0);
@@ -176,9 +189,9 @@ public class EnemyActionController : MonoBehaviour
 
             if (Vector3.Distance(transform.position, _patrolSponPosition) < moveLeastStoppingDistance && !_patrolGotoTaget)
             {
+                StartCoroutine(CountPatrolCD(patrolCD));
                 _isPatrolFinish = true;
                 _patrolGotoTaget = true;
-                _nextPatrolTime = Time.time + patrolCD * Random.Range(5, 16) / 10;
             }
         }
     }
