@@ -31,6 +31,7 @@ public class EnemyActionController : MonoBehaviour
     public float moveLeastStoppingDistance = 0.1f;
     ///////
     private float _nextMovementTime = 0f;
+    private bool _nextMovementState = false;
 
     // Patrol Status
     [Header("PatrolSetting Setting")]
@@ -105,12 +106,13 @@ public class EnemyActionController : MonoBehaviour
         _nextRandomMoveTime = Random.Range(0, 11) / 2;
         _nextDodgeTime = Random.Range(0, 11) / 2;
 
+        StartCoroutine(CountMoveState(0f));
         StartCoroutine(CountPatrolCD((float)Random.Range(0, 11) / 2));
     }
 
     public void TakeKnockback(Vector3 force, float knockbackTime)
     {
-        _nextMovementTime = Time.time + knockbackTime;
+        StartCoroutine(CountMoveState(knockbackTime));
         float mass = gameObject.GetComponent<Rigidbody2D>().mass;
         gameObject.GetComponent<Rigidbody2D>().AddForce(force * mass, ForceMode2D.Impulse);
     }
@@ -128,6 +130,13 @@ public class EnemyActionController : MonoBehaviour
             case State.Random: RandomMove(); break;
                 // case State.Dodge: Dodge(); break;
         }
+    }
+
+    private IEnumerator CountMoveState(float _waitTime)
+    {
+        _nextMovementState = false;
+        yield return new WaitForSeconds(_waitTime);
+        _nextMovementState = true;
     }
 
     private IEnumerator CountPatrolCD(float _cd)
@@ -178,7 +187,7 @@ public class EnemyActionController : MonoBehaviour
         }
         else
         {
-            if (Time.time > _nextMovementTime)
+            if (_nextMovementState)
                 rb.velocity = (_patrolTargetPosition - transform.position).normalized * patrolSpeed;
 
             if (Vector3.Distance(transform.position, _patrolTargetPosition) < moveLeastStoppingDistance && _patrolGotoTaget)
@@ -282,7 +291,7 @@ public class EnemyActionController : MonoBehaviour
         if (distanceToPlayer > chaseRange)
         {
             // Keep moving towards player in chase state
-            if (Time.time > _nextMovementTime)
+            if (_nextMovementState)
                 rb.velocity = (player.position - transform.position).normalized * moveSpeed;
         }
     }
@@ -304,7 +313,7 @@ public class EnemyActionController : MonoBehaviour
         // Calculate the velocity to move towards the orbit position
         Vector3 direction = (circlePosition - transform.position).normalized;
 
-        if (Time.time > _nextMovementTime)
+        if (_nextMovementState)
             rb.velocity = direction * circleSpeed;
 
         if (Time.time > _nextCircleDurationTime)
@@ -366,7 +375,7 @@ public class EnemyActionController : MonoBehaviour
                 _lastThisPosition = transform.position;
             }
 
-            if (Time.time > _nextMovementTime)
+            if (_nextMovementState)
                 rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * randomMoveSpeed;
 
             if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && _randomMoveGotoTaget)
