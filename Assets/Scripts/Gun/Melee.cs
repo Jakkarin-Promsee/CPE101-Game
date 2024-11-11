@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class Melee : MonoBehaviour
 {
-    private Collider2D meleeCollider;
-    Animator animator;
+    private Collider2D hitboxCollider;
+    private Animator animator;
     public float swingDelay = 0.3f;
-    private bool preventSwing = false;
-    internal GameObject weaponPivot;
     public float damage = 10f; // Temp damage
+    private bool preventSwing = false;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
-        meleeCollider = GetComponent<Collider2D>();
+        // Get Animator in Model
+        animator = transform.Find("Model").GetComponent<Animator>();
+        // Get Collider in Model
+        hitboxCollider = transform.Find("Model").GetComponent<Collider2D>();
     }
 
     // ! Test
@@ -31,7 +32,7 @@ public class Melee : MonoBehaviour
         if (preventSwing) return;
         // Prevent another attack for some period of time
         animator.SetTrigger("swordSwing");
-        meleeCollider.enabled = true;
+        hitboxCollider.enabled = true;
         preventSwing = true;
         StartCoroutine(DelaySwing());
     }
@@ -51,14 +52,12 @@ public class Melee : MonoBehaviour
     {
         yield return new WaitForSeconds(swingDelay);
         // Enable attack again after Swing Delay
-        meleeCollider.enabled = false;
+        hitboxCollider.enabled = false;
         preventSwing = false;
     }
 
-    protected virtual void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Enemy")
-        {
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.CompareTag("Enemy")){
             other.gameObject.GetComponent<EnemyController>().TakeDamage(damage);
         }
     }

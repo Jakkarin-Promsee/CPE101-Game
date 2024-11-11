@@ -58,17 +58,10 @@ public class WeaponManager : MonoBehaviour
             // Instantiate the new weapon as a child of the player at position (0,0)
             currentWeapon = Instantiate(weaponPrefabs[index], playerTransform.position, Quaternion.identity, playerTransform);
 
-            // Weapon setup
-            if (currentWeapon.GetComponent<Gun>())
-            {
+            // Gun setup
+            if (currentWeapon.GetComponent<Gun>()){
                 // Link player object to weapon
-                currentWeaponType = WeaponType.Gun;
                 currentWeapon.GetComponent<Gun>().player = gameObject;
-            }
-            else if (currentWeapon.GetComponent<Melee>())
-            {
-                currentWeaponType = WeaponType.Melee;
-                SetUpMeleeWeapon();
             }
 
             // Add weaponAim component, aim weapon to mouse position
@@ -79,26 +72,5 @@ public class WeaponManager : MonoBehaviour
             // Update the current weapon index
             currentWeaponIndex = index;
         }
-    }
-
-    void SetUpMeleeWeapon()
-    {
-        GameObject weaponPivot = new GameObject("WeaponPivot");
-        weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
-
-        // Set pivot (Whole weapon) as a child of player
-        weaponPivot.transform.SetParent(playerTransform);
-
-        // Set the weapon as a child of the pivot
-        currentWeapon.transform.SetParent(weaponPivot.transform);
-
-        // Position the weapon correctly
-        currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
-
-        // Add WeaponAim script to the pivot (to control aiming)
-        weaponPivot.AddComponent<WeaponAim>();
-
-        // Optionally, you can store the pivot for further use if needed
-        currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
     }
 }
