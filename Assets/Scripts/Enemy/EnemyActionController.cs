@@ -22,15 +22,18 @@ public class EnemyActionController : MonoBehaviour
     public float attackRange = 8f;
     public float chaseRange = 5f;
     ///////
-    private float _nextAttackTime = 0f;
+    private bool _nextAttackState = true;
 
     // Movemet status
     [Header("Movement Setting")]
     public float moveSpeed = 2.5f;
     public float moveFrictionCoefficient = 1f;
     public float moveLeastStoppingDistance = 0.1f;
+    public float _wallCheckTime = 0.5f;
     ///////
+    private Vector3 _lastThisPosition;
     private bool _nextMovementState = true;
+    private bool _forceEnd = false;
 
     // Patrol Status
     [Header("PatrolSetting Setting")]
@@ -67,15 +70,11 @@ public class EnemyActionController : MonoBehaviour
     public float randomMoveLength = 2f;
     ///////
     private bool _isRandomMove = false;
-    private float _nextRandomMoveTime = 0f;
+    private bool _nextRandomMoveState = true;
     private bool _randomMoveGotoTaget = true;
     private bool _isRandomMoveFinish = true;
     private Vector3 _randomMoveTargetPosition;
     private Vector3 _randomMoveBasePosition;
-    private Vector3 _lastThisPosition;
-    private float _wallCheckTime = 0.5f;
-    private float _nextWallCheckTime = 0f;
-    private bool _isFirstRandomMove = true;
 
     // Dodge status
     [Header("Dodge movement Setting")]
@@ -99,14 +98,16 @@ public class EnemyActionController : MonoBehaviour
 
         // Random activate time
         // _nextPatrolTime = Random.Range(0, 11) / 2;
-        _nextAttackTime = Random.Range(0, 11) / 2;
+        // _nextAttackTime = Random.Range(0, 11) / 2;
         // _nextCircleTime = Random.Range(0, 11) / 2;
-        _nextRandomMoveTime = Random.Range(0, 11) / 2;
+        // _nextRandomMoveTime = Random.Range(0, 11) / 2;
         _nextDodgeTime = Random.Range(0, 11) / 2;
 
         StartCoroutine(CountMoveState(0f));
+        StartCoroutine(CountAttackCD((float)Random.Range(0, 11) / 2));
         StartCoroutine(CountPatrolCD((float)Random.Range(0, 11) / 2));
         StartCoroutine(CountCircleCD((float)Random.Range(0, 11) / 2));
+        StartCoroutine(CountRandomMoveCD((float)Random.Range(0, 11) / 2));
     }
 
     public void TakeKnockback(Vector3 force, float knockbackTime)
@@ -125,8 +126,8 @@ public class EnemyActionController : MonoBehaviour
             case State.Idle: Patrol(); CheckForPlayer(); break;
             case State.Chase: CheckAttack(); CheckForPlayer(); ChasePlayer(); break;
             case State.Attack: Attack(); break;
-            case State.Circle: CirclePlayer(); break;
-            case State.Random: RandomMove(); break;
+            case State.Circle: CirclePlayer(); CheckWall(); break;
+            case State.Random: RandomMove(); CheckWall(); break;
                 // case State.Dodge: Dodge(); break;
         }
     }
@@ -136,6 +137,42 @@ public class EnemyActionController : MonoBehaviour
         _nextMovementState = false;
         yield return new WaitForSeconds(_waitTime);
         _nextMovementState = true;
+    }
+
+    private bool _isCheckingWall = false;
+
+    private void CheckWall()
+    {
+        if (!_isCheckingWall)
+        {
+            _isCheckingWall = true;
+            StartCoroutine(WaitCheckWall());
+        }
+
+    }
+
+    private IEnumerator WaitCheckWall()
+    {
+        _forceEnd = false;
+        _lastThisPosition = transform.position;
+
+        yield return new WaitForSeconds(_wallCheckTime);
+
+        _isCheckingWall = false;
+        if (_lastThisPosition == transform.position)
+        {
+            Debug.Log("Found Wall");
+            _forceEnd = true;
+        }
+        else
+            _forceEnd = false;
+    }
+
+    private IEnumerator CountAttackCD(float _cd)
+    {
+        _nextAttackState = false;
+        yield return new WaitForSeconds(_cd);
+        _nextAttackState = true;
     }
 
     private IEnumerator CountPatrolCD(float _cd)
@@ -157,6 +194,13 @@ public class EnemyActionController : MonoBehaviour
         _nextCircleDurationState = false;
         yield return new WaitForSeconds(_cd);
         _nextCircleDurationState = true;
+    }
+
+    private IEnumerator CountRandomMoveCD(float _cd)
+    {
+        _nextRandomMoveState = false;
+        yield return new WaitForSeconds(_cd);
+        _nextRandomMoveState = true;
     }
 
     private void CheckForPlayer()
@@ -209,12 +253,13 @@ public class EnemyActionController : MonoBehaviour
                 _patrolTargetPosition = _patrolSponPosition;
             }
 
-            if (Vector3.Distance(transform.position, _patrolSponPosition) < moveLeastStoppingDistance && !_patrolGotoTaget)
+            if ((Vector3.Distance(transform.position, _patrolSponPosition) < moveLeastStoppingDistance && !_patrolGotoTaget) || _forceEnd)
             {
                 StartCoroutine(CountPatrolCD(patrolCD));
                 _isPatrolFinish = true;
                 _patrolGotoTaget = true;
             }
+            CheckWall();
         }
     }
 
@@ -227,9 +272,9 @@ public class EnemyActionController : MonoBehaviour
 
     private void CheckAttack()
     {
-        if (Time.time > _nextAttackTime && Vector3.Distance(transform.position, player.position) < attackRange)
+        if (_nextAttackState && Vector3.Distance(transform.position, player.position) < attackRange)
         {
-            _nextAttackTime = Time.time + attackCD;
+            StartCoroutine(CountAttackCD(attackCD));
             Attack();
         }
 
@@ -245,12 +290,11 @@ public class EnemyActionController : MonoBehaviour
             if (_nextCircleState)
             {
                 _nextCircleState = false;
+                _isCircleMove = true;
                 Debug.Log("Circle move begin");
 
                 // Initial time manager control params
                 StartCoroutine(CountCircleDurationCD(circleDuration * Random.Range(7, 16) / 10));
-
-                _isCircleMove = true;
 
                 // Complex random
                 _circleOffsetRadius = Random.Range(-15, 5) / 10 * circleRadius;
@@ -275,12 +319,10 @@ public class EnemyActionController : MonoBehaviour
         if (!_isCircleMove && distanceToPlayer < chaseRange)
         {
             // If first active state
-            if (Time.time > _nextRandomMoveTime)
+            if (_nextRandomMoveState)
             {
                 Debug.Log("Random move begin");
-
-                _nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(7, 16) / 10;
-
+                _nextRandomMoveState = false;
                 _isRandomMove = true;
                 _isRandomMoveFinish = true;
 
@@ -329,9 +371,9 @@ public class EnemyActionController : MonoBehaviour
         if (_nextMovementState)
             rb.velocity = direction * circleSpeed;
 
-        if (_nextCircleDurationState)
+        if (_nextCircleDurationState || _forceEnd)
         {
-            if (!_isCircleReversePhase)
+            if (!_isCircleReversePhase && !_forceEnd)
             {
                 _isCircleReversePhase = true;
                 _isCircleCW = !_isCircleCW;
@@ -360,33 +402,11 @@ public class EnemyActionController : MonoBehaviour
             else if (moveDir == 2) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(-vector, 0, 0);
             else if (moveDir == 3) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vector, 0, 0);
 
-            _isFirstRandomMove = true;
             _isRandomMoveFinish = false;
             _randomMoveGotoTaget = true;
         }
         else
         {
-            bool forceEnd = false;
-
-            if (_isFirstRandomMove)
-            {
-                _isFirstRandomMove = false;
-                _nextWallCheckTime = Time.time + _wallCheckTime;
-                _lastThisPosition = transform.position;
-            }
-            else if (Time.time > _nextWallCheckTime)
-            {
-                _nextWallCheckTime = Time.time + _wallCheckTime;
-
-                if (_lastThisPosition == transform.position)
-                {
-                    Debug.Log("Found Wall");
-                    forceEnd = true;
-                }
-
-                _lastThisPosition = transform.position;
-            }
-
             if (_nextMovementState)
                 rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * randomMoveSpeed;
 
@@ -396,9 +416,9 @@ public class EnemyActionController : MonoBehaviour
                 _randomMoveTargetPosition = _randomMoveBasePosition;
             }
 
-            if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && !_randomMoveGotoTaget) || forceEnd)
+            if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && !_randomMoveGotoTaget) || _forceEnd)
             {
-                _nextRandomMoveTime = Time.time + randomMoveCD * Random.Range(5, 16) / 10;
+                StartCoroutine(CountRandomMoveCD(randomMoveCD * Random.Range(5, 16) / 10));
                 _isRandomMove = false;
 
                 _currentState = State.Chase;
