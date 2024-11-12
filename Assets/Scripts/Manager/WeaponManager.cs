@@ -27,7 +27,7 @@ public class WeaponManager : MonoBehaviour
             // ! Melee add
             if (currentWeaponType == WeaponType.Gun)
             {
-                currentWeapon.GetComponent<Gun>().Fire();
+                currentWeapon.GetComponent<Gun>().Fire(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             }
             else if (currentWeaponType == WeaponType.Melee)
             {
@@ -65,6 +65,7 @@ public class WeaponManager : MonoBehaviour
                 // Link player object to weapon
                 currentWeaponType = WeaponType.Gun;
                 currentWeapon.GetComponent<Gun>().player = gameObject;
+                currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
             }
             else if (currentWeapon.GetComponent<Melee>())
             {

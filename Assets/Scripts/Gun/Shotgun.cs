@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Shotgun : Gun
 {
-    public override void Fire()
+    public override void Fire(Vector3 targetPosition)
     {
         if (Time.time > base.nextFireTime)
         {
@@ -13,6 +13,6 @@ public class Shotgun : Gun
             shotgunBullet.FirePellets(0);  // Fire multiple pellets
         }
 
-        base.Fire();
+        base.Fire(targetPosition);
     }
 }

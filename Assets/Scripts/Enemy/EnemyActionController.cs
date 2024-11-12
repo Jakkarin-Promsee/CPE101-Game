@@ -10,10 +10,15 @@ public class EnemyActionController : MonoBehaviour
 {
     // Referent setting
     public Transform player;
+    public GameObject weaponPrefab;
     ///////
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
+    public enum WeaponType { Gun, Melee }
+    private GameObject _currentWeapon;
     private Rigidbody2D rb;
+    private EnemyController enemyController;
     private State _currentState;
+    private WeaponType _currentWeaponType;
 
 
     // Attack status
@@ -24,6 +29,7 @@ public class EnemyActionController : MonoBehaviour
     public float chaseRange = 8f;
     ///////
     private bool _nextAttackState = true;
+    private bool _wasAttacked = false;
 
 
     // Movemet status
@@ -102,6 +108,7 @@ public class EnemyActionController : MonoBehaviour
     {
         _currentState = State.Idle;
         rb = GetComponent<Rigidbody2D>();
+        enemyController = GetComponent<EnemyController>();
         _patrolSponPosition = transform.position;
 
         // Set CD count when first load enemy (Make each enemy has different action)
@@ -111,6 +118,30 @@ public class EnemyActionController : MonoBehaviour
         StartCoroutine(CountCircleCD((float)Random.Range(0, 11) / 2));
         StartCoroutine(CountRandomMoveCD((float)Random.Range(0, 5) / 5));
         StartCoroutine(CountDodgeCD((float)Random.Range(0, 11) / 2));
+
+        // Set up weapon
+        _currentWeapon = Instantiate(weaponPrefab, transform.position, Quaternion.identity, transform);
+
+        // Weapon setup
+        if (_currentWeapon.GetComponent<Gun>())
+        {
+            // Link player object to weapon
+            _currentWeaponType = WeaponType.Gun;
+
+            _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
+            _currentWeapon.AddComponent<EnemyWeaponAim>();
+            _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
+            _currentWeapon.GetComponent<EnemyWeaponAim>().player = player;
+            _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
+            // _currentWeapon.GetComponent<Gun>().player = gameObject;
+        }
+        else if (_currentWeapon.GetComponent<Melee>())
+        {
+            _currentWeaponType = WeaponType.Melee;
+            // SetUpMeleeWeapon();
+        }
+
+        _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
     }
 
     void Update()
@@ -128,6 +159,11 @@ public class EnemyActionController : MonoBehaviour
         }
     }
 
+    public void IsAttacked()
+    {
+        _wasAttacked = true;
+    }
+
     private void CheckWall()
     {
         if (!_isCheckingWall)
@@ -139,7 +175,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void CheckForPlayer()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) < eyeRange)
+        if (Vector3.Distance(transform.position, player.transform.position) < eyeRange || _wasAttacked)
         {
             _currentState = State.Chase;
         }
@@ -279,6 +315,11 @@ public class EnemyActionController : MonoBehaviour
 
     private void Attack()
     {
+        // Stop chese was attacked state
+        if (_wasAttacked) _wasAttacked = false;
+
+        _currentWeapon.GetComponent<Gun>().Fire(player.position);
+
         Debug.Log("pwefffff");
 
         _currentState = State.Chase;
@@ -298,7 +339,7 @@ public class EnemyActionController : MonoBehaviour
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         // Can't be interrupt by anything, make this function solitude
-        if (_nextDodgeState && distanceToPlayer < dodgeRange)
+        if ((_nextDodgeState && distanceToPlayer < dodgeRange) || enemyController.hp < 20)
         {
             DodgeInitialize();
             _currentState = State.Dodge;

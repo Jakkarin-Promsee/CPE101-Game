@@ -10,27 +10,40 @@ public class Gun : MonoBehaviour
     public Transform gunPoint;
     public GameObject player;
     public float nextFireTime = 0f;
+    public string weaponOwnerTag = "";
 
-    public virtual void Fire()
+    private void FireMethod(Vector3 targetPosition)
     {
-        if (Time.time > nextFireTime)
+        // Calculate direction to the mouse
+        Vector3 direction = (targetPosition - gunPoint.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Instantiate bullet and set its rotation
+        GameObject bullet = Instantiate(weapon.bulletPrefab, gunPoint.position, Quaternion.Euler(0, 0, angle));
+        bullet.GetComponent<Bullet>().damage = weapon.damage;
+        bullet.GetComponent<Bullet>().knockback = weapon.knockback;
+        bullet.GetComponent<Bullet>().knockbackTime = weapon.knockbackTime;
+        bullet.GetComponent<Bullet>().weaponOwnerTag = weaponOwnerTag;
+    }
+
+    public virtual void Fire(Vector3 targetPosition)
+    {
+        if (weaponOwnerTag == "Player")
         {
-            nextFireTime = Time.time + weapon.fireRate;
+            if (Time.time > nextFireTime)
+            {
+                FireMethod(targetPosition);
+                nextFireTime = Time.time + weapon.fireRate;
 
-            // Calculate direction to the mouse
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 direction = (mousePosition - gunPoint.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-            // Instantiate bullet and set its rotation
-            GameObject bullet = Instantiate(weapon.bulletPrefab, gunPoint.position, Quaternion.Euler(0, 0, angle));
-            bullet.GetComponent<Bullet>().damage = weapon.damage;
-            bullet.GetComponent<Bullet>().knockback = weapon.knockback;
-            bullet.GetComponent<Bullet>().knockbackTime = weapon.knockbackTime;
-
-            // Add force to player
-            Vector3 recoilDirection = -direction;
-            player.GetComponent<PlayerMovement>().Recoil(recoilDirection * weapon.recoil, weapon.recoilTime);
+                // Add force to player
+                Vector3 direction = (targetPosition - gunPoint.position).normalized;
+                Vector3 recoilDirection = -direction;
+                player.GetComponent<PlayerMovement>().Recoil(recoilDirection * weapon.recoil, weapon.recoilTime);
+            }
+        }
+        else if (weaponOwnerTag == "Enemy")
+        {
+            FireMethod(targetPosition);
         }
     }
 }

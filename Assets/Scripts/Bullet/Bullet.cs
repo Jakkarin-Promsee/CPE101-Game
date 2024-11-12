@@ -6,10 +6,10 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public BulletConfig bullet;
-
     public float damage;
     public float knockback;
     public float knockbackTime;
+    public string weaponOwnerTag = "";
     private Vector2 direction;
 
     public virtual void Start()
@@ -30,10 +30,11 @@ public class Bullet : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy")
         {
             // Take enemy damage
             other.gameObject.GetComponent<EnemyController>().TakeDamage(damage);
+            other.gameObject.GetComponent<EnemyActionController>().IsAttacked();
 
             // Calculate knockback vector
             float angleInRadians = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
@@ -49,6 +50,12 @@ public class Bullet : MonoBehaviour
             // If bullet don't move through enemy, destroy it
             if (!bullet.isMoveThroughObject)
                 Destroy(gameObject);  // Destroy the bullet after collision 
+        }
+
+        if (other.CompareTag("Player") && weaponOwnerTag != "Player")
+        {
+            other.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
+            Destroy(gameObject);
         }
     }
 }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Bow : Gun
 {
-    public override void Fire()
+    public override void Fire(Vector3 targetPosition)
     {
-        base.Fire();  // Pistol fire logic
+        base.Fire(targetPosition);  // Pistol fire logic
     }
 }

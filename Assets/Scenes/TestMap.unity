@@ -10127,7 +10127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: randomMoveCD
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: dodgeDuration
@@ -10143,19 +10143,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: randomMoveSpeed
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: randomMoveLength
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.05
+      value: -15.41
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.38
+      value: 11.44
       objectReference: {fileID: 0}
     - target: {fileID: 7739393800232247942, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: m_LocalPosition.z
