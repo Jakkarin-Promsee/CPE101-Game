@@ -445,8 +445,9 @@ public class EnemyActionController : MonoBehaviour
 
             if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && _randomMoveGotoTaget)
             {
+                bool isback = Random.Range(0, 4) % 2 == 1;
                 _randomMoveGotoTaget = false;
-                _randomMoveTargetPosition = (_randomMoveBasePosition + transform.position) / 2;
+                if (isback) _randomMoveTargetPosition = (_randomMoveBasePosition + 3 * transform.position) / 4;
             }
 
             if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && !_randomMoveGotoTaget) || _forceEnd)
