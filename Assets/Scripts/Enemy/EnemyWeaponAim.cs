@@ -7,6 +7,7 @@ public class EnemyWeaponAim : MonoBehaviour
     public Transform player;
     public Transform enemy;
     public float attackRange;
+    public bool forceFace = false;
 
     void Start()
     {
@@ -16,8 +17,9 @@ public class EnemyWeaponAim : MonoBehaviour
 
     private void MoveAngle()
     {
-        if (Vector3.Distance(enemy.position, player.position) < attackRange)
+        if (Vector3.Distance(enemy.position, player.position) < attackRange || forceFace)
         {
+            if (forceFace) forceFace = false;
             // Calculate direction to the player
             Vector3 direction = player.position - transform.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

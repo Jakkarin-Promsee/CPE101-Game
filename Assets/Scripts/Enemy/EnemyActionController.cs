@@ -11,6 +11,8 @@ public class EnemyActionController : MonoBehaviour
     // Referent setting
     public Transform player;
     public GameObject weaponPrefab;
+    public WeaponConfig weaponConfig;
+    public GameObject bulletPrefab;
     ///////
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum WeaponType { Gun, Melee }
@@ -128,6 +130,12 @@ public class EnemyActionController : MonoBehaviour
             // Link player object to weapon
             _currentWeaponType = WeaponType.Gun;
 
+            if (bulletPrefab)
+                weaponConfig.bulletPrefab = bulletPrefab;
+
+            if (weaponConfig)
+                _currentWeapon.GetComponent<Gun>().weaponConfig = weaponConfig;
+
             _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
             _currentWeapon.AddComponent<EnemyWeaponAim>();
             _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
@@ -161,6 +169,7 @@ public class EnemyActionController : MonoBehaviour
 
     public void IsAttacked()
     {
+        _currentWeapon.GetComponent<EnemyWeaponAim>().forceFace = true;
         _wasAttacked = true;
     }
 
@@ -216,7 +225,6 @@ public class EnemyActionController : MonoBehaviour
         _isCheckingWall = false;
         if (_lastThisPosition == transform.position)
         {
-            Debug.Log("Found Wall");
             _forceEnd = true;
         }
         else
@@ -278,7 +286,6 @@ public class EnemyActionController : MonoBehaviour
         {
             if (_nextPatrolState)
             {
-                Debug.Log("Patrol begin");
                 _nextPatrolState = false;
 
                 int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
@@ -319,8 +326,6 @@ public class EnemyActionController : MonoBehaviour
         if (_wasAttacked) _wasAttacked = false;
 
         _currentWeapon.GetComponent<Gun>().Fire(player.position);
-
-        Debug.Log("pwefffff");
 
         _currentState = State.Chase;
     }
@@ -397,7 +402,6 @@ public class EnemyActionController : MonoBehaviour
     {
         _nextCircleState = false;
         _isCircleMove = true;
-        Debug.Log("Circle move begin");
 
         // Initial time manager control params
         StartCoroutine(CountCircleDurationCD(circleDuration * ((float)Random.Range(5, 16) / 10)));
@@ -455,8 +459,6 @@ public class EnemyActionController : MonoBehaviour
 
     private void RandomMoveInitialize()
     {
-        Debug.Log("Random move begin");
-
         _nextRandomMoveState = false;
         _isRandomMove = true;
         _isRandomMoveFinish = true;
@@ -503,7 +505,6 @@ public class EnemyActionController : MonoBehaviour
 
     private void DodgeInitialize()
     {
-        Debug.Log("dodge begin");
         StartCoroutine(CountDodgeDurationCD(dodgeDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Set angle direction [angle that enemy aim to player]

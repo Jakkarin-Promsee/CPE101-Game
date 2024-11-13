@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf7d1bd5cd058f74fbe97e9963cb6ca7, type: 3}
-  m_Name: Pistol
+  m_Name: Ak 1
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6226276864569040743, guid: 6dc3d592f481ac04cbefba3ad4aa31c3, type: 3}
-  damage: 20
-  fireRate: 0.5
-  recoil: 2
+  bulletPrefab: {fileID: 6226276864569040743, guid: 77d70709832b03a48a683b5ac8423a6b, type: 3}
+  damage: 25
+  fireRate: 0.2
+  recoil: 4
   recoilTime: 0.1
-  knockback: 1
+  knockback: 0.75
   knockbackTime: 0.1
   isMoveThroughObject: 0
   speed: 10

@@ -13,9 +13,13 @@ MonoBehaviour:
   m_Name: Bow
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: cf86a55df758e1447aaf5f0a2cef61f0, type: 3}
-  damage: 15
+  damage: 40
   fireRate: 0.5
   recoil: 1
   recoilTime: 0.1
   knockback: 1.5
   knockbackTime: 0.1
+  isMoveThroughObject: 0
+  speed: 30
+  lifespan: 20
+  explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}

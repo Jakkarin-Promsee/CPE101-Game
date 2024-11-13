@@ -8,9 +8,9 @@ public class Shotgun : Gun
     {
         if (Time.time > base.nextFireTime)
         {
-            ShotgunBullet shotgunBullet = weapon.bulletPrefab.GetComponent<ShotgunBullet>();
+            ShotgunBullet shotgunBullet = weaponConfig.bulletPrefab.GetComponent<ShotgunBullet>();
             shotgunBullet.pos = gunPoint.position;
-            shotgunBullet.FirePellets(0);  // Fire multiple pellets
+            shotgunBullet.FirePellets(weaponConfig, weaponOwnerTag, 0);  // Fire multiple pellets
         }
 
         base.Fire(targetPosition);

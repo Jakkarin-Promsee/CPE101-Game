@@ -20,7 +20,7 @@ public class RockgetLuancherBullet : Bullet
         if (other.CompareTag("Enemy"))
         {
             // Take burn effet to enemy and destroy this prefab
-            other.gameObject.GetComponent<EnemyController>().ApplyBurnEffect(damage * burnDamageMultiple, burnDuration, burntime);
+            other.gameObject.GetComponent<EnemyController>().ApplyBurnEffect(weaponConfig.damage * burnDamageMultiple, burnDuration, burntime);
         }
     }
 }

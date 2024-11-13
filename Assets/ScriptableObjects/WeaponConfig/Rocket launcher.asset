@@ -19,3 +19,7 @@ MonoBehaviour:
   recoilTime: 0.15
   knockback: 5
   knockbackTime: 0.1
+  isMoveThroughObject: 0
+  speed: 10
+  lifespan: 20
+  explosionPrefab: {fileID: 6226276864569040743, guid: a454e1f632afe9d45a45bad2c3cff3b2, type: 3}

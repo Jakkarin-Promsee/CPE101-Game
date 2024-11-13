@@ -14,7 +14,7 @@ public class ShotgunBullet : Bullet
         base.Start();
     }
 
-    public void FirePellets(float angle)
+    public void FirePellets(WeaponConfig _weaponConfig, string _weaponOwnerTag, float angle)
     {
         for (int i = 0; i < pelletCount; i++)
         {
@@ -26,7 +26,10 @@ public class ShotgunBullet : Bullet
             // Calculate rotation to face the mouse
             float buffer_angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             float ran = Random.Range(-spreadAngle, spreadAngle);
-            Instantiate(this, pos, Quaternion.Euler(0, 0, buffer_angle + angle + ran));
+
+            GameObject bullet = Instantiate(_weaponConfig.bulletPrefab, pos, Quaternion.Euler(0, 0, buffer_angle + angle + ran));
+            bullet.GetComponent<Bullet>().weaponConfig = _weaponConfig;
+            bullet.GetComponent<Bullet>().weaponOwnerTag = _weaponOwnerTag;
         }
     }
 

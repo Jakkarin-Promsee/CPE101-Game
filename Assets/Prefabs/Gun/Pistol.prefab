@@ -610,10 +610,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3b8fcd8278f3d4787a5499d9cdd788, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapon: {fileID: 11400000, guid: 6fe9a7b3f7c20554fbf886e70b8d1c9a, type: 2}
+  weaponConfig: {fileID: 11400000, guid: 6fe9a7b3f7c20554fbf886e70b8d1c9a, type: 2}
   gunPoint: {fileID: 8664728025803614875}
   player: {fileID: 0}
   nextFireTime: 0
+  weaponOwnerTag: 
 --- !u!1 &7707469049933866919
 GameObject:
   m_ObjectHideFlags: 0
