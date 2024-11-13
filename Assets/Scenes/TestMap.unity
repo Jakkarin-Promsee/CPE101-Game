@@ -2862,7 +2862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a2b0e8fb887d344b24de4415f09b82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 100
+  hp: 1000
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.1
 --- !u!1001 &124487001
@@ -21633,7 +21633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: attackCD
-      value: 8
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: circleCD
@@ -21671,6 +21671,14 @@ PrefabInstance:
       propertyPath: randomMoveCD
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: weaponConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: ab01912e0b7503641a2bbe5646585b22, type: 2}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: weaponPrefab
+      value: 
+      objectReference: {fileID: 7102781951068588039, guid: 3984ab564d78b66438b71f03c976f8db, type: 3}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: dodgeDuration
       value: 0.4
@@ -23342,6 +23350,10 @@ PrefabInstance:
       propertyPath: randomMoveCD
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+      propertyPath: weaponPrefab
+      value: 
+      objectReference: {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: dodgeDuration
       value: 0.4

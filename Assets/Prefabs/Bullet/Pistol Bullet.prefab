@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: -1967675008385881271}
   m_Layer: 0
   m_Name: Pistol Bullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -166,9 +166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b501d8cc4c308eb4ebcd2807923b579b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 11400000, guid: c3a056ca7491d4648b29bce30b008cc5, type: 2}
-  damage: 0
-  knockback: 0
+  weaponConfig: {fileID: 0}
+  weaponOwnerTag: 
 --- !u!1 &8984810678926882979
 GameObject:
   m_ObjectHideFlags: 0

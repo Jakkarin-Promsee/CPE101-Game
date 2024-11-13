@@ -126,30 +126,57 @@ public class EnemyActionController : MonoBehaviour
 
         // Weapon setup
         if (_currentWeapon.GetComponent<Gun>())
-        {
-            // Link player object to weapon
-            _currentWeaponType = WeaponType.Gun;
-
-            if (bulletPrefab)
-                weaponConfig.bulletPrefab = bulletPrefab;
-
-            if (weaponConfig)
-                _currentWeapon.GetComponent<Gun>().weaponConfig = weaponConfig;
-
-            _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
-            _currentWeapon.AddComponent<EnemyWeaponAim>();
-            _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
-            _currentWeapon.GetComponent<EnemyWeaponAim>().player = player;
-            _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
-            // _currentWeapon.GetComponent<Gun>().player = gameObject;
-        }
+            SetUpRangeWeapon();
         else if (_currentWeapon.GetComponent<Melee>())
-        {
-            _currentWeaponType = WeaponType.Melee;
-            // SetUpMeleeWeapon();
-        }
+            SetUpMeleeWeapon();
 
         _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
+    }
+
+    void SetUpRangeWeapon()
+    {
+        _currentWeaponType = WeaponType.Gun;
+
+        if (bulletPrefab)
+            weaponConfig.bulletPrefab = bulletPrefab;
+
+        if (weaponConfig)
+            _currentWeapon.GetComponent<Gun>().weaponConfig = weaponConfig;
+
+        _currentWeapon.AddComponent<EnemyWeaponAim>();
+        _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().player = player;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
+
+        _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
+    }
+
+    void SetUpMeleeWeapon()
+    {
+        _currentWeaponType = WeaponType.Melee;
+
+        GameObject weaponPivot = new GameObject("WeaponPivottest");
+        weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
+
+        // Set pivot (Whole weapon) as a child of player
+        weaponPivot.transform.SetParent(transform);
+
+        // Set the weapon as a child of the pivot
+        _currentWeapon.transform.SetParent(weaponPivot.transform);
+
+        // Position the weapon correctly
+        _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
+
+        // Add WeaponAim script to the pivot (to control aiming)
+        // weaponPivot.AddComponent<WeaponAim>();
+        weaponPivot.AddComponent<EnemyWeaponAim>();
+        weaponPivot.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
+        weaponPivot.GetComponent<EnemyWeaponAim>().player = player;
+        weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
+
+        // Optionally, you can store the pivot for further use if needed
+        _currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
+        _currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }
 
     void Update()
@@ -169,7 +196,10 @@ public class EnemyActionController : MonoBehaviour
 
     public void IsAttacked()
     {
-        _currentWeapon.GetComponent<EnemyWeaponAim>().forceFace = true;
+        if (_currentWeaponType == WeaponType.Gun)
+            _currentWeapon.GetComponent<EnemyWeaponAim>().forceFace = true;
+        else if (_currentWeaponType == WeaponType.Melee)
+            _currentWeapon.GetComponent<Melee>().weaponPivot.GetComponent<EnemyWeaponAim>().forceFace = true;
         _wasAttacked = true;
     }
 
@@ -325,7 +355,16 @@ public class EnemyActionController : MonoBehaviour
         // Stop chese was attacked state
         if (_wasAttacked) _wasAttacked = false;
 
-        _currentWeapon.GetComponent<Gun>().Fire(player.position);
+        if (_currentWeaponType == WeaponType.Gun)
+        {
+            _currentWeapon.GetComponent<Gun>().Fire(player.position);
+        }
+        else if (_currentWeaponType == WeaponType.Melee)
+        {
+            _currentWeapon.GetComponent<Melee>().Swing();
+        }
+
+
 
         _currentState = State.Chase;
     }

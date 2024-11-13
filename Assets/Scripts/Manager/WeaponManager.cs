@@ -102,5 +102,6 @@ public class WeaponManager : MonoBehaviour
 
         // Optionally, you can store the pivot for further use if needed
         currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
+        currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }
 }

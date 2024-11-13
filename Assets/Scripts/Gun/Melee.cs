@@ -10,6 +10,8 @@ public class Melee : MonoBehaviour
     private bool attackBlocked = false;
     internal GameObject weaponPivot;
     public float damage = 10f; // Temp damage
+    public bool reflecBullet = false;
+    public string weaponOwnerTag = "";
 
     private void Start()
     {
@@ -36,9 +38,25 @@ public class Melee : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Enemy")
+        if (other.CompareTag("Bullet") && weaponOwnerTag != "Bullet")
+        {
+            if (reflecBullet)
+            {
+
+            }
+            else if (!other.CompareTag(weaponOwnerTag))
+            {
+                Destroy(other.gameObject);
+            }
+        }
+        else if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy")
         {
             other.gameObject.GetComponent<EnemyController>().TakeDamage(damage);
+        }
+        else if (other.CompareTag("Player") && weaponOwnerTag != "Player")
+        {
+            Debug.Log("I hit player lol");
+            other.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
         }
     }
 }

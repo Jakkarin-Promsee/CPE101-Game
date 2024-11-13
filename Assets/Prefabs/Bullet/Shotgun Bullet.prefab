@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: -571596355532585283}
   m_Layer: 0
   m_Name: Shotgun Bullet
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -166,12 +166,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 457b0aadc6682e84c913a554e50ed4f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 11400000, guid: e88e14fae6a2939448edbead3021ad19, type: 2}
-  damage: 0
-  knockback: 0
+  weaponConfig: {fileID: 0}
+  weaponOwnerTag: 
   pelletCount: 5
   spreadAngle: 15
-  pos: {x: 0, y: 0, z: 0}
+  pos: {x: 3.4638038, y: 3.238693, z: -4.008052}
 --- !u!1 &8984810678926882979
 GameObject:
   m_ObjectHideFlags: 0
