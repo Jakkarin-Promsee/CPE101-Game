@@ -23,8 +23,6 @@ public class WeaponManager : MonoBehaviour
     {
         if (Input.GetMouseButton(0)) // Check 'left hold'
         {
-            // currentWeapon.GetComponent<Gun>().Fire();
-            // ! Melee add
             if (currentWeaponType == WeaponType.Gun)
             {
                 currentWeapon.GetComponent<Gun>().Fire(Camera.main.ScreenToWorldPoint(Input.mousePosition));
@@ -33,7 +31,9 @@ public class WeaponManager : MonoBehaviour
             {
                 currentWeapon.GetComponent<Melee>().Swing();
             }
-            // ! Melee add
+        }
+        if (Input.GetKeyDown(KeyCode.F) && currentWeaponType == WeaponType.Melee){
+            currentWeapon.GetComponent<Melee>().Reflect();
         }
 
         // Switch guns with number keys (1, 2, 3, etc.)

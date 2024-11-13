@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.Intrinsics;
@@ -24,6 +25,13 @@ public class Bullet : MonoBehaviour
     {
         transform.Translate(direction * weaponConfig.speed * Time.deltaTime);
     }
+
+    // ! Test
+    public void ChangeDirection(Vector2 newDirection)
+    {
+        direction = newDirection; // Set the direction to the new direction (normalized to avoid speed changes)
+    }
+    // ! Test
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
