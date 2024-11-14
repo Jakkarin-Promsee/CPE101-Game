@@ -14,15 +14,10 @@ public class ShotgunBullet : Bullet
         base.Start();
     }
 
-    public void FirePellets(RangeWeaponConfig _weaponConfig, string _weaponOwnerTag, float angle)
+    public void FirePellets(RangeWeaponConfig _weaponConfig, string _weaponOwnerTag, Vector3 direction, float angle)
     {
         for (int i = 0; i < pelletCount; i++)
         {
-            // Calculate direction towards the mouse position
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0f;
-            Vector3 direction = (mousePosition - pos).normalized;
-
             // Calculate rotation to face the mouse
             float buffer_angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             float ran = Random.Range(-spreadAngle, spreadAngle);

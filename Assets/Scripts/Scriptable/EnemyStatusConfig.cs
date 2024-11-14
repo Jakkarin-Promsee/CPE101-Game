@@ -34,8 +34,8 @@ public class EnemyStatusConfig : ScriptableObject
     // Patrol Status
     [Header("PatrolSetting Setting")]
     public float patrolCD = 5f;
-    public float patrolSpeed = 2f;
-    public float patrolLength = 3f;
+    public float patrolSpeed = 1.5f;
+    public float patrolLength = 2.5f;
 
     // Circle status
     [Header("Circle movement Setting. \n[chaseRange > circleRadius]")]
@@ -48,8 +48,8 @@ public class EnemyStatusConfig : ScriptableObject
     // Random move status
     [Header("Random movement Setting")]
     public float randomMoveCD = 3f;
-    public float randomMoveSpeed = 2f;
-    public float randomMoveLength = 2f;
+    public float randomMoveSpeed = 2.5f;
+    public float randomMoveLength = 1f;
 
     // Dodge status
     [Header("Dodge movement Setting")]

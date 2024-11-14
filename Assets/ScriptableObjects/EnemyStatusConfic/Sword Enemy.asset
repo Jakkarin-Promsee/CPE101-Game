@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afbcc6dbca5c39c4ea84e5480d9724cf, type: 3}
+  m_Name: Sword Enemy
+  m_EditorClassIdentifier: 
+  weaponPrefab: {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
+  bulletPrefab: {fileID: 0}
+  rangeWeaponConfig: {fileID: 0}
+  meleeWeaponConfig: {fileID: 0}
+  attackCD: 8
+  eyeRange: 12
+  attackRange: 10
+  chaseRange: 8
+  moveSpeed: 2.5
+  moveFrictionCoefficient: 1
+  moveLeastStoppingDistance: 0.1
+  wallCheckTime: 0.5
+  patrolCD: 5
+  patrolSpeed: 1.5
+  patrolLength: 2.5
+  circleCD: 9
+  circleDuration: 1
+  circleSpeed: 2
+  circleAngularSpeed: 0.3
+  circleRadius: 6
+  randomMoveCD: 3
+  randomMoveSpeed: 2.5
+  randomMoveLength: 1
+  dodgeCD: 10
+  dodgeDuration: 0.4
+  dodgeSpeed: 5
+  dodgeAngle: 90
+  dodgeRange: 2

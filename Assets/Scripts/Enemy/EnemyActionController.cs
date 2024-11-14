@@ -70,6 +70,8 @@ public class EnemyActionController : MonoBehaviour
 
     void Start()
     {
+        this.player = GameObject.FindWithTag("Player").transform;
+
         _currentState = State.Idle;
         rb = GetComponent<Rigidbody2D>();
         enemyController = GetComponent<EnemyController>();

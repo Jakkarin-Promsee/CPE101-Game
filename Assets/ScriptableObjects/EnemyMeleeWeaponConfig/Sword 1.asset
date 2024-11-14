@@ -15,7 +15,7 @@ MonoBehaviour:
   damage: 10
   swingDelay: 0.5
   reflectCooldown: 5
-  antiRecoil: 0.75
+  antiRecoil: 1
   antiRecoilTime: 0.1
   knockback: 3
   knockbackTime: 0.1

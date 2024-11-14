@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2885159481664506723}
   - component: {fileID: 1904385643242558053}
   m_Layer: 0
-  m_Name: EnemySample
+  m_Name: Sword Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,28 +178,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  weaponPrefab: {fileID: 7102781951068588039, guid: 4e77c0e2f19af9341a9c019c813f2af8, type: 3}
-  attackCD: 4
-  eyeRange: 10
-  attackRange: 8
-  chaseRange: 6
-  moveSpeed: 2.5
-  moveFrictionCoefficient: 1
-  moveLeastStoppingDistance: 0.1
-  _wallCheckTime: 0.5
-  patrolCD: 5
-  patrolSpeed: 1.5
-  patrolLength: 1
-  circleCD: 4
-  circleDuration: 1
-  circleSpeed: 2
-  circleAngularSpeed: 0.3
-  circleRadius: 3
-  randomMoveCD: 3
-  randomMoveSpeed: 2
-  randomMoveLength: 2
-  dodgeCD: 5
-  dodgeDuration: 0.4
-  dodgeSpeed: 5
-  dodgeAngle: 90
-  dodgeRange: 2
+  enemyStatusConfig: {fileID: 11400000, guid: c432b0cc25868ee47ac9a7f9de8c41ae, type: 2}

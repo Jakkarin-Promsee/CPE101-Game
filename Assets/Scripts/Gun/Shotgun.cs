@@ -10,7 +10,9 @@ public class Shotgun : Gun
         {
             ShotgunBullet shotgunBullet = weaponConfig.bulletPrefab.GetComponent<ShotgunBullet>();
             shotgunBullet.pos = gunPoint.position;
-            shotgunBullet.FirePellets(weaponConfig, weaponOwnerTag, 0);  // Fire multiple pellets
+
+            Vector3 direction = (targetPosition - gunPoint.position).normalized;
+            shotgunBullet.FirePellets(weaponConfig, weaponOwnerTag, direction, 0);  // Fire multiple pellets
         }
 
         base.Fire(targetPosition);
