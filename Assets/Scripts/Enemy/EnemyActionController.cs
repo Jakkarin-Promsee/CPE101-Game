@@ -11,7 +11,7 @@ public class EnemyActionController : MonoBehaviour
     // Referent setting
     public Transform player;
     public GameObject weaponPrefab;
-    public WeaponConfig weaponConfig;
+    public RangeWeaponConfig weaponConfig;
     public GameObject bulletPrefab;
     ///////
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
@@ -175,6 +175,7 @@ public class EnemyActionController : MonoBehaviour
         weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
 
         // Optionally, you can store the pivot for further use if needed
+        _currentWeapon.GetComponent<Melee>().player = gameObject;
         _currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
         _currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }

@@ -2862,7 +2862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a2b0e8fb887d344b24de4415f09b82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 1000
+  hp: 10000
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.1
 --- !u!1001 &124487001
@@ -21633,7 +21633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: attackCD
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1904385643242558053, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
       propertyPath: circleCD

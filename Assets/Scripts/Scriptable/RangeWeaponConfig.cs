@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Weapon Config")]
-public class WeaponConfig : ScriptableObject
+[CreateAssetMenu(menuName = "Range Weapon Config")]
+public class RangeWeaponConfig : ScriptableObject
 {
     [Header("Weapon Setting")]
     public GameObject bulletPrefab;

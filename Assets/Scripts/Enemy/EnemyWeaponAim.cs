@@ -15,6 +15,11 @@ public class EnemyWeaponAim : MonoBehaviour
         InvokeRepeating(nameof(MoveAngle), 0f, 0.2f);
     }
 
+    public Vector3 GetDefaultDirection()
+    {
+        return player.position - transform.position;
+    }
+
     private void MoveAngle()
     {
         if (Vector3.Distance(enemy.position, player.position) < attackRange || forceFace)

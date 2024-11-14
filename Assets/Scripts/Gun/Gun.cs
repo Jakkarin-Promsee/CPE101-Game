@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    public WeaponConfig weaponConfig;
+    public RangeWeaponConfig weaponConfig;
     public Transform gunPoint;
     public GameObject player;
     public float nextFireTime = 0f;
@@ -36,7 +36,7 @@ public class Gun : MonoBehaviour
                 // Add force to player
                 Vector3 direction = (targetPosition - gunPoint.position).normalized;
                 Vector3 recoilDirection = -direction;
-                player.GetComponent<PlayerMovement>().Recoil(recoilDirection * weaponConfig.recoil, weaponConfig.recoilTime);
+                player.GetComponent<PlayerMovement>().TakeKnockback(recoilDirection * weaponConfig.recoil, weaponConfig.recoilTime);
             }
         }
         else if (weaponOwnerTag == "Enemy")

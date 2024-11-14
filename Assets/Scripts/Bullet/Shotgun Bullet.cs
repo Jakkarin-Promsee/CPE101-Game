@@ -14,7 +14,7 @@ public class ShotgunBullet : Bullet
         base.Start();
     }
 
-    public void FirePellets(WeaponConfig _weaponConfig, string _weaponOwnerTag, float angle)
+    public void FirePellets(RangeWeaponConfig _weaponConfig, string _weaponOwnerTag, float angle)
     {
         for (int i = 0; i < pelletCount; i++)
         {

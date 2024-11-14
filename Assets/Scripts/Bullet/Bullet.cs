@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public WeaponConfig weaponConfig;
+    public RangeWeaponConfig weaponConfig;
     public string weaponOwnerTag = "";
     private Vector2 direction;
 
@@ -26,12 +26,11 @@ public class Bullet : MonoBehaviour
         transform.Translate(direction * weaponConfig.speed * Time.deltaTime);
     }
 
-    // ! Test
-    public void ChangeDirection(Vector2 newDirection)
+    public void ChangeMoveAngle(float newAngle)
     {
-        direction = newDirection; // Set the direction to the new direction (normalized to avoid speed changes)
+        Vector3 currentRotation = transform.eulerAngles;
+        transform.eulerAngles = new Vector3(currentRotation.x, currentRotation.y, newAngle);
     }
-    // ! Test
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {

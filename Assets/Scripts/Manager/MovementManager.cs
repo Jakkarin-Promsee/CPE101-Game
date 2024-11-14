@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void Recoil(Vector3 force, float time)
+    public void TakeKnockback(Vector3 force, float time)
     {
         nextMovement = Time.time + time;
         rb.AddForce(force, ForceMode2D.Impulse);

@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class WeaponAim : MonoBehaviour
 {
+    public Vector3 GetDefaultDirection()
+    {
+        // Get mouse position in world space
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // Calculate direction to the mouse
+        return mousePosition - transform.position;
+    }
     void Update()
     {
         // Get mouse position in world space

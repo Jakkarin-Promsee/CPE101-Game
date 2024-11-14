@@ -32,7 +32,8 @@ public class WeaponManager : MonoBehaviour
                 currentWeapon.GetComponent<Melee>().Swing();
             }
         }
-        if (Input.GetKeyDown(KeyCode.F) && currentWeaponType == WeaponType.Melee){
+        if (Input.GetKeyDown(KeyCode.F) && currentWeaponType == WeaponType.Melee)
+        {
             currentWeapon.GetComponent<Melee>().Reflect();
         }
 
@@ -101,6 +102,7 @@ public class WeaponManager : MonoBehaviour
         weaponPivot.AddComponent<WeaponAim>();
 
         // Optionally, you can store the pivot for further use if needed
+        currentWeapon.GetComponent<Melee>().player = gameObject;
         currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
         currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }
