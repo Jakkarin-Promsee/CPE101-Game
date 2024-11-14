@@ -8,21 +8,12 @@ using UnityEngine.Rendering;
 
 public class EnemyActionController : MonoBehaviour
 {
-    // Referent setting
-    [Header("General Setting. \n[eyeRange > attackRange > chaseRange]")]
-
-    [Tooltip("Important!")]
-    public GameObject weaponPrefab;
-    [Tooltip("Not important.")]
-    public GameObject bulletPrefab;
-    [Tooltip("Not important.")]
-    public RangeWeaponConfig rangeWeaponConfig;
-    [Tooltip("Not important.")]
-    public MeleeWeaponConfig meleeWeaponConfig;
-    [Tooltip("Important!")]
+    // General setting
+    [Header("General Setting. Important!")]
     public Transform player;
+    public EnemyStatusConfig enemyStatusConfig;
 
-    ///////
+    // Background setting
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum WeaponType { Gun, Melee }
     private GameObject _currentWeapon;
@@ -33,35 +24,16 @@ public class EnemyActionController : MonoBehaviour
 
 
     // Attack status
-    [Header("General Setting. \n[eyeRange > attackRange > chaseRange]")]
-    public float attackCD = 8f;
-    public float eyeRange = 12f;
-    public float attackRange = 10f;
-    public float chaseRange = 8f;
-    ///////
     private bool _nextAttackState = true;
     private bool _wasAttacked = false;
 
-
     // Movemet status
-    [Header("Movement Setting")]
-    public float moveSpeed = 2.5f;
-    public float moveFrictionCoefficient = 1f;
-    public float moveLeastStoppingDistance = 0.1f;
-    public float _wallCheckTime = 0.5f;
-    ///////
     private bool _isCheckingWall = false;
     private Vector3 _lastThisPosition;
     private bool _nextMovementState = true;
     private bool _forceEnd = false;
 
-
     // Patrol Status
-    [Header("PatrolSetting Setting")]
-    public float patrolCD = 5f;
-    public float patrolSpeed = 2f;
-    public float patrolLength = 3f;
-    ///////
     private bool _nextPatrolState = true;
     private bool _patrolGotoTaget = true;
     private bool _isPatrolFinish = true;
@@ -70,13 +42,6 @@ public class EnemyActionController : MonoBehaviour
 
 
     // Circle status
-    [Header("Circle movement Setting. \n[chaseRange > circleRadius]")]
-    public float circleCD = 9f;
-    public float circleDuration = 1f;
-    public float circleSpeed = 2f;
-    public float circleAngularSpeed = 0.3f;
-    public float circleRadius = 6f;
-    ///////
     private bool _isCircleMove = false;
     private bool _nextCircleState = true;
     private bool _nextCircleDurationState = true;
@@ -88,11 +53,6 @@ public class EnemyActionController : MonoBehaviour
 
 
     // Random move status
-    [Header("Random movement Setting")]
-    public float randomMoveCD = 3f;
-    public float randomMoveSpeed = 2f;
-    public float randomMoveLength = 2f;
-    ///////
     private bool _isRandomMove = false;
     private bool _nextRandomMoveState = true;
     private bool _randomMoveGotoTaget = true;
@@ -102,13 +62,6 @@ public class EnemyActionController : MonoBehaviour
 
 
     // Dodge status
-    [Header("Dodge movement Setting")]
-    public float dodgeCD = 10f;
-    public float dodgeDuration = 0.4f;
-    public float dodgeSpeed = 5f;
-    public int dodgeAngle = 90;
-    public float dodgeRange = 2f;
-    ///////
     private bool _nextDodgeState = true;
     private bool _nextDodgeDurationState = true;
     private float _dodgeFaceAngle = 0f;
@@ -131,7 +84,7 @@ public class EnemyActionController : MonoBehaviour
         StartCoroutine(CountDodgeCD((float)Random.Range(0, 11) / 2));
 
         // Set up weapon
-        _currentWeapon = Instantiate(weaponPrefab, transform.position, Quaternion.identity, transform);
+        _currentWeapon = Instantiate(enemyStatusConfig.weaponPrefab, transform.position, Quaternion.identity, transform);
 
         // Weapon setup
         if (_currentWeapon.GetComponent<Gun>())
@@ -146,16 +99,16 @@ public class EnemyActionController : MonoBehaviour
     {
         _currentWeaponType = WeaponType.Gun;
 
-        if (bulletPrefab)
-            rangeWeaponConfig.bulletPrefab = bulletPrefab;
+        if (enemyStatusConfig.bulletPrefab)
+            enemyStatusConfig.rangeWeaponConfig.bulletPrefab = enemyStatusConfig.bulletPrefab;
 
-        if (rangeWeaponConfig)
-            _currentWeapon.GetComponent<Gun>().weaponConfig = rangeWeaponConfig;
+        if (enemyStatusConfig.rangeWeaponConfig)
+            _currentWeapon.GetComponent<Gun>().weaponConfig = enemyStatusConfig.rangeWeaponConfig;
 
         _currentWeapon.AddComponent<EnemyWeaponAim>();
         _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
         _currentWeapon.GetComponent<EnemyWeaponAim>().player = player;
-        _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
 
         _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
     }
@@ -164,8 +117,8 @@ public class EnemyActionController : MonoBehaviour
     {
         _currentWeaponType = WeaponType.Melee;
 
-        if (meleeWeaponConfig)
-            _currentWeapon.GetComponent<Melee>().weaponConfig = meleeWeaponConfig;
+        if (enemyStatusConfig.meleeWeaponConfig)
+            _currentWeapon.GetComponent<Melee>().weaponConfig = enemyStatusConfig.meleeWeaponConfig;
 
         GameObject weaponPivot = new GameObject("WeaponPivottest");
         weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
@@ -184,7 +137,7 @@ public class EnemyActionController : MonoBehaviour
         weaponPivot.AddComponent<EnemyWeaponAim>();
         weaponPivot.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
         weaponPivot.GetComponent<EnemyWeaponAim>().player = player;
-        weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = attackRange;
+        weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
 
         // Optionally, you can store the pivot for further use if needed
         _currentWeapon.GetComponent<Melee>().player = gameObject;
@@ -227,7 +180,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void CheckForPlayer()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) < eyeRange || _wasAttacked)
+        if (Vector3.Distance(transform.position, player.transform.position) < enemyStatusConfig.eyeRange || _wasAttacked)
         {
             _currentState = State.Chase;
         }
@@ -240,7 +193,7 @@ public class EnemyActionController : MonoBehaviour
     private void ApplyFriction()
     {
         // Calculate the friction force
-        Vector2 frictionForce = -rb.velocity * moveFrictionCoefficient;
+        Vector2 frictionForce = -rb.velocity * enemyStatusConfig.moveFrictionCoefficient;
         rb.AddForce(rb.mass * frictionForce);
     }
 
@@ -263,7 +216,7 @@ public class EnemyActionController : MonoBehaviour
         _forceEnd = false;
         _lastThisPosition = transform.position;
 
-        yield return new WaitForSeconds(_wallCheckTime);
+        yield return new WaitForSeconds(enemyStatusConfig.wallCheckTime);
 
         _isCheckingWall = false;
         if (_lastThisPosition == transform.position)
@@ -332,7 +285,7 @@ public class EnemyActionController : MonoBehaviour
                 _nextPatrolState = false;
 
                 int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
-                float vector = Random.Range(6, 10) * patrolLength / 10;
+                float vector = Random.Range(6, 10) * enemyStatusConfig.patrolLength / 10;
                 if (moveDir == 0) _patrolTargetPosition = _patrolSponPosition + new Vector3(0, -vector, 0);
                 else if (moveDir == 1) _patrolTargetPosition = _patrolSponPosition + new Vector3(0, vector, 0);
                 else if (moveDir == 2) _patrolTargetPosition = _patrolSponPosition + new Vector3(-vector, 0, 0);
@@ -345,17 +298,17 @@ public class EnemyActionController : MonoBehaviour
         else
         {
             if (_nextMovementState)
-                rb.velocity = (_patrolTargetPosition - transform.position).normalized * patrolSpeed;
+                rb.velocity = (_patrolTargetPosition - transform.position).normalized * enemyStatusConfig.patrolSpeed;
 
-            if (Vector3.Distance(transform.position, _patrolTargetPosition) < moveLeastStoppingDistance && _patrolGotoTaget)
+            if (Vector3.Distance(transform.position, _patrolTargetPosition) < enemyStatusConfig.moveLeastStoppingDistance && _patrolGotoTaget)
             {
                 _patrolGotoTaget = false;
                 _patrolTargetPosition = _patrolSponPosition;
             }
 
-            if ((Vector3.Distance(transform.position, _patrolSponPosition) < moveLeastStoppingDistance && !_patrolGotoTaget) || _forceEnd)
+            if ((Vector3.Distance(transform.position, _patrolSponPosition) < enemyStatusConfig.moveLeastStoppingDistance && !_patrolGotoTaget) || _forceEnd)
             {
-                StartCoroutine(CountPatrolCD(patrolCD * ((float)Random.Range(5, 16) / 10)));
+                StartCoroutine(CountPatrolCD(enemyStatusConfig.patrolCD * ((float)Random.Range(5, 16) / 10)));
                 _isPatrolFinish = true;
                 _patrolGotoTaget = true;
             }
@@ -384,9 +337,9 @@ public class EnemyActionController : MonoBehaviour
 
     private void CheckAttack()
     {
-        if (_nextAttackState && Vector3.Distance(transform.position, player.position) < attackRange)
+        if (_nextAttackState && Vector3.Distance(transform.position, player.position) < enemyStatusConfig.attackRange)
         {
-            StartCoroutine(CountAttackCD(attackCD * ((float)Random.Range(5, 16) / 10)));
+            StartCoroutine(CountAttackCD(enemyStatusConfig.attackCD * ((float)Random.Range(5, 16) / 10)));
             Attack();
         }
     }
@@ -394,9 +347,8 @@ public class EnemyActionController : MonoBehaviour
     private void ChasePlayer()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
         // Can't be interrupt by anything, make this function solitude
-        if ((_nextDodgeState && distanceToPlayer < dodgeRange) || enemyController.hp < 20)
+        if ((_nextDodgeState && distanceToPlayer < enemyStatusConfig.dodgeRange) || enemyController.hp < 20)
         {
             DodgeInitialize();
             _currentState = State.Dodge;
@@ -407,7 +359,7 @@ public class EnemyActionController : MonoBehaviour
         // Can be interrupt by attack phase or when player is out of range
         // Must balance between go to fixed circle radius direction and go to random direction
         // From the all, it make this function have complex complex condition
-        if (distanceToPlayer < chaseRange)
+        if (distanceToPlayer < enemyStatusConfig.chaseRange)
         {
             if (!_isRandomMove)
             {
@@ -443,10 +395,10 @@ public class EnemyActionController : MonoBehaviour
         }
 
         // Keep moving towards to player untill chaseRange >= distance
-        if (distanceToPlayer > chaseRange)
+        if (distanceToPlayer > enemyStatusConfig.chaseRange)
         {
             if (_nextMovementState)
-                rb.velocity = (player.position - transform.position).normalized * moveSpeed;
+                rb.velocity = (player.position - transform.position).normalized * enemyStatusConfig.moveSpeed;
         }
     }
 
@@ -456,12 +408,12 @@ public class EnemyActionController : MonoBehaviour
         _isCircleMove = true;
 
         // Initial time manager control params
-        StartCoroutine(CountCircleDurationCD(circleDuration * ((float)Random.Range(5, 16) / 10)));
+        StartCoroutine(CountCircleDurationCD(enemyStatusConfig.circleDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Complex random
-        _circleOffsetRadius = Random.Range(-15, 5) / 10 * circleRadius;
+        _circleOffsetRadius = Random.Range(-15, 5) / 10 * enemyStatusConfig.circleRadius;
         _isCircleCW = (Random.Range(0, 2) == 0) ? true : false;
-        if (chaseRange + _circleOffsetRadius > chaseRange) _circleOffsetRadius = chaseRange;
+        if (enemyStatusConfig.chaseRange + _circleOffsetRadius > enemyStatusConfig.chaseRange) _circleOffsetRadius = enemyStatusConfig.chaseRange;
 
         // Set angle direction [angle that player aim to enemy]
         Vector2 distanceVector = transform.position - player.position;
@@ -474,12 +426,12 @@ public class EnemyActionController : MonoBehaviour
     {
         // Calculate the next position on the orbit path
         if (_isCircleCW)
-            _circleFaceAngle -= Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
+            _circleFaceAngle -= Time.fixedDeltaTime * enemyStatusConfig.circleAngularSpeed; // Update the angle over time
         else
-            _circleFaceAngle += Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
+            _circleFaceAngle += Time.fixedDeltaTime * enemyStatusConfig.circleAngularSpeed; // Update the angle over time
 
-        float x = Mathf.Cos(_circleFaceAngle) * circleRadius;
-        float y = Mathf.Sin(_circleFaceAngle) * circleRadius;
+        float x = Mathf.Cos(_circleFaceAngle) * enemyStatusConfig.circleRadius;
+        float y = Mathf.Sin(_circleFaceAngle) * enemyStatusConfig.circleRadius;
 
         // Determine the target position based on the player's position and angle
         Vector3 circlePosition = new Vector3(_circleLastPlayerPosition.x + x, _circleLastPlayerPosition.y + y, 0);
@@ -488,7 +440,7 @@ public class EnemyActionController : MonoBehaviour
         Vector3 direction = (circlePosition - transform.position).normalized;
 
         if (_nextMovementState)
-            rb.velocity = direction * circleSpeed;
+            rb.velocity = direction * enemyStatusConfig.circleSpeed;
 
         if (_nextCircleDurationState || _forceEnd)
         {
@@ -496,11 +448,11 @@ public class EnemyActionController : MonoBehaviour
             {
                 _isCircleReversePhase = true;
                 _isCircleCW = !_isCircleCW;
-                StartCoroutine(CountCircleDurationCD(circleDuration * ((float)Random.Range(5, 16) / 10)));
+                StartCoroutine(CountCircleDurationCD(enemyStatusConfig.circleDuration * ((float)Random.Range(5, 16) / 10)));
             }
             else
             {
-                StartCoroutine(CountCircleCD(circleCD * ((float)Random.Range(5, 16) / 10)));
+                StartCoroutine(CountCircleCD(enemyStatusConfig.circleCD * ((float)Random.Range(5, 16) / 10)));
                 _isCircleMove = false;
                 _isCircleReversePhase = false;
                 _currentState = State.Chase;
@@ -523,7 +475,7 @@ public class EnemyActionController : MonoBehaviour
             _randomMoveBasePosition = transform.position;
 
             int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
-            float vectorx = Random.Range(6, 15) * randomMoveLength / 10;
+            float vectorx = Random.Range(6, 15) * enemyStatusConfig.randomMoveLength / 10;
             float vectory = Random.Range(-5, 5) * vectorx / 10;
             if (moveDir == 0) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vectory, -vectorx, 0);
             else if (moveDir == 1) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vectory, vectorx, 0);
@@ -536,18 +488,18 @@ public class EnemyActionController : MonoBehaviour
         else
         {
             if (_nextMovementState)
-                rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * randomMoveSpeed;
+                rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * enemyStatusConfig.randomMoveSpeed;
 
-            if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && _randomMoveGotoTaget)
+            if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < enemyStatusConfig.moveLeastStoppingDistance && _randomMoveGotoTaget)
             {
                 bool isback = Random.Range(0, 4) % 2 == 1;
                 _randomMoveGotoTaget = false;
                 if (isback) _randomMoveTargetPosition = (_randomMoveBasePosition + 3 * transform.position) / 4;
             }
 
-            if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < moveLeastStoppingDistance && !_randomMoveGotoTaget) || _forceEnd)
+            if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < enemyStatusConfig.moveLeastStoppingDistance && !_randomMoveGotoTaget) || _forceEnd)
             {
-                StartCoroutine(CountRandomMoveCD(randomMoveCD * ((float)Random.Range(5, 16) / 10)));
+                StartCoroutine(CountRandomMoveCD(enemyStatusConfig.randomMoveCD * ((float)Random.Range(5, 16) / 10)));
                 _isRandomMove = false;
 
                 _currentState = State.Chase;
@@ -557,14 +509,14 @@ public class EnemyActionController : MonoBehaviour
 
     private void DodgeInitialize()
     {
-        StartCoroutine(CountDodgeDurationCD(dodgeDuration * ((float)Random.Range(5, 16) / 10)));
+        StartCoroutine(CountDodgeDurationCD(enemyStatusConfig.dodgeDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Set angle direction [angle that enemy aim to player]
         Vector2 distanceVector = player.position - transform.position;
         _dodgeFaceAngle = Mathf.Atan2(distanceVector.y, distanceVector.x);
 
-        if (Random.Range(0, 2) == 0) _dodgeFaceAngle += dodgeAngle * Mathf.Deg2Rad;
-        else _dodgeFaceAngle -= dodgeAngle * Mathf.Deg2Rad;
+        if (Random.Range(0, 2) == 0) _dodgeFaceAngle += enemyStatusConfig.dodgeAngle * Mathf.Deg2Rad;
+        else _dodgeFaceAngle -= enemyStatusConfig.dodgeAngle * Mathf.Deg2Rad;
 
         float x = Mathf.Cos(_dodgeFaceAngle);
         float y = Mathf.Sin(_dodgeFaceAngle);
@@ -578,11 +530,11 @@ public class EnemyActionController : MonoBehaviour
         if (!_nextDodgeDurationState)
         {
             if (_nextMovementState)
-                rb.velocity = _dodgeDirection * dodgeSpeed;
+                rb.velocity = _dodgeDirection * enemyStatusConfig.dodgeSpeed;
         }
         else
         {
-            StartCoroutine(CountDodgeCD(dodgeCD * ((float)Random.Range(5, 16) / 10)));
+            StartCoroutine(CountDodgeCD(enemyStatusConfig.dodgeCD * ((float)Random.Range(5, 16) / 10)));
             _nextCircleState = true;
             _currentState = State.Chase;
         }
