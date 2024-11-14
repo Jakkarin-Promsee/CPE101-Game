@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Timeline.Actions;
@@ -5,13 +6,21 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // ! Test
-    public float hp = 100f;
-    public float shield = 10f;
+    public float MAX_HP = 10000f;
+    public float MAX_SHIELD = 1000f;
+    public float MAX_MANA = 200f;
+
+    // Update HUD on stats change event
+    public event Action OnStatsChanged;
+
+    public float hp = 1000f;
+    public float shield = 10000f;
+    public float mana = 200f;
+
     private float timeToStartRegeneration = 10f;
+    private float shieldRegenRate = 100f;
     private bool isRegeneratingShield = true;
     private float timeSinceOutOfCombat = 0f; // Timer to track time out of combat
-    // ! Test
 
     private SpriteRenderer spriteRenderer;
     public Color flashColor = Color.red;  // Color to flash
@@ -33,7 +42,6 @@ public class PlayerController : MonoBehaviour
         // Regenerate health if player is out of combat for 10 secs
         if(timeSinceOutOfCombat < timeToStartRegeneration){
             timeSinceOutOfCombat += Time.deltaTime;
-            // print(timeSinceOutOfCombat);
         }else if(timeSinceOutOfCombat >= timeToStartRegeneration && !isRegeneratingShield){
             isRegeneratingShield = true;
             StartCoroutine(RegenerateShield());
@@ -43,19 +51,23 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if(shield > 0){
-            shield--;
+            shield -= damage;
         }else{
-            hp--;
+            hp -= damage;
         }
         StartCoroutine(FlashRed());
         // In combat, stop shield regeneration
         timeSinceOutOfCombat = 0f;
         isRegeneratingShield = false;
+        OnStatsChanged?.Invoke();
     }
 
     private IEnumerator RegenerateShield(){
-        while(isRegeneratingShield && shield < 10f){
-            shield++;
+        while(isRegeneratingShield && shield < MAX_SHIELD){
+            shield += shieldRegenRate;
+            // Keep shield at MAX
+            if(shield > MAX_SHIELD) shield = MAX_SHIELD;
+            OnStatsChanged?.Invoke();
             yield return new WaitForSeconds(1f);
         }
     }

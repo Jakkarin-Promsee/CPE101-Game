@@ -17,11 +17,9 @@ public class Melee : MonoBehaviour
     private Collider2D meleeCollider;
     private Animator animator;
     public string weaponOwnerTag = "";
-    // ! Test
     public bool preventSwing = false;
     public bool isReflectingBullet = false;
     public PlayerController playerController;
-    // ! Test
     private SpriteRenderer spriteRenderer;
 
 
@@ -104,8 +102,8 @@ public class Melee : MonoBehaviour
                 // Set new bullet angle
                 other.GetComponent<Bullet>().Reflect(newMoveAngle);
 
-                // Reduce player shield by one
-                playerController.shield--;
+                // Reduce player shield by damage amount
+                playerController.shield -= weaponConfig.damage;
 
                 // Stop reflecting if shield after collision is 0
                 if(playerController.shield <= 0)
