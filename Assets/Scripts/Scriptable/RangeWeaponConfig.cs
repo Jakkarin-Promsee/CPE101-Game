@@ -18,6 +18,7 @@ public class RangeWeaponConfig : ScriptableObject
     public bool isMoveThroughObject = false;
     public float speed = 10f;
     public float lifespan = 20f;
+    public int bulletBounce = 1;
     public GameObject explosionPrefab;
 
 }

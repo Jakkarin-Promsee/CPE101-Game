@@ -8,10 +8,13 @@ public class Bullet : MonoBehaviour
 {
     public RangeWeaponConfig weaponConfig;
     public string weaponOwnerTag = "";
+    private int bounce = 0;
+    private bool hasReflected = false;
     private Vector2 direction;
 
     public virtual void Start()
     {
+        bounce = 0;
         direction = new Vector2(1, 0); // Set bullet direct to move forward
         Destroy(gameObject, weaponConfig.lifespan);  // Destroy after a certain time
     }
@@ -24,6 +27,15 @@ public class Bullet : MonoBehaviour
     protected virtual void MoveBullet()
     {
         transform.Translate(direction * weaponConfig.speed * Time.deltaTime);
+    }
+
+    public void Reflect(float newAngle)
+    {
+        if (!hasReflected)
+        {
+            hasReflected = true;
+            ChangeMoveAngle(newAngle);
+        }
     }
 
     public void ChangeMoveAngle(float newAngle)
@@ -59,6 +71,12 @@ public class Bullet : MonoBehaviour
         if (other.CompareTag("Player") && weaponOwnerTag != "Player")
         {
             other.gameObject.GetComponent<PlayerController>().TakeDamage(weaponConfig.damage);
+
+            // Calculate knockback vector
+            float angleInRadians = transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+            Vector2 knockbackDirection = new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
+            other.gameObject.GetComponent<PlayerMovement>().TakeKnockback(knockbackDirection * weaponConfig.knockback, weaponConfig.knockbackTime);
+
             Destroy(gameObject);
         }
     }

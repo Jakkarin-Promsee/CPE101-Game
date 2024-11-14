@@ -90,7 +90,7 @@ public class Melee : MonoBehaviour
                 float newMoveAngle = Mathf.Atan2(newDirection.y, newDirection.x) * Mathf.Rad2Deg;
 
                 // Set new bullet angle
-                other.GetComponent<Bullet>().ChangeMoveAngle(newMoveAngle);
+                other.GetComponent<Bullet>().Reflect(newMoveAngle);
             }
             else if (!other.CompareTag(weaponOwnerTag))
             {
