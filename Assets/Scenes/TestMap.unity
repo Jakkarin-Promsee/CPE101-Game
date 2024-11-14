@@ -3069,10 +3069,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a2b0e8fb887d344b24de4415f09b82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MAX_HP: 10000
+  MAX_HP: 1000
   MAX_SHIELD: 1000
   MAX_MANA: 200
-  hp: 10000
+  hp: 1000
   shield: 1000
   mana: 200
   flashColor: {r: 1, g: 0, b: 0, a: 1}

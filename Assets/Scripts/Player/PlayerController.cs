@@ -6,16 +6,16 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MAX_HP = 10000f;
+    public float MAX_HP = 1000f;
     public float MAX_SHIELD = 1000f;
     public float MAX_MANA = 200f;
 
     // Update HUD on stats change event
     public event Action OnStatsChanged;
 
-    public float hp = 1000f;
-    public float shield = 10000f;
-    public float mana = 200f;
+    public float hp;
+    public float shield;
+    public float mana;
 
     private float timeToStartRegeneration = 10f;
     private float shieldRegenRate = 100f;
@@ -32,6 +32,10 @@ public class PlayerController : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;  // Store the original color
+        // Initialize player stats
+        hp = MAX_HP;
+        shield = MAX_SHIELD;
+        mana = MAX_MANA;
     }
 
     void Update()
