@@ -1,10 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float hp = 100;
+    // ! Test
+    public float hp = 100f;
+    public float shield = 10f;
+    private float timeToStartRegeneration = 10f;
+    private bool isRegeneratingShield = true;
+    private float timeSinceOutOfCombat = 0f; // Timer to track time out of combat
+    // ! Test
 
     private SpriteRenderer spriteRenderer;
     public Color flashColor = Color.red;  // Color to flash
@@ -20,13 +27,37 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // Player dead
         if (hp <= 0) Destroy(gameObject);
+
+        // Regenerate health if player is out of combat for 10 secs
+        if(timeSinceOutOfCombat < timeToStartRegeneration){
+            timeSinceOutOfCombat += Time.deltaTime;
+            // print(timeSinceOutOfCombat);
+        }else if(timeSinceOutOfCombat >= timeToStartRegeneration && !isRegeneratingShield){
+            isRegeneratingShield = true;
+            StartCoroutine(RegenerateShield());
+        }
     }
 
     public void TakeDamage(float damage)
     {
-        hp -= damage;
+        if(shield > 0){
+            shield--;
+        }else{
+            hp--;
+        }
         StartCoroutine(FlashRed());
+        // In combat, stop shield regeneration
+        timeSinceOutOfCombat = 0f;
+        isRegeneratingShield = false;
+    }
+
+    private IEnumerator RegenerateShield(){
+        while(isRegeneratingShield && shield < 10f){
+            shield++;
+            yield return new WaitForSeconds(1f);
+        }
     }
 
     private IEnumerator FlashRed()
