@@ -7,7 +7,10 @@ using UnityEngine.InputSystem.XR.Haptics;
 
 public class Melee : MonoBehaviour
 {
+    [Header("General Setting. Necessary to setup.")]
     public MeleeWeaponConfig weaponConfig;
+
+    [Header("Itself Setting. Not necessary to setup.")]
     public GameObject weaponPivot;
     public GameObject player;
 

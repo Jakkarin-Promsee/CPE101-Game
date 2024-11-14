@@ -9,10 +9,19 @@ using UnityEngine.Rendering;
 public class EnemyActionController : MonoBehaviour
 {
     // Referent setting
-    public Transform player;
+    [Header("General Setting. \n[eyeRange > attackRange > chaseRange]")]
+
+    [Tooltip("Important!")]
     public GameObject weaponPrefab;
-    public RangeWeaponConfig weaponConfig;
+    [Tooltip("Not important.")]
     public GameObject bulletPrefab;
+    [Tooltip("Not important.")]
+    public RangeWeaponConfig rangeWeaponConfig;
+    [Tooltip("Not important.")]
+    public MeleeWeaponConfig meleeWeaponConfig;
+    [Tooltip("Important!")]
+    public Transform player;
+
     ///////
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum WeaponType { Gun, Melee }
@@ -138,10 +147,10 @@ public class EnemyActionController : MonoBehaviour
         _currentWeaponType = WeaponType.Gun;
 
         if (bulletPrefab)
-            weaponConfig.bulletPrefab = bulletPrefab;
+            rangeWeaponConfig.bulletPrefab = bulletPrefab;
 
-        if (weaponConfig)
-            _currentWeapon.GetComponent<Gun>().weaponConfig = weaponConfig;
+        if (rangeWeaponConfig)
+            _currentWeapon.GetComponent<Gun>().weaponConfig = rangeWeaponConfig;
 
         _currentWeapon.AddComponent<EnemyWeaponAim>();
         _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
@@ -154,6 +163,9 @@ public class EnemyActionController : MonoBehaviour
     void SetUpMeleeWeapon()
     {
         _currentWeaponType = WeaponType.Melee;
+
+        if (meleeWeaponConfig)
+            _currentWeapon.GetComponent<Melee>().weaponConfig = meleeWeaponConfig;
 
         GameObject weaponPivot = new GameObject("WeaponPivottest");
         weaponPivot.transform.position = transform.position;  // Position it near the player or weapon

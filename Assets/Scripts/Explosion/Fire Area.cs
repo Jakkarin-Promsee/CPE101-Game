@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class FireArea : Explosion
 {
+    [Header("General Setting. Necessary to setup.")]
     public float areaDuration = 5f;
     public float burnDamage = 3f;
     public float burnRate = 0.3f;

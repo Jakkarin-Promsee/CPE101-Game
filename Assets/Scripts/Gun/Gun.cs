@@ -6,8 +6,11 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    [Header("General Setting. Necessary to setup.")]
     public RangeWeaponConfig weaponConfig;
     public Transform gunPoint;
+
+    [Header("Itself Setting. Not necessary to setup.")]
     public GameObject player;
     public float nextFireTime = 0f;
     public string weaponOwnerTag = "";
