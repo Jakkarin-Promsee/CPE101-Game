@@ -15,11 +15,11 @@ MonoBehaviour:
   weaponPrefab: {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
   bulletPrefab: {fileID: 0}
   rangeWeaponConfig: {fileID: 0}
-  meleeWeaponConfig: {fileID: 0}
-  attackCD: 8
+  meleeWeaponConfig: {fileID: 11400000, guid: d691b3729d1ca3747a8331bc78c0a978, type: 2}
+  attackCD: 4
   eyeRange: 12
-  attackRange: 10
-  chaseRange: 8
+  attackRange: 4
+  chaseRange: 5
   moveSpeed: 2.5
   moveFrictionCoefficient: 1
   moveLeastStoppingDistance: 0.1
@@ -27,11 +27,11 @@ MonoBehaviour:
   patrolCD: 5
   patrolSpeed: 1.5
   patrolLength: 2.5
-  circleCD: 9
+  circleCD: 15
   circleDuration: 1
   circleSpeed: 2
   circleAngularSpeed: 0.3
-  circleRadius: 6
+  circleRadius: 4
   randomMoveCD: 3
   randomMoveSpeed: 2.5
   randomMoveLength: 1

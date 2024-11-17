@@ -341,7 +341,7 @@ public class EnemyActionController : MonoBehaviour
     {
         if (_nextAttackState && Vector3.Distance(transform.position, player.position) < enemyStatusConfig.attackRange)
         {
-            StartCoroutine(CountAttackCD(enemyStatusConfig.attackCD * ((float)Random.Range(5, 16) / 10)));
+            StartCoroutine(CountAttackCD(enemyStatusConfig.attackCD * ((float)Random.Range(8, 16) / 10)));
             Attack();
         }
     }
@@ -406,6 +406,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void CircleMoveInitialize()
     {
+        Debug.Log("Circle Move Start");
         _nextCircleState = false;
         _isCircleMove = true;
 
@@ -413,9 +414,9 @@ public class EnemyActionController : MonoBehaviour
         StartCoroutine(CountCircleDurationCD(enemyStatusConfig.circleDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Complex random
-        _circleOffsetRadius = Random.Range(-15, 5) / 10 * enemyStatusConfig.circleRadius;
+        _circleOffsetRadius = (float)Random.Range(8, 15) / 10 * enemyStatusConfig.circleRadius;
+        Debug.Log(_circleOffsetRadius);
         _isCircleCW = (Random.Range(0, 2) == 0) ? true : false;
-        if (enemyStatusConfig.chaseRange + _circleOffsetRadius > enemyStatusConfig.chaseRange) _circleOffsetRadius = enemyStatusConfig.chaseRange;
 
         // Set angle direction [angle that player aim to enemy]
         Vector2 distanceVector = transform.position - player.position;
@@ -432,8 +433,8 @@ public class EnemyActionController : MonoBehaviour
         else
             _circleFaceAngle += Time.fixedDeltaTime * enemyStatusConfig.circleAngularSpeed; // Update the angle over time
 
-        float x = Mathf.Cos(_circleFaceAngle) * enemyStatusConfig.circleRadius;
-        float y = Mathf.Sin(_circleFaceAngle) * enemyStatusConfig.circleRadius;
+        float x = Mathf.Cos(_circleFaceAngle) * _circleOffsetRadius;
+        float y = Mathf.Sin(_circleFaceAngle) * _circleOffsetRadius;
 
         // Determine the target position based on the player's position and angle
         Vector3 circlePosition = new Vector3(_circleLastPlayerPosition.x + x, _circleLastPlayerPosition.y + y, 0);
@@ -465,6 +466,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void RandomMoveInitialize()
     {
+        Debug.Log("Random Move Start");
         _nextRandomMoveState = false;
         _isRandomMove = true;
         _isRandomMoveFinish = true;
@@ -477,8 +479,8 @@ public class EnemyActionController : MonoBehaviour
             _randomMoveBasePosition = transform.position;
 
             int moveDir = Random.Range(0, 4); // 0-3  -- 0=down 1=up 2=left 3=right
-            float vectorx = Random.Range(6, 15) * enemyStatusConfig.randomMoveLength / 10;
-            float vectory = Random.Range(-5, 5) * vectorx / 10;
+            float vectorx = (float)Random.Range(5, 16) * enemyStatusConfig.randomMoveLength / 10;
+            float vectory = (float)Random.Range(5, 16) * vectorx / 20;
             if (moveDir == 0) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vectory, -vectorx, 0);
             else if (moveDir == 1) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(vectory, vectorx, 0);
             else if (moveDir == 2) _randomMoveTargetPosition = _randomMoveBasePosition + new Vector3(-vectorx, vectory, 0);
@@ -492,11 +494,17 @@ public class EnemyActionController : MonoBehaviour
             if (_nextMovementState)
                 rb.velocity = (_randomMoveTargetPosition - transform.position).normalized * enemyStatusConfig.randomMoveSpeed;
 
+            if (Vector3.Distance(transform.position, player.position) < 5)
+            {
+                _forceEnd = true;
+                _nextCircleState = true;
+            }
+
             if (Vector3.Distance(transform.position, _randomMoveTargetPosition) < enemyStatusConfig.moveLeastStoppingDistance && _randomMoveGotoTaget)
             {
-                bool isback = Random.Range(0, 4) % 2 == 1;
+                bool isback = Random.Range(0, 5) != 4;
                 _randomMoveGotoTaget = false;
-                if (isback) _randomMoveTargetPosition = (_randomMoveBasePosition + 3 * transform.position) / 4;
+                if (isback) _randomMoveTargetPosition = (_randomMoveBasePosition + _randomMoveTargetPosition) / 2;
             }
 
             if ((Vector3.Distance(transform.position, _randomMoveTargetPosition) < enemyStatusConfig.moveLeastStoppingDistance && !_randomMoveGotoTaget) || _forceEnd)
@@ -511,6 +519,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void DodgeInitialize()
     {
+        Debug.Log("Dodge Start");
         StartCoroutine(CountDodgeDurationCD(enemyStatusConfig.dodgeDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Set angle direction [angle that enemy aim to player]

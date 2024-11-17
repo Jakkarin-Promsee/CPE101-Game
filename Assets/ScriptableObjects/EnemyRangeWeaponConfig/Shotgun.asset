@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf7d1bd5cd058f74fbe97e9963cb6ca7, type: 3}
-  m_Name: Ak 1
+  m_Name: Shotgun
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 6226276864569040743, guid: 77d70709832b03a48a683b5ac8423a6b, type: 3}
-  damage: 25
-  fireRate: 0.2
-  recoil: 4
+  bulletPrefab: {fileID: 6226276864569040743, guid: b9a46c9b93656d0418df82f955e88ed8, type: 3}
+  damage: 20
+  fireRate: 0.7
+  recoil: 15
   recoilTime: 0.1
-  knockback: 0.75
+  knockback: 10
   knockbackTime: 0.1
   isMoveThroughObject: 0
-  speed: 2
-  lifespan: 20
+  speed: 15
+  lifespan: 0.2
   bulletBounce: 1
   explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}

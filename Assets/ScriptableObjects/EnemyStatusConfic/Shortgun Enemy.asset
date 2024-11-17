@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 7102781951068588039, guid: 11b19ca585e1c4c4a96783dd4079cb36, type: 3}
   bulletPrefab: {fileID: 0}
-  rangeWeaponConfig: {fileID: 0}
+  rangeWeaponConfig: {fileID: 11400000, guid: 41b5e619cee51f346a3965bdd0707dbc, type: 2}
   meleeWeaponConfig: {fileID: 0}
-  attackCD: 8
+  attackCD: 12
   eyeRange: 12
-  attackRange: 10
-  chaseRange: 8
+  attackRange: 5
+  chaseRange: 4
   moveSpeed: 2.5
   moveFrictionCoefficient: 1
   moveLeastStoppingDistance: 0.1
@@ -27,7 +27,7 @@ MonoBehaviour:
   patrolCD: 5
   patrolSpeed: 1.5
   patrolLength: 2.5
-  circleCD: 9
+  circleCD: 15
   circleDuration: 1
   circleSpeed: 2
   circleAngularSpeed: 0.3
