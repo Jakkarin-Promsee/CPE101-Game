@@ -32,9 +32,9 @@ public class WeaponManager : MonoBehaviour
                 currentWeapon.GetComponent<Melee>().Swing();
             }
         }
-        if (Input.GetKeyDown(KeyCode.F) && currentWeaponType == WeaponType.Melee)
-        {
-            currentWeapon.GetComponent<Melee>().Reflect();
+        if (Input.GetKeyDown(KeyCode.F)){
+            if(currentWeaponType == WeaponType.Melee)
+                currentWeapon.GetComponent<Melee>().Reflect();
         }
 
         // Switch guns with number keys (1, 2, 3, etc.)

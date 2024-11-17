@@ -17,8 +17,9 @@ public class Melee : MonoBehaviour
     private Collider2D meleeCollider;
     private Animator animator;
     public string weaponOwnerTag = "";
-    private bool preventSwing = false;
+    public bool preventSwing = false;
     public bool isReflectingBullet = false;
+    public PlayerController playerController;
     private SpriteRenderer spriteRenderer;
 
 
@@ -27,12 +28,12 @@ public class Melee : MonoBehaviour
         animator = GetComponent<Animator>();
         meleeCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        playerController = player.GetComponent<PlayerController>();
     }
 
     public void Swing()
     {
-        if (!preventSwing)
-        {
+        if (!preventSwing){
             animator.SetTrigger("swordSwing");
             meleeCollider.enabled = true;
             StartCoroutine(DelaySwing());
@@ -50,10 +51,11 @@ public class Melee : MonoBehaviour
         }
     }
 
-    // Setup reflect param
-    public void Reflect()
-    {
-        StartCoroutine(CooldownReflect());
+    public void Reflect(){
+        // Prevent player from using reflect if shield is <= 0
+        if(playerController.shield <= 0) return;
+
+        animator.SetBool("swordReflect", true);
     }
 
     public IEnumerator DelaySwing()
@@ -66,16 +68,21 @@ public class Melee : MonoBehaviour
         preventSwing = false;
     }
 
-    public IEnumerator CooldownReflect()
-    {
+    // This function will be call at the start of animation
+    public void StartReflecting(){
+        preventSwing = true;
         isReflectingBullet = true;
+        meleeCollider.enabled = true;
         spriteRenderer.color = Color.red;
+    }
 
-        yield return new WaitForSeconds(weaponConfig.reflectCooldown);
-
+    // This function will be call at the end of animation
+    public void StopReflecting(){
+        preventSwing = false;
         isReflectingBullet = false;
+        meleeCollider.enabled = false;
+        animator.SetBool("swordReflect", false);
         spriteRenderer.color = Color.black;
-        print("Effect stops");
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -94,13 +101,20 @@ public class Melee : MonoBehaviour
 
                 // Set new bullet angle
                 other.GetComponent<Bullet>().Reflect(newMoveAngle);
+
+                // Reduce player shield by damage amount
+                playerController.shield -= weaponConfig.damage;
+
+                // Stop reflecting if shield after collision is 0
+                if(playerController.shield <= 0)
+                    StopReflecting();
             }
             else if (!other.CompareTag(weaponOwnerTag))
             {
                 Destroy(other.gameObject);
             }
         }
-        else if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy")
+        else if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy" && !isReflectingBullet)
         {
             other.gameObject.GetComponent<EnemyController>().TakeDamage(weaponConfig.damage);
 
