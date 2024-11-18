@@ -33,7 +33,8 @@ public class Melee : MonoBehaviour
 
     public void Swing()
     {
-        if (!preventSwing){
+        if (!preventSwing)
+        {
             animator.SetTrigger("swordSwing");
             meleeCollider.enabled = true;
             StartCoroutine(DelaySwing());
@@ -51,9 +52,10 @@ public class Melee : MonoBehaviour
         }
     }
 
-    public void Reflect(){
+    public void Reflect()
+    {
         // Prevent player from using reflect if shield is <= 0
-        if(playerController.shield <= 0) return;
+        if (playerController.shield <= 0) return;
 
         animator.SetBool("swordReflect", true);
     }
@@ -69,7 +71,8 @@ public class Melee : MonoBehaviour
     }
 
     // This function will be call at the start of animation
-    public void StartReflecting(){
+    public void StartReflecting()
+    {
         preventSwing = true;
         isReflectingBullet = true;
         meleeCollider.enabled = true;
@@ -77,7 +80,8 @@ public class Melee : MonoBehaviour
     }
 
     // This function will be call at the end of animation
-    public void StopReflecting(){
+    public void StopReflecting()
+    {
         preventSwing = false;
         isReflectingBullet = false;
         meleeCollider.enabled = false;
@@ -106,10 +110,10 @@ public class Melee : MonoBehaviour
                 playerController.shield -= weaponConfig.damage;
 
                 // Stop reflecting if shield after collision is 0
-                if(playerController.shield <= 0)
+                if (playerController.shield <= 0)
                     StopReflecting();
             }
-            else if (!other.CompareTag(weaponOwnerTag))
+            else if (other.GetComponent<Bullet>().weaponOwnerTag != weaponOwnerTag)
             {
                 Destroy(other.gameObject);
             }
