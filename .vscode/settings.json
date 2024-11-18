@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "CPE101-Game.sln"
+    "dotnet.defaultSolution": "Prototype-01.sln"
 }
