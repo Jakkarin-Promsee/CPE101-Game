@@ -8,24 +8,54 @@ public class MapManager : MonoBehaviour
     public GameObject doorActiveObj;
     public GameObject openDoorObj;
     public GameObject closeDoorObj;
-    public GameObject[] setupEnemies;
+    public List<GameObject> setupEnemies;
 
     public Tilemap groundTilemap;  // Reference to the ground tilemap
     public Tilemap obstructionTilemap;  // Reference to the obstruction tilemap
     public GameObject[] enemyPrefab;
 
+    private List<GameObject> enemyInwave = new List<GameObject>();
+    public int[] waveEnemy;
+    private int currentWave = 0;
+    private bool isStageClear = false;
+
+
     // Start is called before the first frame update
     void Start()
     {
         doorActiveObj.GetComponent<ActiveDoorArea>().mapManager = gameObject.GetComponent<MapManager>();
-        OpenTheDoor();
 
-        InvokeRepeating(nameof(SponEnemyRandom), 3f, 1f);
+        UnActiveEnemies();
+        OpenTheDoor();
     }
 
-    private void SponEnemyRandom()
+    void Update()
     {
-        int numberOfEnemies = 2;
+        if (setupEnemies.Count <= 2 && enemyInwave.Count <= 2)
+        {
+            if (currentWave < waveEnemy.Length)
+            {
+                SponEnemyRandom(waveEnemy[currentWave]);
+                currentWave++;
+            }
+            else
+            {
+                isStageClear = true;
+                OpenTheDoor();
+            }
+        }
+
+        InvokeRepeating(nameof(UpdateEnemyList), 0f, 1f);
+    }
+
+    private void UpdateEnemyList()
+    {
+        setupEnemies.RemoveAll(enemy => enemy == null);
+        enemyInwave.RemoveAll(enemy => enemy == null);
+    }
+
+    private void SponEnemyRandom(int numberOfEnemies)
+    {
         List<Vector3> freeSpaces = GetFreeSpaces();
 
         // Spawn enemies on random free spaces
@@ -43,7 +73,8 @@ public class MapManager : MonoBehaviour
             Vector3 spawnPosition = freeSpaces[randomIndex];
 
             // Spawn the enemy
-            Instantiate(enemyPrefab[prefabIndex], spawnPosition, Quaternion.identity);
+            GameObject enemy = Instantiate(enemyPrefab[prefabIndex], spawnPosition, Quaternion.identity);
+            enemyInwave.Add(enemy);
 
             // Remove the chosen position to avoid spawning multiple enemies at the same spot
             freeSpaces.RemoveAt(randomIndex);
@@ -79,9 +110,17 @@ public class MapManager : MonoBehaviour
         return freeSpaces;
     }
 
+    public void UnActiveEnemies()
+    {
+        for (int i = 0; i < setupEnemies.Count; i++)
+        {
+            setupEnemies[i].GetComponent<EnemyActionController>().active = false;
+        }
+    }
+
     public void ActiveEnemies()
     {
-        for (int i = 0; i < setupEnemies.Length; i++)
+        for (int i = 0; i < setupEnemies.Count; i++)
         {
             setupEnemies[i].GetComponent<EnemyActionController>().active = true;
         }
@@ -97,9 +136,12 @@ public class MapManager : MonoBehaviour
 
     public void CloseTheDoor()
     {
-        openDoorObj.GetComponent<TilemapRenderer>().sortingOrder = -30;
-        openDoorObj.GetComponent<TilemapCollider2D>().isTrigger = true;
-        closeDoorObj.GetComponent<TilemapRenderer>().sortingOrder = 0;
-        closeDoorObj.GetComponent<TilemapCollider2D>().isTrigger = false;
+        if (!isStageClear)
+        {
+            openDoorObj.GetComponent<TilemapRenderer>().sortingOrder = -30;
+            openDoorObj.GetComponent<TilemapCollider2D>().isTrigger = true;
+            closeDoorObj.GetComponent<TilemapRenderer>().sortingOrder = 0;
+            closeDoorObj.GetComponent<TilemapCollider2D>().isTrigger = false;
+        }
     }
 }

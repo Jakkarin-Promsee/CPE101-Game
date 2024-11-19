@@ -12,7 +12,7 @@ public class EnemyActionController : MonoBehaviour
     [Header("General Setting. Important!")]
     public Transform player;
     public EnemyStatusConfig enemyStatusConfig;
-    public bool active = false;
+    public bool active = true;
 
     // Background setting
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }

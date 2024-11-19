@@ -179,3 +179,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   enemyStatusConfig: {fileID: 11400000, guid: 3d751845c1f1e2a40a115bf1d0a937be, type: 2}
+  active: 1
