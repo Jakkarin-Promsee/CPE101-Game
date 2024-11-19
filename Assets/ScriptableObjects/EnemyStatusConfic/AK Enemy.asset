@@ -16,7 +16,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 0}
   rangeWeaponConfig: {fileID: 11400000, guid: ab01912e0b7503641a2bbe5646585b22, type: 2}
   meleeWeaponConfig: {fileID: 0}
-  attackCD: 6
+  attackCD: 2
   eyeRange: 14.4
   attackRange: 10
   chaseRange: 10

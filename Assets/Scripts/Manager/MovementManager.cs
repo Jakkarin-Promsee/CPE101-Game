@@ -10,12 +10,13 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5f;
 
     public float dashCd = 4f; // Dash Colldown
-    public float dashDistance = 5f; // Dash Distant 
-    public float dashSpeed = 20f; // Dash Speed
+    public float dashDuration = 2f;
+    public float dashMultiple = 3f;
 
 
     public bool isforce = false;
     private bool isDashing = false;
+    private bool nextDash = true;
     private Vector3 dashTarget;
     private float nextDashTime = 0f;
     private Rigidbody2D rb;
@@ -35,6 +36,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private IEnumerator CountDashCd()
+    {
+
+        yield return new WaitForSeconds(dashCd);
+        nextDash = true;
+    }
+
+    private IEnumerator CountDashDuration()
+    {
+        nextDash = false;
+        isDashing = true;
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+        StartCoroutine(CountDashCd());
+    }
+
     void Update()
     {
         movement.x = Input.GetAxisRaw("Horizontal");
@@ -42,17 +59,13 @@ public class PlayerMovement : MonoBehaviour
 
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(1)) && Time.time > nextDashTime)
         {
-            nextDashTime = Time.time + dashCd;
-            Dash();
+            if (nextDash)
+            {
+                StartCoroutine(CountDashDuration());
+            }
+
         }
 
-        if (isDashing)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, dashTarget, dashSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(transform.position, dashTarget) < 0.1f)
-                isDashing = false;
-        }
     }
 
     public void TakeKnockback(Vector3 force, float time)
@@ -64,21 +77,11 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         if (Time.time > nextMovement)
-            rb.velocity = movement * moveSpeed;
+            rb.velocity = movement * moveSpeed * (isDashing ? dashMultiple : 1);
 
         if (mainCamera != null)
         {
             mainCamera.transform.position = new Vector3(rb.position.x, rb.position.y, mainCamera.transform.position.z);
         }
-    }
-
-    void Dash()
-    {
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = transform.position.z;
-
-        Vector3 direction = (mousePosition - transform.position).normalized;
-        dashTarget = transform.position + direction * dashDistance;
-        isDashing = true;
     }
 }

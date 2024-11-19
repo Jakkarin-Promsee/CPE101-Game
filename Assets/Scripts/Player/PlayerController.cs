@@ -6,10 +6,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MAX_HP = 1000f;
-    public float MAX_SHIELD = 1000f;
-    public float MAX_MANA = 200f;
-
     // Update HUD on stats change event
     public event Action OnStatsChanged;
 
@@ -18,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public float mana;
 
     private float timeToStartRegeneration = 10f;
-    private float shieldRegenRate = 100f;
+    private float shieldRegenRate = 10f;
     private bool isRegeneratingShield = true;
     private float timeSinceOutOfCombat = 0f; // Timer to track time out of combat
 
@@ -27,15 +23,19 @@ public class PlayerController : MonoBehaviour
     public float flashDuration = 0.1f;      // Duration of flash in seconds
     private Color originalColor;            // Original color to reset back to
 
+    public float MAX_HP;
+    public float MAX_SHIELD;
+    public float MAX_MANA;
+
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;  // Store the original color
         // Initialize player stats
-        hp = MAX_HP;
-        shield = MAX_SHIELD;
-        mana = MAX_MANA;
+        MAX_HP = hp;
+        MAX_SHIELD = shield;
+        MAX_MANA = mana;
     }
 
     void Update()
@@ -44,9 +44,12 @@ public class PlayerController : MonoBehaviour
         if (hp <= 0) Destroy(gameObject);
 
         // Regenerate health if player is out of combat for 10 secs
-        if(timeSinceOutOfCombat < timeToStartRegeneration){
+        if (timeSinceOutOfCombat < timeToStartRegeneration)
+        {
             timeSinceOutOfCombat += Time.deltaTime;
-        }else if(timeSinceOutOfCombat >= timeToStartRegeneration && !isRegeneratingShield){
+        }
+        else if (timeSinceOutOfCombat >= timeToStartRegeneration && !isRegeneratingShield)
+        {
             isRegeneratingShield = true;
             StartCoroutine(RegenerateShield());
         }
@@ -54,9 +57,12 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if(shield > 0){
+        if (shield > 0)
+        {
             shield -= damage;
-        }else{
+        }
+        else
+        {
             hp -= damage;
         }
         StartCoroutine(FlashRed());
@@ -66,11 +72,13 @@ public class PlayerController : MonoBehaviour
         OnStatsChanged?.Invoke();
     }
 
-    private IEnumerator RegenerateShield(){
-        while(isRegeneratingShield && shield < MAX_SHIELD){
+    private IEnumerator RegenerateShield()
+    {
+        while (isRegeneratingShield && shield < MAX_SHIELD)
+        {
             shield += shieldRegenRate;
             // Keep shield at MAX
-            if(shield > MAX_SHIELD) shield = MAX_SHIELD;
+            if (shield > MAX_SHIELD) shield = MAX_SHIELD;
             OnStatsChanged?.Invoke();
             yield return new WaitForSeconds(1f);
         }

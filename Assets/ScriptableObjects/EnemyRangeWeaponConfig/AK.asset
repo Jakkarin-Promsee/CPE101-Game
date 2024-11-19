@@ -20,7 +20,7 @@ MonoBehaviour:
   knockback: 0.75
   knockbackTime: 0.1
   isMoveThroughObject: 0
-  speed: 3
+  speed: 4
   lifespan: 20
   bulletBounce: 1
   explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}
