@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 6622850973220064165}
   - component: {fileID: 8998959967351138173}
   - component: {fileID: -8404888696828919656}
+  - component: {fileID: 814728552111300506}
   m_Layer: 0
   m_Name: rocket launcher Bullet
   m_TagString: Bullet
@@ -436,6 +437,33 @@ MonoBehaviour:
   burnDamageMultiple: 0.5
   burntime: 0.75
   burnDuration: 2
+--- !u!50 &814728552111300506
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226276864569040743}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &8682605093987098089
 GameObject:
   m_ObjectHideFlags: 0

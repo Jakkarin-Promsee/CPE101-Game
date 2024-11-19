@@ -46,6 +46,12 @@ public class Bullet : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag("Wall"))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy")
         {
             // Take enemy damage

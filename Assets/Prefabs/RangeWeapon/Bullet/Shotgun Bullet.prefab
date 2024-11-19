@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 6622850973220064165}
   - component: {fileID: -5078217302993495434}
   - component: {fileID: -571596355532585283}
+  - component: {fileID: -8266239605032902522}
   m_Layer: 0
   m_Name: Shotgun Bullet
   m_TagString: Bullet
@@ -170,7 +171,34 @@ MonoBehaviour:
   weaponOwnerTag: 
   pelletCount: 5
   spreadAngle: 15
-  pos: {x: 3.4638038, y: 3.238693, z: -4.008052}
+  pos: {x: 3.7327547, y: 5.9211555, z: -15.57945}
+--- !u!50 &-8266239605032902522
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226276864569040743}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &8984810678926882979
 GameObject:
   m_ObjectHideFlags: 0

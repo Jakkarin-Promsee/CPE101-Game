@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 70426854}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -335,7 +335,7 @@ TilemapCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -1212,7 +1212,7 @@ GameObject:
   - component: {fileID: 253520194}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11905,7 +11905,7 @@ GameObject:
   - component: {fileID: 936981918}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13793,7 +13793,7 @@ MonoBehaviour:
   - {fileID: 8416368581815251967, guid: 884252a364afb164da5fbb000760e283, type: 3}
   - {fileID: 8416368581815251967, guid: 9e05a15626dd3934f99fbb78873e74ab, type: 3}
   - {fileID: 8416368581815251967, guid: b0d28506276fe5148a67aee53f43ce0b, type: 3}
-  waveEnemy: 0600000008000000080000002a030000
+  waveEnemy: 0600000008000000080000000a000000
 --- !u!1 &1752020095
 GameObject:
   m_ObjectHideFlags: 0
@@ -13808,7 +13808,7 @@ GameObject:
   - component: {fileID: 1752020099}
   m_Layer: 0
   m_Name: OpenDoor
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14523,7 +14523,7 @@ GameObject:
   - component: {fileID: 2122071059}
   m_Layer: 0
   m_Name: CloseDoor
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
