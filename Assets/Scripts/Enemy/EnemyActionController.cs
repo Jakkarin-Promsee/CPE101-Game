@@ -12,15 +12,18 @@ public class EnemyActionController : MonoBehaviour
     [Header("General Setting. Important!")]
     public Transform player;
     public EnemyStatusConfig enemyStatusConfig;
+    public bool active = false;
 
     // Background setting
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum WeaponType { Gun, Melee }
     private GameObject _currentWeapon;
+    private GameObject _weaponPivot;
     private Rigidbody2D rb;
     private EnemyController enemyController;
     private State _currentState;
     private WeaponType _currentWeaponType;
+
 
 
     // Attack status
@@ -122,28 +125,28 @@ public class EnemyActionController : MonoBehaviour
         if (enemyStatusConfig.meleeWeaponConfig)
             _currentWeapon.GetComponent<Melee>().weaponConfig = enemyStatusConfig.meleeWeaponConfig;
 
-        GameObject weaponPivot = new GameObject("WeaponPivottest");
-        weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
+        _weaponPivot = new GameObject("WeaponPivottest");
+        _weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
 
         // Set pivot (Whole weapon) as a child of player
-        weaponPivot.transform.SetParent(transform);
+        _weaponPivot.transform.SetParent(transform);
 
         // Set the weapon as a child of the pivot
-        _currentWeapon.transform.SetParent(weaponPivot.transform);
+        _currentWeapon.transform.SetParent(_weaponPivot.transform);
 
         // Position the weapon correctly
         _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
 
         // Add WeaponAim script to the pivot (to control aiming)
         // weaponPivot.AddComponent<WeaponAim>();
-        weaponPivot.AddComponent<EnemyWeaponAim>();
-        weaponPivot.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
-        weaponPivot.GetComponent<EnemyWeaponAim>().player = player;
-        weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
+        _weaponPivot.AddComponent<EnemyWeaponAim>();
+        _weaponPivot.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
+        _weaponPivot.GetComponent<EnemyWeaponAim>().player = player;
+        _weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
 
         // Optionally, you can store the pivot for further use if needed
         _currentWeapon.GetComponent<Melee>().player = gameObject;
-        _currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
+        _currentWeapon.GetComponent<Melee>().weaponPivot = _weaponPivot;
         _currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }
 
@@ -182,8 +185,13 @@ public class EnemyActionController : MonoBehaviour
 
     private void CheckForPlayer()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) < enemyStatusConfig.eyeRange || _wasAttacked)
+        if ((Vector3.Distance(transform.position, player.transform.position) < enemyStatusConfig.eyeRange && active) || _wasAttacked)
         {
+            if (_currentWeaponType == WeaponType.Gun)
+                _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
+            else if (_currentWeaponType == WeaponType.Melee)
+                _weaponPivot.GetComponent<EnemyWeaponAim>().active = true;
+            active = true;
             _currentState = State.Chase;
         }
         else
