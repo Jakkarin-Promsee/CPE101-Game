@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 878748a72785a1045822d0da05198d48, type: 3}
   m_Name: Sword
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 40
   swingDelay: 0.5
-  reflectCooldown: 5
+  reflectDuration: 5
   antiRecoil: 2
   antiRecoilTime: 0.1
   knockback: 3

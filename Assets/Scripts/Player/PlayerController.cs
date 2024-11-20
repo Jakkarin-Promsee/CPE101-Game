@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
     public float shield;
     public float mana;
 
-    private float timeToStartRegeneration = 10f;
-    private float shieldRegenRate = 10f;
+    public float timeToStartRegeneration = 10f;
+    public float shieldRegenRate = 10f;
     private bool isRegeneratingShield = true;
     private float timeSinceOutOfCombat = 0f; // Timer to track time out of combat
 

@@ -38,7 +38,7 @@ public class MapManager : MonoBehaviour
                 SponEnemyRandom(waveEnemy[currentWave]);
                 currentWave++;
             }
-            else
+            else if (setupEnemies.Count <= 0 && enemyInwave.Count <= 0)
             {
                 isStageClear = true;
                 OpenTheDoor();
