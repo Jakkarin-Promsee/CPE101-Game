@@ -11,7 +11,6 @@ public class Melee : MonoBehaviour
     public MeleeWeaponConfig weaponConfig;
 
     [Header("Itself Setting. Not necessary to setup.")]
-    public GameObject weaponPivot;
     public GameObject player;
 
     private Collider2D meleeCollider;
@@ -41,12 +40,12 @@ public class Melee : MonoBehaviour
 
             if (weaponOwnerTag == "Player")
             {
-                Vector3 direction = weaponPivot.GetComponent<WeaponAim>().GetDefaultDirection();
+                Vector3 direction = transform.parent.GetComponent<WeaponAim>().GetDefaultDirection();
                 player.gameObject.GetComponent<PlayerMovement>().TakeKnockback(direction * weaponConfig.antiRecoil, weaponConfig.antiRecoilTime);
             }
             else if (weaponOwnerTag == "Enemy")
             {
-                Vector3 direction = weaponPivot.GetComponent<EnemyWeaponAim>().GetDefaultDirection();
+                Vector3 direction = transform.parent.GetComponent<EnemyWeaponAim>().GetDefaultDirection();
                 player.gameObject.GetComponent<EnemyActionController>().TakeKnockback(direction * weaponConfig.antiRecoil, weaponConfig.antiRecoilTime);
             }
         }

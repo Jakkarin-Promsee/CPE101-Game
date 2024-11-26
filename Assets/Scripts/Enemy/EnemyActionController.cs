@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.AI;
@@ -18,7 +19,9 @@ public class EnemyActionController : MonoBehaviour
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum WeaponType { Gun, Melee }
     private GameObject _currentWeapon;
-    private GameObject _weaponPivot;
+    // ! Test
+    // private GameObject _weaponPivot;
+    // ! Test
     private Rigidbody2D rb;
     private EnemyController enemyController;
     private State _currentState;
@@ -94,7 +97,7 @@ public class EnemyActionController : MonoBehaviour
         // Weapon setup
         if (_currentWeapon.GetComponent<Gun>())
             SetUpRangeWeapon();
-        else if (_currentWeapon.GetComponent<Melee>())
+        else if (_currentWeapon.GetComponentInChildren<Melee>())
             SetUpMeleeWeapon();
 
         _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
@@ -123,31 +126,16 @@ public class EnemyActionController : MonoBehaviour
         _currentWeaponType = WeaponType.Melee;
 
         if (enemyStatusConfig.meleeWeaponConfig)
-            _currentWeapon.GetComponent<Melee>().weaponConfig = enemyStatusConfig.meleeWeaponConfig;
+            _currentWeapon.GetComponentInChildren<Melee>().weaponConfig = enemyStatusConfig.meleeWeaponConfig;
 
-        _weaponPivot = new GameObject("WeaponPivottest");
-        _weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
-
-        // Set pivot (Whole weapon) as a child of player
-        _weaponPivot.transform.SetParent(transform);
-
-        // Set the weapon as a child of the pivot
-        _currentWeapon.transform.SetParent(_weaponPivot.transform);
-
-        // Position the weapon correctly
-        _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
-
-        // Add WeaponAim script to the pivot (to control aiming)
-        // weaponPivot.AddComponent<WeaponAim>();
-        _weaponPivot.AddComponent<EnemyWeaponAim>();
-        _weaponPivot.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
-        _weaponPivot.GetComponent<EnemyWeaponAim>().player = player;
-        _weaponPivot.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
+        _currentWeapon.AddComponent<EnemyWeaponAim>();
+        _currentWeapon.GetComponent<EnemyWeaponAim>().enemy = gameObject.transform;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().player = player;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
 
         // Optionally, you can store the pivot for further use if needed
-        _currentWeapon.GetComponent<Melee>().player = gameObject;
-        _currentWeapon.GetComponent<Melee>().weaponPivot = _weaponPivot;
-        _currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
+        _currentWeapon.GetComponentInChildren<Melee>().player = gameObject;
+        _currentWeapon.GetComponentInChildren<Melee>().weaponOwnerTag = gameObject.tag;
     }
 
     void Update()
@@ -167,10 +155,7 @@ public class EnemyActionController : MonoBehaviour
 
     public void IsAttacked()
     {
-        if (_currentWeaponType == WeaponType.Gun)
-            _currentWeapon.GetComponent<EnemyWeaponAim>().forceFace = true;
-        else if (_currentWeaponType == WeaponType.Melee)
-            _currentWeapon.GetComponent<Melee>().weaponPivot.GetComponent<EnemyWeaponAim>().forceFace = true;
+        _currentWeapon.GetComponent<EnemyWeaponAim>().forceFace = true;
         _wasAttacked = true;
     }
 
@@ -187,10 +172,13 @@ public class EnemyActionController : MonoBehaviour
     {
         if ((Vector3.Distance(transform.position, player.transform.position) < enemyStatusConfig.eyeRange && active) || _wasAttacked)
         {
-            if (_currentWeaponType == WeaponType.Gun)
-                _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
-            else if (_currentWeaponType == WeaponType.Melee)
-                _weaponPivot.GetComponent<EnemyWeaponAim>().active = true;
+            // ! Test
+            // if (_currentWeaponType == WeaponType.Gun)
+                // _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
+            // else if (_currentWeaponType == WeaponType.Melee)
+                // _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
+            _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
+            // ! Test
             active = true;
             _currentState = State.Chase;
         }
@@ -337,7 +325,7 @@ public class EnemyActionController : MonoBehaviour
         }
         else if (_currentWeaponType == WeaponType.Melee)
         {
-            _currentWeapon.GetComponent<Melee>().Swing();
+            _currentWeapon.GetComponentInChildren<Melee>().Swing();
         }
 
 
@@ -414,7 +402,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void CircleMoveInitialize()
     {
-        Debug.Log("Circle Move Start");
+        // Debug.Log("Circle Move Start");
         _nextCircleState = false;
         _isCircleMove = true;
 
@@ -423,7 +411,7 @@ public class EnemyActionController : MonoBehaviour
 
         // Complex random
         _circleOffsetRadius = (float)Random.Range(8, 15) / 10 * enemyStatusConfig.circleRadius;
-        Debug.Log(_circleOffsetRadius);
+        // Debug.Log(_circleOffsetRadius);
         _isCircleCW = (Random.Range(0, 2) == 0) ? true : false;
 
         // Set angle direction [angle that player aim to enemy]
@@ -474,7 +462,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void RandomMoveInitialize()
     {
-        Debug.Log("Random Move Start");
+        // Debug.Log("Random Move Start");
         _nextRandomMoveState = false;
         _isRandomMove = true;
         _isRandomMoveFinish = true;
@@ -527,7 +515,7 @@ public class EnemyActionController : MonoBehaviour
 
     private void DodgeInitialize()
     {
-        Debug.Log("Dodge Start");
+        // Debug.Log("Dodge Start");
         StartCoroutine(CountDodgeDurationCD(enemyStatusConfig.dodgeDuration * ((float)Random.Range(5, 16) / 10)));
 
         // Set angle direction [angle that enemy aim to player]

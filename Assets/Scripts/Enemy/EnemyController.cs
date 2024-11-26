@@ -17,14 +17,10 @@ public class EnemyController : MonoBehaviour
         originalColor = spriteRenderer.color;  // Store the original color
     }
 
-    void Update()
-    {
-        if (hp <= 0) Destroy(gameObject);
-    }
-
     public void TakeDamage(float damage)
-    {
-        hp -= damage;
+    {   
+        if (hp <= 0) Destroy(gameObject);
+        else hp -= damage;
         StartCoroutine(FlashWhite());
     }
 

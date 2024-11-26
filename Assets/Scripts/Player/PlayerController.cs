@@ -40,9 +40,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // Player dead
-        if (hp <= 0) Destroy(gameObject);
-
         // Regenerate health if player is out of combat for 10 secs
         if (timeSinceOutOfCombat < timeToStartRegeneration)
         {
@@ -57,14 +54,13 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (shield > 0)
-        {
+        if(hp <= 0)
+            Destroy(gameObject);
+        else if (shield > 0)
             shield -= damage;
-        }
         else
-        {
             hp -= damage;
-        }
+
         StartCoroutine(FlashRed());
         // In combat, stop shield regeneration
         timeSinceOutOfCombat = 0f;

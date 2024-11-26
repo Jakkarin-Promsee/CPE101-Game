@@ -29,12 +29,12 @@ public class WeaponManager : MonoBehaviour
             }
             else if (currentWeaponType == WeaponType.Melee)
             {
-                currentWeapon.GetComponent<Melee>().Swing();
+                currentWeapon.GetComponentInChildren<Melee>().Swing();
             }
         }
         if (Input.GetKeyDown(KeyCode.F)){
             if(currentWeaponType == WeaponType.Melee)
-                currentWeapon.GetComponent<Melee>().Reflect();
+                currentWeapon.GetComponentInChildren<Melee>().Reflect();
         }
 
         // Switch guns with number keys (1, 2, 3, etc.)
@@ -68,10 +68,11 @@ public class WeaponManager : MonoBehaviour
                 currentWeapon.GetComponent<Gun>().player = gameObject;
                 currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
             }
-            else if (currentWeapon.GetComponent<Melee>())
+            else if (currentWeapon.GetComponentInChildren<Melee>())
             {
-                currentWeaponType = WeaponType.Melee;
-                SetUpMeleeWeapon();
+                currentWeaponType = WeaponType.Melee;   
+                currentWeapon.GetComponentInChildren<Melee>().player = gameObject;
+                currentWeapon.GetComponentInChildren<Melee>().weaponOwnerTag = gameObject.tag;
             }
 
             // Add weaponAim component, aim weapon to mouse position
@@ -82,28 +83,5 @@ public class WeaponManager : MonoBehaviour
             // Update the current weapon index
             currentWeaponIndex = index;
         }
-    }
-
-    void SetUpMeleeWeapon()
-    {
-        GameObject weaponPivot = new GameObject("WeaponPivot");
-        weaponPivot.transform.position = transform.position;  // Position it near the player or weapon
-
-        // Set pivot (Whole weapon) as a child of player
-        weaponPivot.transform.SetParent(playerTransform);
-
-        // Set the weapon as a child of the pivot
-        currentWeapon.transform.SetParent(weaponPivot.transform);
-
-        // Position the weapon correctly
-        currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
-
-        // Add WeaponAim script to the pivot (to control aiming)
-        weaponPivot.AddComponent<WeaponAim>();
-
-        // Optionally, you can store the pivot for further use if needed
-        currentWeapon.GetComponent<Melee>().player = gameObject;
-        currentWeapon.GetComponent<Melee>().weaponPivot = weaponPivot;
-        currentWeapon.GetComponent<Melee>().weaponOwnerTag = gameObject.tag;
     }
 }
