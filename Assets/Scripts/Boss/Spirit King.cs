@@ -15,19 +15,15 @@ public class SpiritKing : MonoBehaviour
     public float circleSpeed = 3;
     public float circleAngularSpeed = 0.3f;
 
-    public float circleRadius = 4;
+    public float circleRadius = 3;
     public bool _forceFixedAtCircle = false;
 
     ///////////////////////////////////////
     private bool _forceEnd = false;
     private bool _nextMovementState = true;
-    private bool _isCircleMove = false;
-    private bool _nextCircleState = true;
-    public bool _nextCircleDurationState = true;
     private float _circleFaceAngle = 0f;
     private float _circleOffsetRadius = 0f;
     private bool _isCircleCW = true;
-    bool _isCircleReversePhase = false;
 
     private enum State { Idle, ChaseCircle, ChaseStraight, Random };
     private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
@@ -63,8 +59,8 @@ public class SpiritKing : MonoBehaviour
 
         switch (_currentState)
         {
-            case State.Idle: break;
-            case State.ChaseCircle: CircleMove(); break;
+            case State.Idle: Idle(); break;
+            case State.ChaseCircle: ChaseCircle(); break;
         }
     }
 
@@ -75,91 +71,79 @@ public class SpiritKing : MonoBehaviour
         rb.AddForce(rb.mass * frictionForce);
     }
 
-    private IEnumerator CountCircleCD(float _cd)
-    {
-        _nextCircleState = false;
-        yield return new WaitForSeconds(_cd);
-        _nextCircleState = true;
-    }
-
-    private IEnumerator CountCircleDurationCD(float _cd)
-    {
-        _nextCircleDurationState = false;
-        yield return new WaitForSeconds(_cd);
-        _nextCircleDurationState = true;
-    }
-
     private void Idle()
     {
-        if (_nextCircleState)
+        if (_nextNormalAttack)
         {
-            CircleMoveInitialize();
             _currentState = State.ChaseCircle;
-            return;
+            ChaseCircleInitial();
+            StartCoroutine(CountNormalAttackCd());
         }
-        else if (_isCircleMove)
-        {
-            CircleMove();
-            _currentState = State.ChaseCircle;
-            return;
-        }
+
     }
 
-    private void CircleMoveInitialize()
+    private void ChaseCircleInitial()
     {
-        Debug.Log("Circle Move Start");
-        _nextCircleState = false;
-        _isCircleMove = true;
-
-        // Initial time manager control params
-        StartCoroutine(CountCircleDurationCD(circleDuration * ((float)Random.Range(5, 16) / 10)));
+        Debug.Log("Start target");
 
         // Complex random
         _circleOffsetRadius = (float)Random.Range(8, 15) / 10 * circleRadius;
-        Debug.Log(_circleOffsetRadius);
         _isCircleCW = (Random.Range(0, 2) == 0) ? true : false;
+        StartCoroutine(CountCircleCWCd());
 
         // Set angle direction [angle that player aim to enemy]
         Vector2 distanceVector = transform.position - player.position;
         _circleFaceAngle = Mathf.Atan2(distanceVector.y, distanceVector.x);
     }
 
-    private void CircleMove()
+    private float _chaseCircleCWCd = 2f;
+    private bool _nextCircleCWChange = false;
+
+    private IEnumerator CountCircleCWCd()
+    {
+        _nextCircleCWChange = false;
+        yield return new WaitForSeconds(_chaseCircleCWCd);
+        _nextCircleCWChange = true;
+    }
+
+    private float _normalAttackCd = 3f;
+    private bool _nextNormalAttack = true;
+    private IEnumerator CountNormalAttackCd()
+    {
+        _nextNormalAttack = false;
+        yield return new WaitForSeconds(_normalAttackCd);
+        _nextNormalAttack = true;
+    }
+
+    private void ChaseCircle()
     {
         // Calculate the next position on the orbit path
         if (_isCircleCW)
-            _circleFaceAngle -= Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
+            _circleFaceAngle -= Time.fixedDeltaTime * circleAngularSpeed;
         else
-            _circleFaceAngle += Time.fixedDeltaTime * circleAngularSpeed; // Update the angle over time
+            _circleFaceAngle += Time.fixedDeltaTime * circleAngularSpeed;
+        Debug.Log(_circleFaceAngle);
 
         float x = Mathf.Cos(_circleFaceAngle) * _circleOffsetRadius;
         float y = Mathf.Sin(_circleFaceAngle) * _circleOffsetRadius;
 
         // Determine the target position based on the player's position and angle
         Vector3 circlePosition = new Vector3(player.position.x + x, player.position.y + y, 0);
-
-        // Calculate the velocity to move towards the orbit position
         Vector3 direction = (circlePosition - transform.position).normalized;
 
         if (_nextMovementState)
             rb.velocity = direction * circleSpeed;
 
-        if (_nextCircleDurationState || _forceEnd)
+        if (_nextCircleCWChange)
         {
-            if (!_isCircleReversePhase && !_forceEnd)
-            {
-                _isCircleReversePhase = true;
-                _isCircleCW = !_isCircleCW;
-                StartCoroutine(CountCircleDurationCD(circleDuration * ((float)Random.Range(5, 16) / 10)));
-            }
-            else
-            {
-                StartCoroutine(CountCircleCD(circleCD * ((float)Random.Range(5, 16) / 10)));
-                _isCircleMove = false;
-                _isCircleReversePhase = false;
-                _currentState = State.Idle;
-            }
+            StartCoroutine(CountCircleCWCd());
+            _isCircleCW = !_isCircleCW;
+        }
 
+        if (Vector3.Distance(player.position, transform.position) < _circleOffsetRadius * 1.5 || _forceEnd)
+        {
+            Debug.Log("Arrived target");
+            _currentState = State.Idle;
         }
     }
 
