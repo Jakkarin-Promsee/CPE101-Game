@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpiritKing : MonoBehaviour
@@ -8,6 +9,28 @@ public class SpiritKing : MonoBehaviour
     public float moveFrictionCoefficient = 1;
 
 
+    // Circle status
+    public float circleCD = 6;
+    public float circleDuration = 2;
+    public float circleSpeed = 3;
+    public float circleAngularSpeed = 0.3f;
+
+    public float circleRadius = 4;
+    public bool _forceFixedAtCircle = false;
+
+    ///////////////////////////////////////
+    private bool _forceEnd = false;
+    private bool _nextMovementState = true;
+    private bool _isCircleMove = false;
+    private bool _nextCircleState = true;
+    public bool _nextCircleDurationState = true;
+    private float _circleFaceAngle = 0f;
+    private float _circleOffsetRadius = 0f;
+    private bool _isCircleCW = true;
+    bool _isCircleReversePhase = false;
+
+    private enum State { Idle, ChaseCircle, ChaseStraight, Random };
+    private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
     /*
         Idle => Rest Stand
         Chase => run to player
@@ -20,27 +43,9 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
 
-    private enum State { Idle, Chase, Circle, Random };
-    private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
     private State _currentState;
     private Attack _currentAttack;
-    Rigidbody2D rb;
-
-    // Circle status
-    public float circleCD = 6;
-    public float circleDuration = 2;
-    public float circleRadius = 4;
-    public float circleAngularSpeed = 0.3f;
-    public bool _forceEnd = false;
-    ///////////////////////////////////////?
-    private bool _isCircleMove = false;
-    private bool _nextCircleState = true;
-    public bool _nextCircleDurationState = true;
-    private float _circleFaceAngle = 0f;
-    private float _circleOffsetRadius = 0f;
-    private bool _isCircleCW = true;
-    bool _isCircleReversePhase = false;
-    private Vector3 _circleLastPlayerPosition;
+    private Rigidbody2D rb;
 
 
     void Start()
@@ -55,6 +60,12 @@ public class SpiritKing : MonoBehaviour
     void Update()
     {
         ApplyFriction();
+
+        switch (_currentState)
+        {
+            case State.Idle: break;
+            case State.ChaseCircle: CircleMove(); break;
+        }
     }
 
     private void ApplyFriction()
@@ -78,6 +89,22 @@ public class SpiritKing : MonoBehaviour
         _nextCircleDurationState = true;
     }
 
+    private void Idle()
+    {
+        if (_nextCircleState)
+        {
+            CircleMoveInitialize();
+            _currentState = State.ChaseCircle;
+            return;
+        }
+        else if (_isCircleMove)
+        {
+            CircleMove();
+            _currentState = State.ChaseCircle;
+            return;
+        }
+    }
+
     private void CircleMoveInitialize()
     {
         Debug.Log("Circle Move Start");
@@ -95,8 +122,6 @@ public class SpiritKing : MonoBehaviour
         // Set angle direction [angle that player aim to enemy]
         Vector2 distanceVector = transform.position - player.position;
         _circleFaceAngle = Mathf.Atan2(distanceVector.y, distanceVector.x);
-
-        _circleLastPlayerPosition = player.position;
     }
 
     private void CircleMove()
@@ -111,10 +136,13 @@ public class SpiritKing : MonoBehaviour
         float y = Mathf.Sin(_circleFaceAngle) * _circleOffsetRadius;
 
         // Determine the target position based on the player's position and angle
-        Vector3 circlePosition = new Vector3(_circleLastPlayerPosition.x + x, _circleLastPlayerPosition.y + y, 0);
+        Vector3 circlePosition = new Vector3(player.position.x + x, player.position.y + y, 0);
 
         // Calculate the velocity to move towards the orbit position
         Vector3 direction = (circlePosition - transform.position).normalized;
+
+        if (_nextMovementState)
+            rb.velocity = direction * circleSpeed;
 
         if (_nextCircleDurationState || _forceEnd)
         {
@@ -129,7 +157,7 @@ public class SpiritKing : MonoBehaviour
                 StartCoroutine(CountCircleCD(circleCD * ((float)Random.Range(5, 16) / 10)));
                 _isCircleMove = false;
                 _isCircleReversePhase = false;
-                _currentState = State.Chase;
+                _currentState = State.Idle;
             }
 
         }
