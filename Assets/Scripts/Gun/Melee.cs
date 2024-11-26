@@ -106,7 +106,7 @@ public class Melee : MonoBehaviour
                 other.GetComponent<Bullet>().Reflect(newMoveAngle);
 
                 // Reduce player shield by damage amount
-                playerController.shield -= weaponConfig.damage;
+                playerController.TakeDamage(weaponConfig.damage);
 
                 // Stop reflecting if shield after collision is 0
                 if (playerController.shield <= 0)

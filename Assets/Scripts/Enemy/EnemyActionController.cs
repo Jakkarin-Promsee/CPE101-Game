@@ -327,9 +327,6 @@ public class EnemyActionController : MonoBehaviour
         {
             _currentWeapon.GetComponentInChildren<Melee>().Swing();
         }
-
-
-
         _currentState = State.Chase;
     }
 

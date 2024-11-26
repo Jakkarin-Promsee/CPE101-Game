@@ -58,10 +58,11 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
         else if (shield > 0)
             shield -= damage;
-        else
+        else{
             hp -= damage;
+            StartCoroutine(FlashRed());
+        }
 
-        StartCoroutine(FlashRed());
         // In combat, stop shield regeneration
         timeSinceOutOfCombat = 0f;
         isRegeneratingShield = false;
