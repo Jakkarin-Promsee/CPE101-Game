@@ -70,7 +70,11 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
-        if (_nextNomalAttack) NormalAttack();
+        if (_nextNomalAttack)
+        {
+            normalAttackMoveSpeed = moveSpeed * 1.5f;
+            NormalAttack();
+        }
     }
 
     private void NormalAttack()
@@ -79,7 +83,9 @@ public class SpiritKing : MonoBehaviour
         _isAttack = true;
         _nextNomalAttack = false;
 
-        if (!ChasePlayer(1f))
+        normalAttackMoveSpeed += Time.deltaTime / 3;
+
+        if (!ChasePlayer(4f, normalAttackMoveSpeed))
             return;
 
         Debug.Log("I got you");
@@ -90,26 +96,27 @@ public class SpiritKing : MonoBehaviour
     IEnumerator CountNormalAttackCD()
     {
         _nextNomalAttack = false;
-        yield return new WaitForSeconds(NormalAttackCD);
+        yield return new WaitForSeconds(normalAttackCD);
         _nextNomalAttack = true;
     }
 
 
     public float moveSpeed = 3.5f;
-    public float NormalAttackCD = 2f;
+    public float normalAttackCD = 2f;
+    private float normalAttackMoveSpeed;
 
     private bool _isAttack = false;
     private bool _nextMovementState = true;
     private bool _nextNomalAttack = true;
 
-    private bool ChasePlayer(float _targethaseDistance)
+    private bool ChasePlayer(float chaseLength, float speed)
     {
 
         float distance = Vector3.Distance(transform.position, player.position);
-        if (distance > _targethaseDistance)
+        if (distance > chaseLength)
         {
             if (_nextMovementState)
-                rb.velocity = (player.position - transform.position).normalized * moveSpeed;
+                rb.velocity = (player.position - transform.position).normalized * speed;
             return false;
         }
         return true;
