@@ -15,7 +15,7 @@ public class SpiritKing : MonoBehaviour
 
 
     // State Set
-    private enum State { Idle, Chase, Random };
+    private enum State { Idle, Chase, Attack };
     private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
     /*
         Idle => Rest Stand
@@ -29,10 +29,11 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
 
+    private enum NormalAttackState { Initial, Chase, Caution, Attack, CoolDown };
+
     // Action State Controller Variables
-    private State _currentState;
-    private Attack _currentAttack;
-    private bool _isAttack = false;
+    [SerializeField] private State _currentState;
+    [SerializeField] private Attack _currentAttack;
 
 
     // Normal Attack 
@@ -54,7 +55,7 @@ public class SpiritKing : MonoBehaviour
 
     void Start()
     {
-        this.player = GameObject.FindWithTag("Player").transform;
+        player = GameObject.FindWithTag("Player").transform;
 
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -65,24 +66,60 @@ public class SpiritKing : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    [SerializeField] private NormalAttackState _normalAttackState = NormalAttackState.Initial;
+
     void Update()
     {
         ApplyFriction();
 
-        if (_isAttack)
+        switch (_currentState)
         {
-            switch (_currentAttack)
-            {
-                case Attack.NormalAttack: Debug.Log("yse here"); NormalAttack(); break;
-            }
+            case State.Idle:
+                Idle();
+                break;
+
+            case State.Attack:
+                switch (_currentAttack)
+                {
+                    case Attack.NormalAttack:
+                        NormalAttackController();
+                        break;
+                    default:
+                        break;
+                }
+                break;
         }
-        else
+    }
+
+    private void NormalAttackController()
+    {
+        switch (_normalAttackState)
         {
-            switch (_currentState)
-            {
-                case State.Idle: Idle(); break;
-                case State.Chase: break;
-            }
+            case NormalAttackState.Initial:
+                _currentAttack = Attack.NormalAttack;
+                _normalAttackState = NormalAttackState.Chase;
+                _nextNomalAttack = false;
+                break;
+
+            case NormalAttackState.Chase:
+                if (ChasePlayer(4f, normalAttackMoveSpeed))
+                {
+                    normalAttackMoveSpeed += Time.deltaTime / 3;
+                    _normalAttackState = NormalAttackState.CoolDown;
+                }
+                break;
+
+            case NormalAttackState.Caution:
+                break;
+            case NormalAttackState.Attack:
+                break;
+
+            case NormalAttackState.CoolDown:
+                _currentState = State.Idle;
+                _normalAttackState = NormalAttackState.Initial;
+                normalAttackMoveSpeed = moveSpeed;
+                StartCoroutine(CountNormalAttackCD());
+                break;
         }
     }
 
@@ -98,25 +135,9 @@ public class SpiritKing : MonoBehaviour
         if (_nextNomalAttack)
         {
             normalAttackMoveSpeed = moveSpeed * 1.5f;
-            NormalAttack();
+            _currentState = State.Attack;
+            _currentAttack = Attack.NormalAttack;
         }
-    }
-
-    private void NormalAttack()
-    {
-        _currentAttack = Attack.NormalAttack;
-        _isAttack = true;
-        _nextNomalAttack = false;
-
-        normalAttackMoveSpeed += Time.deltaTime / 3;
-
-        // Chase player
-        if (!ChasePlayer(4f, normalAttackMoveSpeed))
-            return;
-
-        Debug.Log("I got you");
-        _isAttack = false;
-        StartCoroutine(CountNormalAttackCD());
     }
 
     IEnumerator CountNormalAttackCD()
