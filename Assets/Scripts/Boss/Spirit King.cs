@@ -2,13 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SpiritKing : MonoBehaviour
 {
     public Transform player;
+    private NavMeshAgent agent;
+
+    [Header("General Setting")]
     public float moveFrictionCoefficient = 1;
+    public float moveSpeed = 3.5f;
 
 
+    // State Set
     private enum State { Idle, Chase, Random };
     private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
     /*
@@ -23,14 +29,36 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
 
+    // Action State Controller Variables
     private State _currentState;
     private Attack _currentAttack;
+    private bool _isAttack = false;
+
+
+    // Normal Attack 
+    [Header("Normal Attack Setting")]
+    public float normalAttackCD = 2f;
+    public Color warningColor = new Color(1, 0, 0, 0.5f); // Semi-transparent red
+    public Vector2 warningSize = new Vector2(3, 1); // Width and height of the area
+    public float blinkSpeed = 1.0f; // Speed of the blinking effect
+
+    private bool isVisible = true;
+    private Transform bossTransform;
+    private float normalAttackMoveSpeed;
+    private bool _nextMovementState = true;
+    private bool _nextNomalAttack = true;
+
+    // Other
     private Rigidbody2D rb;
 
 
     void Start()
     {
         this.player = GameObject.FindWithTag("Player").transform;
+
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
 
         _currentState = State.Idle;
         _currentAttack = Attack.NormalAttack;
@@ -45,7 +73,7 @@ public class SpiritKing : MonoBehaviour
         {
             switch (_currentAttack)
             {
-                case Attack.NormalAttack: NormalAttack(); break;
+                case Attack.NormalAttack: Debug.Log("yse here"); NormalAttack(); break;
             }
         }
         else
@@ -56,9 +84,6 @@ public class SpiritKing : MonoBehaviour
                 case State.Chase: break;
             }
         }
-
-
-
     }
 
     private void ApplyFriction()
@@ -85,6 +110,7 @@ public class SpiritKing : MonoBehaviour
 
         normalAttackMoveSpeed += Time.deltaTime / 3;
 
+        // Chase player
         if (!ChasePlayer(4f, normalAttackMoveSpeed))
             return;
 
@@ -100,15 +126,6 @@ public class SpiritKing : MonoBehaviour
         _nextNomalAttack = true;
     }
 
-
-    public float moveSpeed = 3.5f;
-    public float normalAttackCD = 2f;
-    private float normalAttackMoveSpeed;
-
-    private bool _isAttack = false;
-    private bool _nextMovementState = true;
-    private bool _nextNomalAttack = true;
-
     private bool ChasePlayer(float chaseLength, float speed)
     {
 
@@ -116,9 +133,13 @@ public class SpiritKing : MonoBehaviour
         if (distance > chaseLength)
         {
             if (_nextMovementState)
-                rb.velocity = (player.position - transform.position).normalized * speed;
+                agent.SetDestination(player.position);
+            agent.speed = speed;
+
+            // rb.velocity = (player.position - transform.position).normalized * speed;
             return false;
         }
+        agent.speed = 0;
         return true;
     }
 }
