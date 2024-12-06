@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -25,6 +26,7 @@ public class SpiritKing : MonoBehaviour
     [Header("Normal Attack Setting")]
     public GameObject normalAttackWarningAreaPrefab;
     public float normalAttackCD = 2f;
+    public float normalAttackDelay = 0.75f;
     public float normalAttackDamage = 30f;
     public float normalAttackKnockback = 13f;
     public float normalAttackWarningDuration = 2f;
@@ -35,7 +37,9 @@ public class SpiritKing : MonoBehaviour
 
     // Normal Attack 
     [Header("Skill 1 Setting")]
+    public GameObject skill1WarningAreaPrefab;
     public float skill1CD = 5f;
+    public float skill1Delay = 1.5f;
     public float skill1Damage = 40f;
     public float skill1Knockback = 13f;
     public float skill1WarningDuration = 2f;
@@ -128,12 +132,40 @@ public class SpiritKing : MonoBehaviour
                 break;
 
             case Skill1State.Warning:
+                if (!isCreateWarningArea)
+                {
+                    isCreateWarningArea = true;
+
+                    Vector3 direction = (player.transform.position - transform.position).normalized;
+                    Vector3 offset = direction * ((skill1WarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + skill1lengthOffset);
+                    Vector3 spawnPosition = transform.position + offset;
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+                    // Instantiate the warning area
+                    currentWarningArea = Instantiate(skill1WarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+                    currentWarningArea.AddComponent<AreaAttack>();
+
+                    StartCoroutine(DelayMoveAngle(currentWarningArea, skill1Delay, skill1lengthOffset));
+                    StartCoroutine(BlinkWarningArea(currentWarningArea, skill1WarningDuration, skill1WarningBlinkInterval));
+                }
+                else if (isWarningAreaDone)
+                {
+                    playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
+
+                    Destroy(currentWarningArea);
+                    isCreateWarningArea = false;
+
+                    skill1State = Skill1State.CoolDown;
+                }
                 break;
 
             case Skill1State.Attack:
                 break;
 
             case Skill1State.CoolDown:
+                currentState = State.Idle;
+                skill1State = Skill1State.Initial;
+                StartCoroutine(CountSkill1CD());
                 break;
         }
     }
@@ -156,8 +188,6 @@ public class SpiritKing : MonoBehaviour
         isWarningAreaDone = true;
     }
 
-    public float normalAttackDelay = 1f;
-
     IEnumerator DelayMoveAngle(GameObject _warningArea, float delayAngle, float lengthOffset)
     {
         float elapsedTime = 0f;
@@ -168,13 +198,11 @@ public class SpiritKing : MonoBehaviour
             Vector3 offset = direction * ((_warningArea.GetComponent<Transform>().localScale.x / 2) + lengthOffset);
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            Debug.Log(angle);
-
             _warningArea.transform.position = transform.position + offset;
             _warningArea.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             yield return new WaitForSeconds(0.05f);
-            elapsedTime += 0.1f;
+            elapsedTime += 0.05f;
         }
     }
 
@@ -211,7 +239,7 @@ public class SpiritKing : MonoBehaviour
                     currentWarningArea = Instantiate(normalAttackWarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
                     currentWarningArea.AddComponent<AreaAttack>();
 
-                    StartCoroutine(DelayMoveAngle(currentWarningArea, 0.75f, normalAttacklengthOffset));
+                    StartCoroutine(DelayMoveAngle(currentWarningArea, normalAttackDelay, normalAttacklengthOffset));
                     StartCoroutine(BlinkWarningArea(currentWarningArea, normalAttackWarningDuration, normalAttackWarningBlinkInterval));
                 }
                 else if (isWarningAreaDone)
@@ -250,7 +278,7 @@ public class SpiritKing : MonoBehaviour
         rb.AddForce(rb.mass * frictionForce);
     }
 
-    private bool nextSkill1 = false;
+    private bool nextSkill1 = true;
 
     private void Idle()
     {
@@ -276,6 +304,13 @@ public class SpiritKing : MonoBehaviour
         nextNomalAttack = false;
         yield return new WaitForSeconds(normalAttackCD);
         nextNomalAttack = true;
+    }
+
+    IEnumerator CountSkill1CD()
+    {
+        nextSkill1 = false;
+        yield return new WaitForSeconds(skill1CD);
+        nextSkill1 = true;
     }
 
     private bool ChasePlayer(float chaseLength, float speed)

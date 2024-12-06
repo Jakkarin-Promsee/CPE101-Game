@@ -32291,12 +32291,15 @@ MonoBehaviour:
   currentAttack: 0
   normalAttackWarningAreaPrefab: {fileID: 8062580075470036449, guid: 79452479e1a5a95469566d452573959a, type: 3}
   normalAttackCD: 3
+  normalAttackDelay: 1
   normalAttackDamage: 30
   normalAttackKnockback: 13
   normalAttackWarningDuration: 2
   normalAttackWarningBlinkInterval: 0.3
   normalAttacklengthOffset: 0
+  skill1WarningAreaPrefab: {fileID: 8062580075470036449, guid: ebf08154d9fc7ee4995aeaaa6a83f1b0, type: 3}
   skill1CD: 5
+  skill1Delay: 1.5
   skill1Damage: 40
   skill1Knockback: 13
   skill1WarningDuration: 2
@@ -32306,7 +32309,6 @@ MonoBehaviour:
   initialColor: {r: 1, g: 1, b: 1, a: 0.27450982}
   blinkColor: {r: 1, g: 0, b: 0, a: 0.27450982}
   normalAttackState: 0
-  normalAttackDelay: 1
 --- !u!195 &1006689724
 NavMeshAgent:
   m_ObjectHideFlags: 0
