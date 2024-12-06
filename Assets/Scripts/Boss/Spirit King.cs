@@ -17,28 +17,31 @@ public class SpiritKing : MonoBehaviour
     // Action State Controller Variables
     [SerializeField] private State currentState;
     [SerializeField] private Attack currentAttack;
+    private bool nextMovementState = true;
 
 
     // Normal Attack 
     [Header("Normal Attack Setting")]
     public float normalAttackCD = 2f;
-    private bool isCreateWarningArea = false;
     public float normalAttackDamage = 30f;
     public float normalAttackKnockback = 13f;
-    private List<GameObject> playerInZone;
+    public float normalAttackWarningDuration = 2f;
+    public float normalAttackWarningBlinkInterval = 0.3f;
+    public float normalAttacklengthOffset = 0f;
     private float normalAttackMoveSpeed;
-    private bool nextMovementState = true;
     private bool nextNomalAttack = true;
 
+    // Normal Attack 
+    [Header("Skill 1 Setting")]
 
+    // Handle Warning Area
     [Header("Warning Area Settings")]
     public Color initialColor = Color.white;
     public Color blinkColor = Color.red;
     public GameObject warningAreaPrefab;
-    public float warningDuration = 2f;
-    public float warningBlinkInterval = 0.3f;
-    public float lengthOffset = 0f;
-    private GameObject warningArea;
+    private GameObject currentWarningArea;
+    private List<GameObject> playerInZone;
+    private bool isCreateWarningArea = false;
     private bool isWarningAreaDone = false;
 
     // Other
@@ -59,6 +62,7 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
     private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
+    private enum Skill1State { Initial, Warning, Attack, CoolDown };
 
 
     void Start()
@@ -99,12 +103,12 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
-    IEnumerator BlinkWarningArea()
+    IEnumerator BlinkWarningArea(GameObject _warningArea, float warningDuration, float warningBlinkInterval)
     {
         isWarningAreaDone = false;
 
         float elapsedTime = 0f;
-        SpriteRenderer warningSprite = warningArea.GetComponent<SpriteRenderer>();
+        SpriteRenderer warningSprite = _warningArea.GetComponent<SpriteRenderer>();
         while (elapsedTime < warningDuration)
         {
             warningSprite.color = initialColor;
@@ -141,23 +145,23 @@ public class SpiritKing : MonoBehaviour
                     isCreateWarningArea = true;
 
                     Vector3 direction = (player.transform.position - transform.position).normalized;
-                    Vector3 offset = direction * ((warningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + lengthOffset);
+                    Vector3 offset = direction * ((warningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + normalAttacklengthOffset);
                     Vector3 spawnPosition = transform.position + offset;
                     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
                     // Instantiate the warning area
-                    warningArea = Instantiate(warningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
-                    warningArea.AddComponent<AreaAttack>();
+                    currentWarningArea = Instantiate(warningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+                    currentWarningArea.AddComponent<AreaAttack>();
 
-                    StartCoroutine(BlinkWarningArea());
+                    StartCoroutine(BlinkWarningArea(currentWarningArea, normalAttackWarningDuration, normalAttackWarningBlinkInterval));
                 }
                 else if (isWarningAreaDone)
                 {
-                    playerInZone = new List<GameObject>(warningArea.GetComponent<AreaAttack>().playersInZone);
+                    playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
 
-                    Destroy(warningArea);
-
+                    Destroy(currentWarningArea);
                     isCreateWarningArea = false;
+
                     normalAttackState = NormalAttackState.Attack;
                 }
                 break;
