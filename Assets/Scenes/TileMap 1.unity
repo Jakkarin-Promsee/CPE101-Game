@@ -2583,9 +2583,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420031}
   moveSpeed: 4
-  dashCd: 3
-  dashDuration: 0.6
-  dashMultiple: 2.5
+  dashCd: 4
+  dashDuration: 0.5
+  dashMultiple: 1.75
   isforce: 0
 --- !u!70 &122267451
 CapsuleCollider2D:
@@ -32287,10 +32287,18 @@ MonoBehaviour:
   player: {fileID: 0}
   moveFrictionCoefficient: 1
   moveSpeed: 3.5
-  normalAttackCD: 2
-  warningColor: {r: 1, g: 0, b: 0, a: 0.5}
-  warningSize: {x: 3, y: 1}
-  blinkSpeed: 1
+  currentState: 0
+  currentAttack: 0
+  normalAttackCD: 3
+  normalAttackDamage: 30
+  normalAttackKnockback: 13
+  initialColor: {r: 1, g: 1, b: 1, a: 0.27450982}
+  blinkColor: {r: 1, g: 0, b: 0, a: 0.27450982}
+  warningAreaPrefab: {fileID: 8062580075470036449, guid: 79452479e1a5a95469566d452573959a, type: 3}
+  warningDuration: 3
+  warningBlinkInterval: 0.5
+  lengthOffset: 1
+  normalAttackState: 0
 --- !u!195 &1006689724
 NavMeshAgent:
   m_ObjectHideFlags: 0

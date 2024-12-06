@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class SpiritKing : MonoBehaviour
 {
+    [Header("References")]
     public Transform player;
     private NavMeshAgent agent;
 
@@ -13,6 +14,35 @@ public class SpiritKing : MonoBehaviour
     public float moveFrictionCoefficient = 1;
     public float moveSpeed = 3.5f;
 
+    // Action State Controller Variables
+    [SerializeField] private State currentState;
+    [SerializeField] private Attack currentAttack;
+
+
+    // Normal Attack 
+    [Header("Normal Attack Setting")]
+    public float normalAttackCD = 2f;
+    private bool isCreateWarningArea = false;
+    public float normalAttackDamage = 30f;
+    public float normalAttackKnockback = 13f;
+    private List<GameObject> playerInZone;
+    private float normalAttackMoveSpeed;
+    private bool nextMovementState = true;
+    private bool nextNomalAttack = true;
+
+
+    [Header("Warning Area Settings")]
+    public Color initialColor = Color.white;
+    public Color blinkColor = Color.red;
+    public GameObject warningAreaPrefab;
+    public float warningDuration = 2f;
+    public float warningBlinkInterval = 0.3f;
+    public float lengthOffset = 0f;
+    private GameObject warningArea;
+    private bool isWarningAreaDone = false;
+
+    // Other
+    private Rigidbody2D rb;
 
     // State Set
     private enum State { Idle, Chase, Attack };
@@ -28,29 +58,7 @@ public class SpiritKing : MonoBehaviour
         Skill5 => Sword Laser 540 anagle
         Skill6 => Summon black hole area attack
     */
-
-    private enum NormalAttackState { Initial, Chase, Caution, Attack, CoolDown };
-
-    // Action State Controller Variables
-    [SerializeField] private State _currentState;
-    [SerializeField] private Attack _currentAttack;
-
-
-    // Normal Attack 
-    [Header("Normal Attack Setting")]
-    public float normalAttackCD = 2f;
-    public Color warningColor = new Color(1, 0, 0, 0.5f); // Semi-transparent red
-    public Vector2 warningSize = new Vector2(3, 1); // Width and height of the area
-    public float blinkSpeed = 1.0f; // Speed of the blinking effect
-
-    private bool isVisible = true;
-    private Transform bossTransform;
-    private float normalAttackMoveSpeed;
-    private bool _nextMovementState = true;
-    private bool _nextNomalAttack = true;
-
-    // Other
-    private Rigidbody2D rb;
+    private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
 
 
     void Start()
@@ -61,25 +69,25 @@ public class SpiritKing : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
 
-        _currentState = State.Idle;
-        _currentAttack = Attack.NormalAttack;
+        currentState = State.Idle;
+        currentAttack = Attack.NormalAttack;
         rb = GetComponent<Rigidbody2D>();
     }
 
-    [SerializeField] private NormalAttackState _normalAttackState = NormalAttackState.Initial;
+    [SerializeField] private NormalAttackState normalAttackState = NormalAttackState.Initial;
 
     void Update()
     {
         ApplyFriction();
 
-        switch (_currentState)
+        switch (currentState)
         {
             case State.Idle:
                 Idle();
                 break;
 
             case State.Attack:
-                switch (_currentAttack)
+                switch (currentAttack)
                 {
                     case Attack.NormalAttack:
                         NormalAttackController();
@@ -91,32 +99,81 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    IEnumerator BlinkWarningArea()
+    {
+        isWarningAreaDone = false;
+
+        float elapsedTime = 0f;
+        SpriteRenderer warningSprite = warningArea.GetComponent<SpriteRenderer>();
+        while (elapsedTime < warningDuration)
+        {
+            warningSprite.color = initialColor;
+            yield return new WaitForSeconds(warningBlinkInterval);
+            warningSprite.color = blinkColor;
+            yield return new WaitForSeconds(warningBlinkInterval);
+            elapsedTime += warningBlinkInterval * 2;
+        }
+
+        isWarningAreaDone = true;
+    }
+
     private void NormalAttackController()
     {
-        switch (_normalAttackState)
+        switch (normalAttackState)
         {
             case NormalAttackState.Initial:
-                _currentAttack = Attack.NormalAttack;
-                _normalAttackState = NormalAttackState.Chase;
-                _nextNomalAttack = false;
+                currentAttack = Attack.NormalAttack;
+                normalAttackState = NormalAttackState.Chase;
+                nextNomalAttack = false;
                 break;
 
             case NormalAttackState.Chase:
                 if (ChasePlayer(4f, normalAttackMoveSpeed))
                 {
-                    normalAttackMoveSpeed += Time.deltaTime / 3;
-                    _normalAttackState = NormalAttackState.CoolDown;
+                    normalAttackMoveSpeed += Time.deltaTime / 2;
+                    normalAttackState = NormalAttackState.Warning;
                 }
                 break;
 
-            case NormalAttackState.Caution:
+            case NormalAttackState.Warning:
+                if (!isCreateWarningArea)
+                {
+                    isCreateWarningArea = true;
+
+                    Vector3 direction = (player.transform.position - transform.position).normalized;
+                    Vector3 offset = direction * ((warningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + lengthOffset);
+                    Vector3 spawnPosition = transform.position + offset;
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+                    // Instantiate the warning area
+                    warningArea = Instantiate(warningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+                    warningArea.AddComponent<AreaAttack>();
+
+                    StartCoroutine(BlinkWarningArea());
+                }
+                else if (isWarningAreaDone)
+                {
+                    playerInZone = new List<GameObject>(warningArea.GetComponent<AreaAttack>().playersInZone);
+
+                    Destroy(warningArea);
+
+                    isCreateWarningArea = false;
+                    normalAttackState = NormalAttackState.Attack;
+                }
                 break;
+
             case NormalAttackState.Attack:
+                foreach (GameObject player in playerInZone)
+                {
+                    player.GetComponent<PlayerMovement>().TakeKnockback((player.transform.position - transform.position).normalized * normalAttackKnockback, 0.3f);
+                    player.GetComponent<PlayerController>().TakeDamage(normalAttackDamage);
+                }
+                normalAttackState = NormalAttackState.CoolDown;
                 break;
 
             case NormalAttackState.CoolDown:
-                _currentState = State.Idle;
-                _normalAttackState = NormalAttackState.Initial;
+                currentState = State.Idle;
+                normalAttackState = NormalAttackState.Initial;
                 normalAttackMoveSpeed = moveSpeed;
                 StartCoroutine(CountNormalAttackCD());
                 break;
@@ -132,19 +189,19 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
-        if (_nextNomalAttack)
+        if (nextNomalAttack)
         {
             normalAttackMoveSpeed = moveSpeed * 1.5f;
-            _currentState = State.Attack;
-            _currentAttack = Attack.NormalAttack;
+            currentState = State.Attack;
+            currentAttack = Attack.NormalAttack;
         }
     }
 
     IEnumerator CountNormalAttackCD()
     {
-        _nextNomalAttack = false;
+        nextNomalAttack = false;
         yield return new WaitForSeconds(normalAttackCD);
-        _nextNomalAttack = true;
+        nextNomalAttack = true;
     }
 
     private bool ChasePlayer(float chaseLength, float speed)
@@ -153,7 +210,7 @@ public class SpiritKing : MonoBehaviour
         float distance = Vector3.Distance(transform.position, player.position);
         if (distance > chaseLength)
         {
-            if (_nextMovementState)
+            if (nextMovementState)
                 agent.SetDestination(player.position);
             agent.speed = speed;
 
