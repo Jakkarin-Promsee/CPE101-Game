@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,6 +23,7 @@ public class SpiritKing : MonoBehaviour
 
     // Normal Attack 
     [Header("Normal Attack Setting")]
+    public GameObject normalAttackWarningAreaPrefab;
     public float normalAttackCD = 2f;
     public float normalAttackDamage = 30f;
     public float normalAttackKnockback = 13f;
@@ -33,12 +35,18 @@ public class SpiritKing : MonoBehaviour
 
     // Normal Attack 
     [Header("Skill 1 Setting")]
+    public float skill1CD = 5f;
+    public float skill1Damage = 40f;
+    public float skill1Knockback = 13f;
+    public float skill1WarningDuration = 2f;
+    public float skill1WarningBlinkInterval = 0.3f;
+    public float skill1DashSpeed = 4f;
+    public float skill1lengthOffset = 0f;
 
     // Handle Warning Area
     [Header("Warning Area Settings")]
     public Color initialColor = Color.white;
     public Color blinkColor = Color.red;
-    public GameObject warningAreaPrefab;
     private GameObject currentWarningArea;
     private List<GameObject> playerInZone;
     private bool isCreateWarningArea = false;
@@ -63,7 +71,6 @@ public class SpiritKing : MonoBehaviour
     */
     private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
     private enum Skill1State { Initial, Warning, Attack, CoolDown };
-
 
     void Start()
     {
@@ -96,9 +103,37 @@ public class SpiritKing : MonoBehaviour
                     case Attack.NormalAttack:
                         NormalAttackController();
                         break;
+
+                    case Attack.Skill1:
+                        Skill1Controller();
+                        break;
+
                     default:
                         break;
                 }
+                break;
+        }
+    }
+
+    private Skill1State skill1State = Skill1State.Initial;
+
+    public void Skill1Controller()
+    {
+        switch (skill1State)
+        {
+            case Skill1State.Initial:
+                currentAttack = Attack.Skill1;
+                skill1State = Skill1State.Warning;
+                nextSkill1 = false;
+                break;
+
+            case Skill1State.Warning:
+                break;
+
+            case Skill1State.Attack:
+                break;
+
+            case Skill1State.CoolDown:
                 break;
         }
     }
@@ -121,11 +156,34 @@ public class SpiritKing : MonoBehaviour
         isWarningAreaDone = true;
     }
 
+    public float normalAttackDelay = 1f;
+
+    IEnumerator DelayMoveAngle(GameObject _warningArea, float delayAngle, float lengthOffset)
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < delayAngle)
+        {
+            Vector3 direction = (player.transform.position - transform.position).normalized;
+            Vector3 offset = direction * ((_warningArea.GetComponent<Transform>().localScale.x / 2) + lengthOffset);
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            Debug.Log(angle);
+
+            _warningArea.transform.position = transform.position + offset;
+            _warningArea.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            yield return new WaitForSeconds(0.05f);
+            elapsedTime += 0.1f;
+        }
+    }
+
     private void NormalAttackController()
     {
         switch (normalAttackState)
         {
             case NormalAttackState.Initial:
+                normalAttackMoveSpeed = moveSpeed * 1.5f;
                 currentAttack = Attack.NormalAttack;
                 normalAttackState = NormalAttackState.Chase;
                 nextNomalAttack = false;
@@ -145,14 +203,15 @@ public class SpiritKing : MonoBehaviour
                     isCreateWarningArea = true;
 
                     Vector3 direction = (player.transform.position - transform.position).normalized;
-                    Vector3 offset = direction * ((warningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + normalAttacklengthOffset);
+                    Vector3 offset = direction * ((normalAttackWarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + normalAttacklengthOffset);
                     Vector3 spawnPosition = transform.position + offset;
                     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
                     // Instantiate the warning area
-                    currentWarningArea = Instantiate(warningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+                    currentWarningArea = Instantiate(normalAttackWarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
                     currentWarningArea.AddComponent<AreaAttack>();
 
+                    StartCoroutine(DelayMoveAngle(currentWarningArea, 0.75f, normalAttacklengthOffset));
                     StartCoroutine(BlinkWarningArea(currentWarningArea, normalAttackWarningDuration, normalAttackWarningBlinkInterval));
                 }
                 else if (isWarningAreaDone)
@@ -191,14 +250,25 @@ public class SpiritKing : MonoBehaviour
         rb.AddForce(rb.mass * frictionForce);
     }
 
+    private bool nextSkill1 = false;
+
     private void Idle()
     {
+        if (nextSkill1)
+        {
+            currentState = State.Attack;
+            currentAttack = Attack.Skill1;
+            return;
+        }
+
+
         if (nextNomalAttack)
         {
-            normalAttackMoveSpeed = moveSpeed * 1.5f;
             currentState = State.Attack;
             currentAttack = Attack.NormalAttack;
+            return;
         }
+
     }
 
     IEnumerator CountNormalAttackCD()
