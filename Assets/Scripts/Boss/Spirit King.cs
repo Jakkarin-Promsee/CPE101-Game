@@ -56,6 +56,10 @@ public class SpiritKing : MonoBehaviour
     private bool isCreateWarningArea = false;
     private bool isWarningAreaDone = false;
 
+    [Header("Raycast Setting")]
+    public LayerMask wallLayer;
+    public LayerMask playerLayer;
+
     // Other
     private Rigidbody2D rb;
 
@@ -74,7 +78,7 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
     private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
-    private enum Skill1State { Initial, Warning, Attack, CoolDown };
+    private enum Skill1State { Initial, Warning, Drawline, Attack, CoolDown };
 
     void Start()
     {
@@ -119,7 +123,35 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    private float skill1Angle;
+    private bool isSkill1Dashing = false;
+
     private Skill1State skill1State = Skill1State.Initial;
+
+    public LineRenderer lineRenderer;
+    Vector2 skill1DashTarget;
+    float skill1ElapsedTime;
+    private void Skill1DrawLine(Vector2 dashTarget)
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 2; // Start and end points
+        lineRenderer.SetPosition(0, transform.position); // Starting point
+        lineRenderer.SetPosition(1, dashTarget); // Endpoint
+        lineRenderer.startColor = Color.red;
+        lineRenderer.endColor = Color.red;
+        // lineRenderer.startWidth = 0.1f;
+        // lineRenderer.endWidth = 0.1f;
+
+        // Disable the LineRenderer after 0.5 seconds
+        StartCoroutine(DisableLineRenderer(lineRenderer));
+    }
+
+    private IEnumerator DisableLineRenderer(LineRenderer lineRenderer)
+    {
+        lineRenderer.enabled = true;
+        yield return new WaitForSeconds(0.5f);
+        lineRenderer.enabled = false;
+    }
 
     public void Skill1Controller()
     {
@@ -150,16 +182,65 @@ public class SpiritKing : MonoBehaviour
                 }
                 else if (isWarningAreaDone)
                 {
+                    skill1Angle = currentWarningArea.GetComponent<Transform>().eulerAngles.z;
                     playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
 
                     Destroy(currentWarningArea);
                     isCreateWarningArea = false;
 
-                    skill1State = Skill1State.CoolDown;
+                    skill1State = Skill1State.Attack;
                 }
                 break;
 
+
             case Skill1State.Attack:
+
+
+                if (!isSkill1Dashing)
+                {
+                    float radians = skill1Angle * Mathf.Deg2Rad;
+                    Vector2 dashDirection = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
+
+
+                    RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, Mathf.Infinity, wallLayer);
+                    if (hit.collider != null)
+                    {
+                        skill1DashTarget = hit.point;
+                    }
+                    else
+                    {
+                        // Safety fallback in case no wall is hit (optional)
+                        skill1DashTarget = (Vector2)transform.position + dashDirection * 50f;
+                    }
+
+                    RaycastHit2D playerHit = Physics2D.Raycast(transform.position, dashDirection, Vector2.Distance(transform.position, skill1DashTarget), playerLayer);
+                    if (playerHit.collider != null)
+                    {
+                        // Damage the player
+                        PlayerController playerHealth = playerHit.collider.GetComponent<PlayerController>();
+                        if (playerHealth != null)
+                        {
+                            playerHealth.TakeDamage(skill1Damage);
+                        }
+                    }
+
+                    skill1ElapsedTime = 0;
+                    isSkill1Dashing = true;
+                }
+                else
+                {
+                    if (skill1ElapsedTime < 1 || Vector3.Distance(transform.position, player.position) < 0.5)
+                    {
+                        rb.velocity = ((Vector3)skill1DashTarget - transform.position).normalized * 30;
+                        skill1ElapsedTime += Time.deltaTime;
+                    }
+
+                    else
+                    {
+                        isSkill1Dashing = false;
+                        skill1State = Skill1State.CoolDown;
+                    }
+                }
                 break;
 
             case Skill1State.CoolDown:
