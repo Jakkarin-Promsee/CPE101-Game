@@ -13,6 +13,7 @@ public class SpiritKing : MonoBehaviour
     public Transform player;
     private NavMeshAgent agent;
 
+
     [Header("General Setting")]
     public float moveFrictionCoefficient = 1;
     public float moveSpeed = 3.5f;
@@ -27,7 +28,7 @@ public class SpiritKing : MonoBehaviour
     [Header("Normal Attack Setting")]
     public GameObject normalAttackWarningAreaPrefab;
     public float normalAttackCD = 2f;
-    public float normalAttackDelay = 0.75f;
+    public float normalAttackDelayDuration = 0.75f;
     public float normalAttackDamage = 30f;
     public float normalAttackKnockback = 13f;
     public float normalAttackWarningDuration = 2f;
@@ -38,29 +39,18 @@ public class SpiritKing : MonoBehaviour
 
     // Normal Attack 
     [Header("Skill 1 Setting")]
-    public GameObject skill1WarningAreaPrefab;
     public float skill1CD = 5f;
-    public float skill1Delay = 1.5f;
-    public float skill1Damage = 40f;
-    public float skill1Knockback = 20f;
     public float skill1WarningDuration = 2f;
     public float skill1WarningBlinkInterval = 0.3f;
-    public float skill1DashSpeed = 4f;
+    public float skill1DelayDuration = 1.5f;
+    public float skill1DashDuration = 1f;
+    public float skill1Damage = 40f;
+    public float skill1DashSpeed = 30f;
+    public float skill1Knockback = 20f;
     public float skill1lengthOffset = 0f;
-
-    // Skill 1
-    [Header("Skill 1 Settings")]
-    private float skill1Angle;
-    private bool isSkill1Dashing = false;
-    private Skill1State skill1State = Skill1State.Initial;
-    public LineRenderer lineRenderer;
-    private Vector2 skill1DashTarget;
-    private float skill1ElapsedTime;
+    public GameObject skill1WarningAreaPrefab;
     public GameObject skill1AreaAttackPrefab;
-    private bool skill1HitPlayer = false;
-    private bool skill1Isback = false;
-    public float skill1Duration = 1f;
-    private float skill1DurationCal;
+    public LineRenderer lineRenderer;
     private bool nextSkill1 = true;
 
 
@@ -78,9 +68,11 @@ public class SpiritKing : MonoBehaviour
     [Header("Raycast Setting")]
     public LayerMask wallLayer;
     public LayerMask playerLayer;
+    private const float DefaultRaycastDistance = 50f;
 
 
     // Other
+    private const float DashUpdateInterval = 0.05f;
     private Rigidbody2D rb;
 
 
@@ -99,8 +91,8 @@ public class SpiritKing : MonoBehaviour
         Skill6 => Summon black hole area attack
     */
     private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
-    private enum Skill1State { Initial, Warning, Drawline, Attack, CoolDown };
     [SerializeField] private NormalAttackState normalAttackState = NormalAttackState.Initial;
+    private bool isAttacking = false;
 
 
     void Start()
@@ -134,7 +126,9 @@ public class SpiritKing : MonoBehaviour
                         break;
 
                     case Attack.Skill1:
-                        Skill1Controller();
+                        if (!isAttacking)
+                            StartCoroutine(Skill1ControllerIE());
+                        // Skill1Controller();
                         break;
 
                     default:
@@ -165,132 +159,122 @@ public class SpiritKing : MonoBehaviour
         lineRenderer.enabled = false;
     }
 
-    public void Skill1Controller()
+
+    public IEnumerator Skill1ControllerIE()
     {
-        switch (skill1State)
+        // Initialize state
+        isAttacking = true;
+
+
+        // Create and manage setting area
+        Vector3 direction = (player.transform.position - transform.position).normalized;
+        Vector3 offset = direction * ((skill1WarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + skill1lengthOffset);
+        Vector3 spawnPosition = transform.position + offset;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+
+        // Instantiate the warning area
+        currentWarningArea = Instantiate(skill1WarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+        currentWarningArea.AddComponent<AreaAttack>();
+
+
+        // Manage Area
+        StartCoroutine(DelayMoveAngle(currentWarningArea, skill1DelayDuration, skill1lengthOffset));
+        yield return BlinkWarningArea(currentWarningArea, skill1WarningDuration, skill1WarningBlinkInterval);
+
+
+        // Save waring area data and destroy this gameobject
+        float faceAngle = currentWarningArea.GetComponent<Transform>().eulerAngles.z;
+        playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
+        Destroy(currentWarningArea);
+
+
+        // Draw the raycast to find target position (wall)
+        float radians = faceAngle * Mathf.Deg2Rad;
+        Vector2 dashDirection = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, Mathf.Infinity, wallLayer);
+        Vector2 dashTarget;
+        if (hit.collider != null)
+            dashTarget = hit.point;
+        else
+            dashTarget = (Vector2)transform.position + dashDirection * DefaultRaycastDistance;
+
+
+        // Initialize and manage to moving target state
+        bool isHitPlayer = false;
+        for (int i = 0; i < 2; i++)
         {
-            case Skill1State.Initial:
-                currentAttack = Attack.Skill1;
-                skill1State = Skill1State.Warning;
-                nextSkill1 = false;
+            float elapsedTime = 0;
+            float durationCal;
+            bool isback;
+
+            if (i == 0) // First dash
+            {
+                isback = false;
+                durationCal = skill1DashDuration;
+            }
+            else if (i == 1 && !isHitPlayer) // Sencond dash
+            {
+                Skill1AreaAttack();
+
+                isback = true;
+                durationCal = 0.15f;
+            }
+            else // Complete dash
+            {
+                if (isHitPlayer)
+                    Skill1AreaAttack();
+
+                rb.velocity = new Vector2(0, 0);
                 break;
+            }
 
-            case Skill1State.Warning:
-                if (!isCreateWarningArea)
+            // Dash manager
+            while (elapsedTime < durationCal)
+            {
+                isHitPlayer = false;
+                if (Vector3.Distance(transform.position, player.position) < 2f)
                 {
-                    isCreateWarningArea = true;
+                    rb.velocity = new Vector2(0, 0);
+                    player.GetComponent<PlayerController>().TakeDamage(skill1Damage);
+                    player.GetComponent<PlayerMovement>().TakeKnockback((player.position - transform.position) * skill1Knockback, 0.3f);
 
-                    Vector3 direction = (player.transform.position - transform.position).normalized;
-                    Vector3 offset = direction * ((skill1WarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + skill1lengthOffset);
-                    Vector3 spawnPosition = transform.position + offset;
-                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-                    // Instantiate the warning area
-                    currentWarningArea = Instantiate(skill1WarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
-                    currentWarningArea.AddComponent<AreaAttack>();
-
-                    StartCoroutine(DelayMoveAngle(currentWarningArea, skill1Delay, skill1lengthOffset));
-                    StartCoroutine(BlinkWarningArea(currentWarningArea, skill1WarningDuration, skill1WarningBlinkInterval));
-                }
-                else if (isWarningAreaDone)
-                {
-                    skill1Angle = currentWarningArea.GetComponent<Transform>().eulerAngles.z;
-                    playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
-
-                    Destroy(currentWarningArea);
-                    isCreateWarningArea = false;
-
-                    skill1State = Skill1State.Attack;
-                }
-                break;
-
-            case Skill1State.Attack:
-                if (!isSkill1Dashing)
-                {
-                    isSkill1Dashing = true;
-                    skill1ElapsedTime = 0;
-                    skill1Isback = false;
-                    skill1DurationCal = skill1Duration;
-
-                    float radians = skill1Angle * Mathf.Deg2Rad;
-                    Vector2 dashDirection = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
-
-
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, Mathf.Infinity, wallLayer);
-                    if (hit.collider != null)
-                    {
-                        skill1DashTarget = hit.point;
-                    }
-                    else
-                    {
-                        // Safety fallback in case no wall is hit (optional)
-                        skill1DashTarget = (Vector2)transform.position + dashDirection * 50f;
-                    }
+                    isHitPlayer = true;
+                    break;
                 }
                 else
                 {
-                    if (skill1ElapsedTime < skill1DurationCal)
-                    {
-                        if (Vector3.Distance(transform.position, player.position) < 2f)
-                        {
-                            rb.velocity = new Vector2(0, 0);
-                            player.GetComponent<PlayerController>().TakeDamage(skill1Damage);
-                            player.GetComponent<PlayerMovement>().TakeKnockback((player.position - transform.position) * skill1Knockback, 0.3f);
-
-                            skill1ElapsedTime = skill1DurationCal;
-                            skill1HitPlayer = true;
-                        }
-                        else
-                        {
-                            skill1HitPlayer = false;
-                            Vector3 direction;
-                            if (!skill1Isback)
-                                direction = ((Vector3)skill1DashTarget - transform.position).normalized;
-                            else
-                                direction = (transform.position - (Vector3)skill1DashTarget).normalized;
-
-                            rb.velocity = direction * 30;
-                            skill1ElapsedTime += Time.deltaTime;
-
-                            if (!skill1Isback)
-                            {
-                                if (CheckWall(skill1DashTarget, 0.1f))
-                                {
-                                    skill1ElapsedTime = skill1DurationCal;
-                                }
-                            }
-                        }
-                    }
+                    Vector3 _direction;
+                    if (!isback)
+                        _direction = ((Vector3)dashTarget - transform.position).normalized;
                     else
+                        _direction = (transform.position - (Vector3)dashTarget).normalized;
+
+                    rb.velocity = _direction * skill1DashSpeed;
+
+                    if (!isback)
                     {
-                        if (!skill1Isback && !skill1HitPlayer)
+                        if (CheckWall(dashTarget, 0.1f))
                         {
-                            Skill1AreaAttack();
-
-                            skill1Isback = true;
-                            skill1ElapsedTime = 0;
-                            skill1DurationCal = 0.15f;
-                        }
-                        else
-                        {
-                            if (skill1HitPlayer)
-                                Skill1AreaAttack();
-
-                            skill1Isback = false;
-                            rb.velocity = new Vector2(0, 0);
-                            isSkill1Dashing = false;
-                            skill1State = Skill1State.CoolDown;
+                            break;
                         }
                     }
                 }
-                break;
 
-            case Skill1State.CoolDown:
-                currentState = State.Idle;
-                skill1State = Skill1State.Initial;
-                StartCoroutine(CountSkill1CD());
-                break;
+                yield return new WaitForSeconds(DashUpdateInterval);
+                elapsedTime += DashUpdateInterval;
+            }
         }
+        rb.velocity = new Vector2(0, 0);
+
+        // Wait cooldown
+        // yield return new WaitForSeconds(skill1CD);
+        StartCoroutine(CountSkill1CD());
+
+        // Set state to defualt
+        isAttacking = false;
+        currentState = State.Idle;
     }
 
     private void Skill1AreaAttack()
@@ -336,103 +320,103 @@ public class SpiritKing : MonoBehaviour
         return false;
     }
 
-    public void Skill2Controller()
-    {
-        switch (skill1State)
-        {
-            case Skill1State.Initial:
-                currentAttack = Attack.Skill1;
-                skill1State = Skill1State.Warning;
-                nextSkill1 = false;
-                break;
+    // public void Skill2Controller()
+    // {
+    //     switch (skill1State)
+    //     {
+    //         case Skill1State.Initial:
+    //             currentAttack = Attack.Skill1;
+    //             skill1State = Skill1State.Warning;
+    //             nextSkill1 = false;
+    //             break;
 
-            case Skill1State.Warning:
-                if (!isCreateWarningArea)
-                {
-                    isCreateWarningArea = true;
+    //         case Skill1State.Warning:
+    //             if (!isCreateWarningArea)
+    //             {
+    //                 isCreateWarningArea = true;
 
-                    Vector3 direction = (player.transform.position - transform.position).normalized;
-                    Vector3 offset = direction * ((skill1WarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + skill1lengthOffset);
-                    Vector3 spawnPosition = transform.position + offset;
-                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    //                 Vector3 direction = (player.transform.position - transform.position).normalized;
+    //                 Vector3 offset = direction * ((skill1WarningAreaPrefab.GetComponent<Transform>().localScale.x / 2) + skill1lengthOffset);
+    //                 Vector3 spawnPosition = transform.position + offset;
+    //                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-                    // Instantiate the warning area
-                    currentWarningArea = Instantiate(skill1WarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
-                    currentWarningArea.AddComponent<AreaAttack>();
+    //                 // Instantiate the warning area
+    //                 currentWarningArea = Instantiate(skill1WarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
+    //                 currentWarningArea.AddComponent<AreaAttack>();
 
-                    StartCoroutine(DelayMoveAngle(currentWarningArea, skill1Delay, skill1lengthOffset));
-                    StartCoroutine(BlinkWarningArea(currentWarningArea, skill1WarningDuration, skill1WarningBlinkInterval));
-                }
-                else if (isWarningAreaDone)
-                {
-                    skill1Angle = currentWarningArea.GetComponent<Transform>().eulerAngles.z;
-                    playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
+    //                 StartCoroutine(DelayMoveAngle(currentWarningArea, skill1DelayDuration, skill1lengthOffset));
+    //                 StartCoroutine(BlinkWarningArea(currentWarningArea, skill1WarningDuration, skill1WarningBlinkInterval));
+    //             }
+    //             else if (isWarningAreaDone)
+    //             {
+    //                 skill1Angle = currentWarningArea.GetComponent<Transform>().eulerAngles.z;
+    //                 playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
 
-                    Destroy(currentWarningArea);
-                    isCreateWarningArea = false;
+    //                 Destroy(currentWarningArea);
+    //                 isCreateWarningArea = false;
 
-                    skill1State = Skill1State.Attack;
-                }
-                break;
-
-
-            case Skill1State.Attack:
+    //                 skill1State = Skill1State.Attack;
+    //             }
+    //             break;
 
 
-                if (!isSkill1Dashing)
-                {
-                    float radians = skill1Angle * Mathf.Deg2Rad;
-                    Vector2 dashDirection = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
+    //         case Skill1State.Attack:
 
 
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, Mathf.Infinity, wallLayer);
-                    if (hit.collider != null)
-                    {
-                        skill1DashTarget = hit.point;
-                    }
-                    else
-                    {
-                        // Safety fallback in case no wall is hit (optional)
-                        skill1DashTarget = (Vector2)transform.position + dashDirection * 50f;
-                    }
+    //             if (!isSkill1Dashing)
+    //             {
+    //                 float radians = skill1Angle * Mathf.Deg2Rad;
+    //                 Vector2 dashDirection = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
 
-                    RaycastHit2D playerHit = Physics2D.Raycast(transform.position, dashDirection, Vector2.Distance(transform.position, skill1DashTarget), playerLayer);
-                    if (playerHit.collider != null)
-                    {
-                        // Damage the player
-                        PlayerController playerHealth = playerHit.collider.GetComponent<PlayerController>();
-                        if (playerHealth != null)
-                        {
-                            playerHealth.TakeDamage(skill1Damage);
-                        }
-                    }
 
-                    skill1ElapsedTime = 0;
-                    isSkill1Dashing = true;
-                }
-                else
-                {
-                    if (skill1ElapsedTime < 1 || Vector3.Distance(transform.position, player.position) < 0.5)
-                    {
-                        rb.velocity = ((Vector3)skill1DashTarget - transform.position).normalized * 30;
-                        skill1ElapsedTime += Time.deltaTime;
-                    }
+    //                 RaycastHit2D hit = Physics2D.Raycast(transform.position, dashDirection, Mathf.Infinity, wallLayer);
+    //                 if (hit.collider != null)
+    //                 {
+    //                     skill1DashTarget = hit.point;
+    //                 }
+    //                 else
+    //                 {
+    //                     // Safety fallback in case no wall is hit (optional)
+    //                     skill1DashTarget = (Vector2)transform.position + dashDirection * 50f;
+    //                 }
 
-                    else
-                    {
-                        isSkill1Dashing = false;
-                        skill1State = Skill1State.CoolDown;
-                    }
-                }
-                break;
+    //                 RaycastHit2D playerHit = Physics2D.Raycast(transform.position, dashDirection, Vector2.Distance(transform.position, skill1DashTarget), playerLayer);
+    //                 if (playerHit.collider != null)
+    //                 {
+    //                     // Damage the player
+    //                     PlayerController playerHealth = playerHit.collider.GetComponent<PlayerController>();
+    //                     if (playerHealth != null)
+    //                     {
+    //                         playerHealth.TakeDamage(skill1Damage);
+    //                     }
+    //                 }
 
-            case Skill1State.CoolDown:
-                currentState = State.Idle;
-                skill1State = Skill1State.Initial;
-                StartCoroutine(CountSkill1CD());
-                break;
-        }
-    }
+    //                 skill1ElapsedTime = 0;
+    //                 isSkill1Dashing = true;
+    //             }
+    //             else
+    //             {
+    //                 if (skill1ElapsedTime < 1 || Vector3.Distance(transform.position, player.position) < 0.5)
+    //                 {
+    //                     rb.velocity = ((Vector3)skill1DashTarget - transform.position).normalized * 30;
+    //                     skill1ElapsedTime += Time.deltaTime;
+    //                 }
+
+    //                 else
+    //                 {
+    //                     isSkill1Dashing = false;
+    //                     skill1State = Skill1State.CoolDown;
+    //                 }
+    //             }
+    //             break;
+
+    //         case Skill1State.CoolDown:
+    //             currentState = State.Idle;
+    //             skill1State = Skill1State.Initial;
+    //             StartCoroutine(CountSkill1CD());
+    //             break;
+    //     }
+    // }
 
     IEnumerator BlinkWarningArea(GameObject _warningArea, float warningDuration, float warningBlinkInterval)
     {
@@ -452,11 +436,11 @@ public class SpiritKing : MonoBehaviour
         isWarningAreaDone = true;
     }
 
-    IEnumerator DelayMoveAngle(GameObject _warningArea, float delayAngle, float lengthOffset)
+    IEnumerator DelayMoveAngle(GameObject _warningArea, float delayDuration, float lengthOffset)
     {
         float elapsedTime = 0f;
 
-        while (elapsedTime < delayAngle)
+        while (elapsedTime < delayDuration)
         {
             Vector3 direction = (player.transform.position - transform.position).normalized;
             Vector3 offset = direction * ((_warningArea.GetComponent<Transform>().localScale.x / 2) + lengthOffset);
@@ -465,8 +449,8 @@ public class SpiritKing : MonoBehaviour
             _warningArea.transform.position = transform.position + offset;
             _warningArea.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-            yield return new WaitForSeconds(0.05f);
-            elapsedTime += 0.05f;
+            yield return new WaitForSeconds(DashUpdateInterval);
+            elapsedTime += DashUpdateInterval;
         }
     }
 
@@ -503,7 +487,7 @@ public class SpiritKing : MonoBehaviour
                     currentWarningArea = Instantiate(normalAttackWarningAreaPrefab, spawnPosition, Quaternion.Euler(0, 0, angle), transform);
                     currentWarningArea.AddComponent<AreaAttack>();
 
-                    StartCoroutine(DelayMoveAngle(currentWarningArea, normalAttackDelay, normalAttacklengthOffset));
+                    StartCoroutine(DelayMoveAngle(currentWarningArea, normalAttackDelayDuration, normalAttacklengthOffset));
                     StartCoroutine(BlinkWarningArea(currentWarningArea, normalAttackWarningDuration, normalAttackWarningBlinkInterval));
                 }
                 else if (isWarningAreaDone)
