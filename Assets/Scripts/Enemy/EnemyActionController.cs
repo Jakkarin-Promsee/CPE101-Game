@@ -17,15 +17,12 @@ public class EnemyActionController : MonoBehaviour
 
     // Background setting
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
-    public enum WeaponType { Gun, Melee }
+    public enum ItemType { Gun, Melee }
     private GameObject _currentWeapon;
-    // ! Test
-    // private GameObject _weaponPivot;
-    // ! Test
     private Rigidbody2D rb;
     private EnemyController enemyController;
     private State _currentState;
-    private WeaponType _currentWeaponType;
+    private ItemType _currentItemType;
 
 
 
@@ -105,7 +102,7 @@ public class EnemyActionController : MonoBehaviour
 
     void SetUpRangeWeapon()
     {
-        _currentWeaponType = WeaponType.Gun;
+        _currentItemType = ItemType.Gun;
 
         if (enemyStatusConfig.bulletPrefab)
             enemyStatusConfig.rangeWeaponConfig.bulletPrefab = enemyStatusConfig.bulletPrefab;
@@ -123,7 +120,7 @@ public class EnemyActionController : MonoBehaviour
 
     void SetUpMeleeWeapon()
     {
-        _currentWeaponType = WeaponType.Melee;
+        _currentItemType = ItemType.Melee;
 
         if (enemyStatusConfig.meleeWeaponConfig)
             _currentWeapon.GetComponentInChildren<Melee>().weaponConfig = enemyStatusConfig.meleeWeaponConfig;
@@ -172,13 +169,7 @@ public class EnemyActionController : MonoBehaviour
     {
         if ((Vector3.Distance(transform.position, player.transform.position) < enemyStatusConfig.eyeRange && active) || _wasAttacked)
         {
-            // ! Test
-            // if (_currentWeaponType == WeaponType.Gun)
-                // _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
-            // else if (_currentWeaponType == WeaponType.Melee)
-                // _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
             _currentWeapon.GetComponent<EnemyWeaponAim>().active = true;
-            // ! Test
             active = true;
             _currentState = State.Chase;
         }
@@ -319,11 +310,11 @@ public class EnemyActionController : MonoBehaviour
         // Stop chese was attacked state
         if (_wasAttacked) _wasAttacked = false;
 
-        if (_currentWeaponType == WeaponType.Gun)
+        if (_currentItemType == ItemType.Gun)
         {
             _currentWeapon.GetComponent<Gun>().Fire(player.position);
         }
-        else if (_currentWeaponType == WeaponType.Melee)
+        else if (_currentItemType == ItemType.Melee)
         {
             _currentWeapon.GetComponentInChildren<Melee>().Swing();
         }

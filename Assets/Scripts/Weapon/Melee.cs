@@ -27,7 +27,8 @@ public class Melee : MonoBehaviour
         animator = GetComponent<Animator>();
         meleeCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        playerController = player.GetComponent<PlayerController>();
+        if(player != null)
+            playerController = player.GetComponent<PlayerController>();
     }
 
     public void Swing()
