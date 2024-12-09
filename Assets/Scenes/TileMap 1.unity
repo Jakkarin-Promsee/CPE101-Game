@@ -1800,7 +1800,7 @@ TilemapCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -2464,8 +2464,8 @@ GameObject:
   - component: {fileID: 122267448}
   - component: {fileID: 122267447}
   - component: {fileID: 122267450}
-  - component: {fileID: 122267451}
   - component: {fileID: 122267452}
+  - component: {fileID: 122267451}
   - component: {fileID: 122267453}
   m_Layer: 0
   m_Name: Player
@@ -2634,15 +2634,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4003db74ccc10794e82467b5e25fe857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponPrefabs:
-  - {fileID: 7102781951068588039, guid: 3984ab564d78b66438b71f03c976f8db, type: 3}
-  - {fileID: 7102781951068588039, guid: 4e77c0e2f19af9341a9c019c813f2af8, type: 3}
-  - {fileID: 7102781951068588039, guid: 8c6467a729ddf33408ad11aab4a7cc2e, type: 3}
-  - {fileID: 7102781951068588039, guid: 11b19ca585e1c4c4a96783dd4079cb36, type: 3}
-  - {fileID: 7102781951068588039, guid: e32787c35e1e6684fbf08cc09c224d21, type: 3}
-  - {fileID: 7102781951068588039, guid: 032513e94d0330d419c49560882fdcea, type: 3}
-  - {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
-  currentWeaponType: 0
+  Inventory:
+  - Sword
+  - AK
+  - Pistol
+  - Rocket Launcher
+  currentItemType: 0
+  isInPickupArea: 0
+  itemToPickUp: {fileID: 0}
+  swordPrefab: {fileID: 4121203216067658606, guid: cc010c3b59a3e5140b8685ad5f7a2c3e, type: 3}
+  akPrefab: {fileID: 7102781951068588039, guid: 3984ab564d78b66438b71f03c976f8db, type: 3}
+  pistolPrefab: {fileID: 7102781951068588039, guid: 4e77c0e2f19af9341a9c019c813f2af8, type: 3}
+  rocketLauncherPrefab: {fileID: 7102781951068588039, guid: 032513e94d0330d419c49560882fdcea, type: 3}
+  magicOrbPrefab: {fileID: 7102781951068588039, guid: e32787c35e1e6684fbf08cc09c224d21, type: 3}
+  bowPrefab: {fileID: 7102781951068588039, guid: 8c6467a729ddf33408ad11aab4a7cc2e, type: 3}
+  shotgunPrefab: {fileID: 7102781951068588039, guid: 11b19ca585e1c4c4a96783dd4079cb36, type: 3}
 --- !u!114 &122267453
 MonoBehaviour:
   m_ObjectHideFlags: 0
