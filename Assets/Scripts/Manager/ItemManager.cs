@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
+
 public class ItemManager : MonoBehaviour
 {
     [Header("Inventory")]
@@ -16,15 +17,22 @@ public class ItemManager : MonoBehaviour
     private int currentItemIndex = 0;
     private Transform playerTransform;
 
+    // Switch item
+    [SerializeField] private KeyCode switchItemKey;
+
     // Drop item
+    [SerializeField] private KeyCode dropItemKey;
     public float droppedItemScale = 0.5f; // Change size of dropped item
 
     // Pick up item
+    [SerializeField] private KeyCode pickupItemKey;
     private bool isInPickupArea = false;
     private GameObject itemToPickUp;
 
+    // Dictionary to work inventory
     private Dictionary<string, GameObject> itemInstantiate = new Dictionary<string, GameObject>();
 
+    // Original prefabs to be instantiated later
     [Header("Item prefabs")]
     [SerializeField] private GameObject swordPrefab;
     [SerializeField] private GameObject akPrefab;
@@ -33,6 +41,12 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private GameObject magicOrbPrefab;
     [SerializeField] private GameObject bowPrefab;
     [SerializeField] private GameObject shotgunPrefab;
+
+    // ! Test
+    // Pick up item Text
+    [Header("UI")]
+    [SerializeField] private Text pickupItemText;
+    // ! Test
 
     void Start()
     {
@@ -48,7 +62,6 @@ public class ItemManager : MonoBehaviour
         itemInstantiate.Add("Magic Orb", magicOrbPrefab);
 
         EquipItem(currentItemIndex);
-
     }
 
     void Update()
@@ -77,14 +90,14 @@ public class ItemManager : MonoBehaviour
         }
 
         // Drop item
-        if (Input.GetKeyDown(KeyCode.G)){
+        if (Input.GetKeyDown(dropItemKey)){
             if(currentItem != null){
                 DropItem();
             }
         }
 
         // Pick up item
-        if (Input.GetKeyDown(KeyCode.E) && isInPickupArea){
+        if (Input.GetKeyDown(pickupItemKey) && isInPickupArea){
             PickupItem(itemToPickUp);
         }
 
@@ -93,7 +106,7 @@ public class ItemManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) EquipItem(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) EquipItem(2);
 
-        if (Input.GetKeyDown(KeyCode.R)) // Switch guns with 'r' key
+        if (Input.GetKeyDown(switchItemKey)) // Switch guns with 'r' key
         {
             currentItemIndex++;
             if (currentItemIndex >= Inventory.Count) currentItemIndex -= Inventory.Count;
@@ -186,15 +199,23 @@ public class ItemManager : MonoBehaviour
         if(other.CompareTag("Collectable")) {
             itemToPickUp = other.gameObject;
             isInPickupArea = true;
+
+            // Tell that you're able to pick up item
+            pickupItemText.gameObject.SetActive(true);
+            pickupItemText.text = "Press E to pick up \"" + itemToPickUp.GetComponent<ItemPickable>().itemScriptableObject.itemName + "\"";
         }
     }
 
+    // Prevent picking up item after left the area
     private void OnTriggerExit2D(Collider2D other){
         // If the player leaves the pickup area
         if (other.CompareTag("Collectable"))
         {
             itemToPickUp = null;  // Reset the item reference
             isInPickupArea = false;  // Set the flag to false
+
+            // Hide text if player left pick up item area
+            pickupItemText.gameObject.SetActive(false);
         }
     }
 }

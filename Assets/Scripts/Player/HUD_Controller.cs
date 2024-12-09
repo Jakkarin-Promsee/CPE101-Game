@@ -7,15 +7,20 @@ using UnityEngine.UI;
 
 public class HUD_Controller : MonoBehaviour
 {
+    private GameObject player;
     private PlayerController playerController;
 
+    // Status
     [SerializeField] private Image healthImage;
     [SerializeField] private Image shieldImage;
     [SerializeField] private Image manaImage;
 
     void Start()
     {
-        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        // Find player
+        player = GameObject.Find("Player");
+        playerController = player.GetComponent<PlayerController>();
+
         // Null checking
         if (healthImage == null || shieldImage == null || manaImage == null)
             Debug.LogError("HUD UI elements not assigned.");
