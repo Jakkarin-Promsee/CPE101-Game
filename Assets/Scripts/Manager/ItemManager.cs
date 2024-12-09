@@ -12,27 +12,27 @@ public class ItemManager : MonoBehaviour
     public List<string> Inventory;
 
     private GameObject currentItem;
-    public ItemType currentItemType;
+    private ItemType currentItemType;
     private int currentItemIndex = 0;
     private Transform playerTransform;
 
     // Drop item
-    private float droppedItemScale = 0.5f; // Change size of dropped item
+    public float droppedItemScale = 0.5f; // Change size of dropped item
 
     // Pick up item
-    public bool isInPickupArea = false;
-    public GameObject itemToPickUp;
+    private bool isInPickupArea = false;
+    private GameObject itemToPickUp;
 
     private Dictionary<string, GameObject> itemInstantiate = new Dictionary<string, GameObject>();
 
     [Header("Item prefabs")]
-    public GameObject swordPrefab;
-    public GameObject akPrefab;
-    public GameObject pistolPrefab;
-    public GameObject rocketLauncherPrefab;
-    public GameObject magicOrbPrefab;
-    public GameObject bowPrefab;
-    public GameObject shotgunPrefab;
+    [SerializeField] private GameObject swordPrefab;
+    [SerializeField] private GameObject akPrefab;
+    [SerializeField] private GameObject pistolPrefab;
+    [SerializeField] private GameObject rocketLauncherPrefab;
+    [SerializeField] private GameObject magicOrbPrefab;
+    [SerializeField] private GameObject bowPrefab;
+    [SerializeField] private GameObject shotgunPrefab;
 
     void Start()
     {
