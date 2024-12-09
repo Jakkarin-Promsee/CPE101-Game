@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 7102781951068588039, guid: 3984ab564d78b66438b71f03c976f8db, type: 3}
   itemName: AK
   itemType: 0
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 21300000, guid: ff130067e0208f040b8e48e963a06432, type: 3}

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class ItemManager : MonoBehaviour
 {
     [Header("Inventory")]
-    public List<string> Inventory;
+    public List<string> inventory;
 
     private GameObject currentItem;
     private ItemType currentItemType;
@@ -46,6 +46,9 @@ public class ItemManager : MonoBehaviour
     // Pick up item Text
     [Header("UI")]
     [SerializeField] private Text pickupItemText;
+    [SerializeField] private Image[] inventorySlotImage = new Image[3];
+    [SerializeField] private Image[] inventoryBackgroundImage = new Image[3];
+    [SerializeField] private Sprite emptySlotSprite;
     // ! Test
 
     void Start()
@@ -106,23 +109,42 @@ public class ItemManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) EquipItem(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) EquipItem(2);
 
-        if (Input.GetKeyDown(switchItemKey)) // Switch guns with 'r' key
+        // Switch guns with 'r' key
+        if (Input.GetKeyDown(switchItemKey))
         {
             currentItemIndex++;
-            if (currentItemIndex >= Inventory.Count) currentItemIndex -= Inventory.Count;
+            if (currentItemIndex >= inventory.Count) currentItemIndex -= inventory.Count;
             EquipItem(currentItemIndex);
+        }
+
+        // Item slots
+        for(int i=0; i<3; i++){
+            if(i<inventory.Count){
+                // Set border to black if it's current item
+                if(i == currentItemIndex)
+                    inventoryBackgroundImage[i].color = Color.black;
+                else
+                    inventoryBackgroundImage[i].color = Color.white;
+                
+                // Set sprite image
+                inventorySlotImage[i].sprite = itemInstantiate[inventory[i]].GetComponent<ItemPickable>().itemScriptableObject.itemSprite;
+            }else{
+                // Remove image and border if it doesn't exist
+                inventorySlotImage[i].sprite = null;
+                inventoryBackgroundImage[i].color = Color.white;
+            }
         }
     }
 
     void EquipItem(int index)
     {
-        if (index >= 0 && index < Inventory.Count)
+        if (index >= 0 && index < inventory.Count)
         {
             // Destroy the current weapon if it exists
             if (currentItem != null) Destroy(currentItem);
 
             // Instantiate the new weapon as a child of the player at position (0,0)
-            currentItem = Instantiate(itemInstantiate[Inventory[index]], playerTransform.position, Quaternion.identity, playerTransform);
+            currentItem = Instantiate(itemInstantiate[inventory[index]], playerTransform.position, Quaternion.identity, playerTransform);
             
             // Set item type
             currentItemType = currentItem.GetComponent<ItemPickable>().itemScriptableObject.itemType;
@@ -153,13 +175,13 @@ public class ItemManager : MonoBehaviour
     private void DropItem(){
         // Instantiate the item at the player's current position (or in front, based on your choice)
         Vector3 dropPosition = playerTransform.position;
-        GameObject droppedItem = Instantiate(itemInstantiate[Inventory[currentItemIndex]], dropPosition, Quaternion.identity);
+        GameObject droppedItem = Instantiate(itemInstantiate[inventory[currentItemIndex]], dropPosition, Quaternion.identity);
         droppedItem.transform.localScale = droppedItem.transform.localScale;
         // droppedItem.transform.localScale = droppedItem.transform.localScale * droppedItemScale;
         droppedItem.tag = "Collectable";
 
         // Remove from Item Inventory
-        Inventory.RemoveAt(currentItemIndex);
+        inventory.RemoveAt(currentItemIndex);
 
         // Remove from player's hand
         Destroy(currentItem);
@@ -168,8 +190,8 @@ public class ItemManager : MonoBehaviour
         currentItem = null;
 
         // Equip another item instead
-        if(Inventory.Count > 0){
-            if(currentItemIndex >= Inventory.Count){
+        if(inventory.Count > 0){
+            if(currentItemIndex >= inventory.Count){
                 currentItemIndex--;
             }
             EquipItem(currentItemIndex);
@@ -180,13 +202,13 @@ public class ItemManager : MonoBehaviour
     private void PickupItem(GameObject other){
         if(other != null){
             // If Inventory full, drop holding item to pick another one instead
-            if(Inventory.Count == 3){
+            if(inventory.Count == 3){
                 DropItem();
             }
             IPickable item = other.GetComponent<IPickable>();
             if(item != null){
                 // Add into inventory
-                Inventory.Add(other.GetComponent<ItemPickable>().itemScriptableObject.itemName);
+                inventory.Add(other.GetComponent<ItemPickable>().itemScriptableObject.itemName);
                 // Remove the item in the scene
                 item.PickupItem();
             }

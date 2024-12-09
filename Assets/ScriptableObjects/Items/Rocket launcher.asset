@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 7102781951068588039, guid: 032513e94d0330d419c49560882fdcea, type: 3}
   itemName: Rocket Launcher
   itemType: 0
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 21300000, guid: e8d4a58e6347dac43bac5516735550fb, type: 3}

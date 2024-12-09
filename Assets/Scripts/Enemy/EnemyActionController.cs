@@ -116,6 +116,9 @@ public class EnemyActionController : MonoBehaviour
         _currentWeapon.GetComponent<EnemyWeaponAim>().attackRange = enemyStatusConfig.attackRange;
 
         _currentWeapon.GetComponent<Gun>().weaponOwnerTag = gameObject.tag;
+
+        // Avoid being equipped by player
+        _currentWeapon.tag = "Untagged";
     }
 
     void SetUpMeleeWeapon()
@@ -133,6 +136,9 @@ public class EnemyActionController : MonoBehaviour
         // Optionally, you can store the pivot for further use if needed
         _currentWeapon.GetComponentInChildren<Melee>().player = gameObject;
         _currentWeapon.GetComponentInChildren<Melee>().weaponOwnerTag = gameObject.tag;
+        
+        // Avoid being equipped by player
+        _currentWeapon.tag = "Untagged";
     }
 
     void Update()
