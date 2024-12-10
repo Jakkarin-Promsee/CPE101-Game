@@ -47,7 +47,9 @@ public class ItemManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Text pickupItemText;
     [SerializeField] private Image[] inventorySlotImage = new Image[3];
-    [SerializeField] private Image[] inventoryBackgroundImage = new Image[3];
+    [SerializeField] private Image[] inventoryBorderImage = new Image[3];
+    [SerializeField] private Sprite normalBorderSprite;
+    [SerializeField] private Sprite pickedBorderSprite;
     [SerializeField] private Sprite emptySlotSprite;
     // ! Test
 
@@ -122,16 +124,16 @@ public class ItemManager : MonoBehaviour
             if(i<inventory.Count){
                 // Set border to black if it's current item
                 if(i == currentItemIndex)
-                    inventoryBackgroundImage[i].color = Color.black;
+                    inventoryBorderImage[i].sprite = pickedBorderSprite;
                 else
-                    inventoryBackgroundImage[i].color = Color.white;
+                    inventoryBorderImage[i].sprite = normalBorderSprite;
                 
                 // Set sprite image
                 inventorySlotImage[i].sprite = itemInstantiate[inventory[i]].GetComponent<ItemPickable>().itemScriptableObject.itemSprite;
             }else{
                 // Remove image and border if it doesn't exist
-                inventorySlotImage[i].sprite = null;
-                inventoryBackgroundImage[i].color = Color.white;
+                inventorySlotImage[i].sprite = emptySlotSprite;
+                inventoryBorderImage[i].sprite = normalBorderSprite;
             }
         }
     }
@@ -224,7 +226,7 @@ public class ItemManager : MonoBehaviour
 
             // Tell that you're able to pick up item
             pickupItemText.gameObject.SetActive(true);
-            pickupItemText.text = "Press E to pick up \"" + itemToPickUp.GetComponent<ItemPickable>().itemScriptableObject.itemName + "\"";
+            pickupItemText.text = "Press \"E\" to pick up \"" + itemToPickUp.GetComponent<ItemPickable>().itemScriptableObject.itemName + "\"";
         }
     }
 
