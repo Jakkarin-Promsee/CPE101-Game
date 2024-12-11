@@ -2680,7 +2680,7 @@ GameObject:
   - component: {fileID: 171798896}
   m_Layer: 6
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32292,6 +32292,7 @@ MonoBehaviour:
   currentAttack: 0
   normalAttackWarningAreaPrefab: {fileID: 8062580075470036449, guid: 79452479e1a5a95469566d452573959a, type: 3}
   normalAttackCD: 3
+  normalAttackWait: 1
   normalAttackDelayDuration: 0.75
   normalAttackDamage: 30
   normalAttackKnockback: 13
@@ -32299,6 +32300,7 @@ MonoBehaviour:
   normalAttackWarningBlinkInterval: 0.3
   normalAttacklengthOffset: 0
   skill1CD: 5
+  skill1Wait: 1
   skill1WarningDuration: 2
   skill1WarningBlinkInterval: 0.3
   skill1DelayDuration: 1.5
@@ -32310,6 +32312,7 @@ MonoBehaviour:
   skill1WarningAreaPrefab: {fileID: 8062580075470036449, guid: ebf08154d9fc7ee4995aeaaa6a83f1b0, type: 3}
   skill1AreaAttackPrefab: {fileID: 7096452089889314423, guid: 26a82b6d09191e1418f1ad3b23e0c94e, type: 3}
   skill2CD: 5
+  skill2Wait: 1
   skill2WarningDuration: 2
   skill2WarningBlinkInterval: 0.3
   skill2DelayDuration: 1.75
@@ -32317,8 +32320,19 @@ MonoBehaviour:
   skill2Knockback: 20
   skill2WarningAreaLine: {fileID: 3648400271137279541, guid: a173df3692f9a3a4fa782268152c4d69, type: 3}
   skill2AttackLine: {fileID: 3648400271137279541, guid: f0c2c4c5d237bb84a8cf2ff20dbc77d1, type: 3}
-  initialColor: {r: 1, g: 1, b: 1, a: 0.27450982}
-  blinkColor: {r: 1, g: 0, b: 0, a: 0.27450982}
+  skill2BlinkColor: {r: 1, g: 1, b: 1, a: 1}
+  skill2WarningAreaTransparent: 0.5
+  skill3WarningAreaPrefab: {fileID: 2523449000850455852, guid: 17b54ef45816c9148be01aed2beeeaa5, type: 3}
+  skill3CD: 2
+  skill3Wait: 1
+  skill3DelayDuration: 1.25
+  skill3Damage: 30
+  skill3Knockback: 30
+  skill3WarningDuration: 2
+  skill3WarningBlinkInterval: 0.3
+  skill3lengthOffset: 1
+  skill3HitKnockBack: 15
+  blinkColor: {r: 1, g: 1, b: 1, a: 0.27450982}
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -32326,7 +32340,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   normalAttackState: 0
-  skill2BlinkColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!195 &1006689724
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -32340,7 +32353,7 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 150
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -33381,7 +33394,7 @@ GameObject:
   - component: {fileID: 1241344600}
   m_Layer: 6
   m_Name: Obstruction
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
