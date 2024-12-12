@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -11,6 +9,7 @@ public class SpiritKing : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
+    public GameObject playerCamera;
     public GameObject defaultLineRenderer;
     private NavMeshAgent agent;
 
@@ -95,6 +94,7 @@ public class SpiritKing : MonoBehaviour
     public float skill4Wait = 1f;
     public float skill4WarningDuration = 2f;
     public float skill4WarningBlinkInterval = 0.3f;
+    public float skill4AreaAttackDuration = 15f;
     private bool nextSkill4 = true;
 
 
@@ -134,7 +134,6 @@ public class SpiritKing : MonoBehaviour
     private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
     [SerializeField] private NormalAttackState normalAttackState = NormalAttackState.Initial;
     private bool isAttacking = false;
-
 
     void Start()
     {
@@ -180,6 +179,10 @@ public class SpiritKing : MonoBehaviour
                             StartCoroutine(Skill3ControllerIE());
                             break;
 
+                        case Attack.Skill4:
+                            StartCoroutine(Skill4ControllerIE());
+                            break;
+
                         default:
                             break;
                     }
@@ -191,6 +194,13 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
+        if (nextSkill4)
+        {
+            currentState = State.Attack;
+            currentAttack = Attack.Skill4;
+            return;
+        }
+
         if (nextSkill3)
         {
             currentState = State.Attack;
@@ -220,7 +230,19 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    public IEnumerator Skill4ControllerIE()
+    {
+        // Initialize
+        isAttacking = true;
 
+        // Wait cooldown
+        yield return new WaitForSeconds(skill4Wait);
+        StartCoroutine(CountSkill4CD());
+
+        // Set state to defualt
+        isAttacking = false;
+        currentState = State.Idle;
+    }
 
     public IEnumerator Skill3ControllerIE()
     {
@@ -489,6 +511,26 @@ public class SpiritKing : MonoBehaviour
         Destroy(currentAreaAttact);
     }
 
+    private IEnumerator ShackCamera(float duration, float magnitude)
+    {
+        Transform camTransform = playerCamera.GetComponent<Transform>();
+        Vector3 originalPos = camTransform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * magnitude;
+            float offsetY = Random.Range(-1f, 1f) * magnitude;
+
+            camTransform.localPosition = new Vector3(originalPos.x + offsetX, originalPos.y + offsetY, originalPos.z);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        camTransform.localPosition = originalPos;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (skill2isDashing)
@@ -661,6 +703,13 @@ public class SpiritKing : MonoBehaviour
         nextSkill3 = false;
         yield return new WaitForSeconds(skill3CD);
         nextSkill3 = true;
+    }
+
+    IEnumerator CountSkill4CD()
+    {
+        nextSkill4 = false;
+        yield return new WaitForSeconds(skill4CD);
+        nextSkill4 = true;
     }
 
     private bool ChasePlayer(float chaseLength, float speed)
