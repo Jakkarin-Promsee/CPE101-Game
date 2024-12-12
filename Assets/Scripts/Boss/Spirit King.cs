@@ -4,14 +4,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TestTools;
+using UnityEngine.Tilemaps;
 
 public class SpiritKing : MonoBehaviour
 {
     [Header("References")]
-    public Transform player;
+    [SerializeField] private Attack testSkill;
+    [SerializeField] private Transform player;
     public GameObject playerCamera;
-    public GameObject defaultLineRenderer;
     private NavMeshAgent agent;
+    public Tilemap groundTilemap;
+    public Tilemap wallTilemap;
+    public Tilemap obstacleTilemap;
 
 
     [Header("General Setting")]
@@ -35,6 +39,8 @@ public class SpiritKing : MonoBehaviour
     public float normalAttackWarningDuration = 2f;
     public float normalAttackWarningBlinkInterval = 0.3f;
     public float normalAttacklengthOffset = 0f;
+    public float normalAttackShakeDuration = 0.5f;
+    public float normalAttackShakeMagnitude = 1f;
     private float normalAttackMoveSpeed;
     private bool nextNomalAttack = true;
 
@@ -50,6 +56,8 @@ public class SpiritKing : MonoBehaviour
     public float skill1DashSpeed = 30f;
     public float skill1Knockback = 20f;
     public float skill1lengthOffset = 0f;
+    public float skill1ShakeDuration = 1.5f;
+    public float skill1ShakeMagnitude = 2f;
     public GameObject skill1WarningAreaPrefab;
     public GameObject skill1AreaAttackPrefab;
     private bool nextSkill1 = true;
@@ -67,6 +75,8 @@ public class SpiritKing : MonoBehaviour
     public GameObject skill2AttackLine;
     public Color skill2BlinkColor = Color.white;
     public float skill2WarningAreaTransparent = 0.5f;
+    public float skill2ShakeDuration = 2f;
+    public float skill2ShakeMagnitude = 1f;
     private bool nextSkill2 = true;
     private bool skill2isDashing = false;
     private bool skill2isHitWall = false;
@@ -84,17 +94,22 @@ public class SpiritKing : MonoBehaviour
     public float skill3lengthOffset = 0f;
     private float skill3MoveSpeed;
     public float skill3HitKnockBack = 15f;
+    public float skill3ShakeDuration = 2f;
+    public float skill3ShakeMagnitude = 2f;
     private bool nextSkill3 = true;
 
     // Skill 4
     [Header("Skill4 Setting")]
     public GameObject skill4WarningAreaPrefab;
-    public GameObject skill4AreaAttack;
+    public GameObject skill4AreaAttackPrefab;
+    public int skill2spawnAmount = 5;
     public float skill4CD = 2f;
     public float skill4Wait = 1f;
     public float skill4WarningDuration = 2f;
     public float skill4WarningBlinkInterval = 0.3f;
     public float skill4AreaAttackDuration = 15f;
+    public float skill4ShakeDuration = 4f;
+    public float skill4ShakeMagnitude = 2f;
     private bool nextSkill4 = true;
 
 
@@ -119,7 +134,7 @@ public class SpiritKing : MonoBehaviour
 
     // State Setting
     private enum State { Idle, Chase, Attack };
-    private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6 }
+    private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6, Null }
     /* Attack Idea
         Idle => Rest Stand
         Chase => run to player
@@ -194,6 +209,13 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
+        if (testSkill != Attack.Null)
+        {
+            currentState = State.Attack;
+            currentAttack = testSkill;
+            return;
+        }
+
         if (nextSkill4)
         {
             currentState = State.Attack;
@@ -235,6 +257,47 @@ public class SpiritKing : MonoBehaviour
         // Initialize
         isAttacking = true;
 
+        // Shank camera
+        yield return ShackCamera(skill4ShakeDuration, skill4ShakeMagnitude);
+
+        // Setup warning area
+        BoundsInt bounds = groundTilemap.cellBounds;
+        List<Vector3> validPositions = new List<Vector3>();
+
+        for (int x = bounds.xMin; x < bounds.xMax; x++)
+        {
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                Vector3Int cellPosition = new Vector3Int(x, y, 0);
+
+                // Check if the tile is on the ground layer and not obstructed
+                if (groundTilemap.HasTile(cellPosition) &&
+                    !wallTilemap.HasTile(cellPosition) &&
+                    !obstacleTilemap.HasTile(cellPosition))
+                {
+                    // Convert cell position to world position and add to the valid list
+                    Vector3 worldPosition = groundTilemap.CellToWorld(cellPosition) + groundTilemap.tileAnchor;
+                    validPositions.Add(worldPosition);
+                }
+            }
+        }
+
+        // Randomly spawn objects at valid positions
+        for (int i = 0; i < 5; i++)
+        {
+            if (validPositions.Count == 0) break;
+
+            // Select a random position
+            int randomIndex = Random.Range(0, validPositions.Count);
+            Vector3 spawnPosition = validPositions[randomIndex];
+
+            // Spawn the object
+            Instantiate(skill4WarningAreaPrefab, spawnPosition, Quaternion.identity);
+
+            // Remove the position to avoid duplicate spawns
+            validPositions.RemoveAt(randomIndex);
+        }
+
         // Wait cooldown
         yield return new WaitForSeconds(skill4Wait);
         StartCoroutine(CountSkill4CD());
@@ -259,7 +322,9 @@ public class SpiritKing : MonoBehaviour
             yield return new WaitForSeconds(IEUpdateInterval);
         }
 
+        // Hit player before skill
         player.GetComponent<PlayerMovement>().TakeKnockback((player.transform.position - transform.position).normalized * skill3HitKnockBack, 0.3f);
+        StartCoroutine(ShackCamera(skill3ShakeDuration, skill3ShakeMagnitude));
 
         // Setup warning area
         Vector3 direction = (player.transform.position - transform.position).normalized;
@@ -285,6 +350,7 @@ public class SpiritKing : MonoBehaviour
             player.GetComponent<PlayerMovement>().TakeKnockback((player.transform.position - transform.position).normalized * skill3Knockback, 0.3f);
             player.GetComponent<PlayerController>().TakeDamage(skill3Damage);
         }
+        StartCoroutine(ShackCamera(skill3ShakeDuration, skill3ShakeMagnitude));
 
         // Wait cooldown
         yield return new WaitForSeconds(skill3Wait);
@@ -354,6 +420,7 @@ public class SpiritKing : MonoBehaviour
                 playerHit.collider.GetComponent<PlayerMovement>().TakeKnockback((target - (Vector2)transform.position).normalized * skill2Knockback, 0.3f);
             }
         }
+        StartCoroutine(ShackCamera(skill2ShakeDuration, skill2ShakeMagnitude));
 
         // Wait cooldown
         yield return new WaitForSeconds(skill2Wait);
@@ -424,6 +491,7 @@ public class SpiritKing : MonoBehaviour
                 if (isHitWall)
                 {
                     StartCoroutine(Skill1AreaAttackIE());
+                    StartCoroutine(ShackCamera(skill1ShakeDuration, skill1ShakeMagnitude));
                     isback = true;
                     durationCal = 0.15f;
                 }
@@ -433,7 +501,10 @@ public class SpiritKing : MonoBehaviour
             else // Complete dash
             {
                 if (isHitPlayer)
+                {
                     StartCoroutine(Skill1AreaAttackIE());
+                    StartCoroutine(ShackCamera(skill1ShakeDuration, skill1ShakeMagnitude));
+                }
 
                 rb.velocity = new Vector2(0, 0);
                 break;
@@ -514,21 +585,20 @@ public class SpiritKing : MonoBehaviour
     private IEnumerator ShackCamera(float duration, float magnitude)
     {
         Transform camTransform = playerCamera.GetComponent<Transform>();
-        Vector3 originalPos = camTransform.position;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
+            Vector3 originalPos = camTransform.position;
+
             float offsetX = Random.Range(-1f, 1f) * magnitude;
             float offsetY = Random.Range(-1f, 1f) * magnitude;
 
             camTransform.localPosition = new Vector3(originalPos.x + offsetX, originalPos.y + offsetY, originalPos.z);
 
-            elapsed += Time.deltaTime;
-            yield return null;
+            yield return new WaitForSeconds(IEUpdateInterval);
+            elapsed += IEUpdateInterval;
         }
-
-        camTransform.localPosition = originalPos;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -660,6 +730,8 @@ public class SpiritKing : MonoBehaviour
             player.GetComponent<PlayerController>().TakeDamage(normalAttackDamage);
         }
 
+        StartCoroutine(ShackCamera(normalAttackShakeDuration, normalAttackShakeMagnitude));
+
         // Wait cooldown
         yield return new WaitForSeconds(normalAttackWait);
         StartCoroutine(CountNormalAttackCD());
@@ -725,6 +797,7 @@ public class SpiritKing : MonoBehaviour
 
             return false;
         }
+        agent.SetDestination(transform.position);
         agent.speed = 0;
         return true;
     }

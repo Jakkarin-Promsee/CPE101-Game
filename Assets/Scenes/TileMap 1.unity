@@ -32284,8 +32284,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8197174eb32320d4ca0a46d1419929b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testSkill: 3
   player: {fileID: 0}
-  defaultLineRenderer: {fileID: 0}
+  playerCamera: {fileID: 519420028}
+  groundTilemap: {fileID: 0}
+  wallTilemap: {fileID: 0}
+  obstacleTilemap: {fileID: 0}
   moveFrictionCoefficient: 1
   moveSpeed: 3.5
   currentState: 0
@@ -32299,6 +32303,8 @@ MonoBehaviour:
   normalAttackWarningDuration: 2
   normalAttackWarningBlinkInterval: 0.3
   normalAttacklengthOffset: 0
+  normalAttackShakeDuration: 0.1
+  normalAttackShakeMagnitude: 0.5
   skill1CD: 5
   skill1Wait: 1
   skill1WarningDuration: 2
@@ -32309,6 +32315,8 @@ MonoBehaviour:
   skill1DashSpeed: 30
   skill1Knockback: 35
   skill1lengthOffset: 0
+  skill1ShakeDuration: 0.1
+  skill1ShakeMagnitude: 1
   skill1WarningAreaPrefab: {fileID: 8062580075470036449, guid: ebf08154d9fc7ee4995aeaaa6a83f1b0, type: 3}
   skill1AreaAttackPrefab: {fileID: 7096452089889314423, guid: 26a82b6d09191e1418f1ad3b23e0c94e, type: 3}
   skill2CD: 5
@@ -32322,6 +32330,8 @@ MonoBehaviour:
   skill2AttackLine: {fileID: 3648400271137279541, guid: f0c2c4c5d237bb84a8cf2ff20dbc77d1, type: 3}
   skill2BlinkColor: {r: 1, g: 1, b: 1, a: 1}
   skill2WarningAreaTransparent: 0.5
+  skill2ShakeDuration: 0.1
+  skill2ShakeMagnitude: 0.25
   skill3WarningAreaPrefab: {fileID: 2523449000850455852, guid: 17b54ef45816c9148be01aed2beeeaa5, type: 3}
   skill3CD: 2
   skill3Wait: 1
@@ -32332,6 +32342,18 @@ MonoBehaviour:
   skill3WarningBlinkInterval: 0.3
   skill3lengthOffset: 1
   skill3HitKnockBack: 15
+  skill3ShakeDuration: 0.2
+  skill3ShakeMagnitude: 1
+  skill4WarningAreaPrefab: {fileID: 0}
+  skill4AreaAttackPrefab: {fileID: 0}
+  skill2spawnAmount: 5
+  skill4CD: 2
+  skill4Wait: 1
+  skill4WarningDuration: 2
+  skill4WarningBlinkInterval: 0.3
+  skill4AreaAttackDuration: 15
+  skill4ShakeDuration: 2
+  skill4ShakeMagnitude: 0.3
   blinkColor: {r: 1, g: 1, b: 1, a: 0.27450982}
   wallLayer:
     serializedVersion: 2
