@@ -61,6 +61,8 @@ public class SpiritKing : MonoBehaviour
     public GameObject skill1WarningAreaPrefab;
     public GameObject skill1AreaAttackPrefab;
     private bool nextSkill1 = true;
+    private bool skill1isDashing = false;
+    private bool skill1isHitWall = false;
 
     // Skill 2
     [Header("Skill 2 Settings")]
@@ -78,8 +80,7 @@ public class SpiritKing : MonoBehaviour
     public float skill2ShakeDuration = 2f;
     public float skill2ShakeMagnitude = 1f;
     private bool nextSkill2 = true;
-    private bool skill2isDashing = false;
-    private bool skill2isHitWall = false;
+
 
     // Skill 3
     [Header("Skill3 Settings")]
@@ -100,6 +101,7 @@ public class SpiritKing : MonoBehaviour
 
     // Skill 4
     [Header("Skill4 Setting")]
+    public GameObject skill4MeteorPrefab;
     public GameObject skill4WarningAreaPrefab;
     public GameObject skill4AreaAttackPrefab;
     public int skill2spawnAmount = 5;
@@ -111,6 +113,26 @@ public class SpiritKing : MonoBehaviour
     public float skill4ShakeDuration = 4f;
     public float skill4ShakeMagnitude = 2f;
     private bool nextSkill4 = true;
+
+    // Skill 5
+    [Header("Skill5 Setting")]
+    public float skill5CD = 5f;
+    public float skill5Wait = 1f;
+    public float skill5WarningDuration = 2f;
+    public float skill5WarningBlinkInterval = 0.3f;
+    public float skill5DelayDuration = 1.5f;
+    public float skill5Damage = 40f;
+    public float skill5Knockback = 20f;
+    public GameObject skill5WarningAreaLine;
+    public GameObject skill5AttackLine;
+    public Color skill5BlinkColor = Color.white;
+    public float skill5WarningAreaTransparent = 0.5f;
+    public float skill5ShakeDuration = 2f;
+    public float skill5ShakeMagnitude = 1f;
+    private bool nextSkill5 = true;
+    private bool skill5isDashing = false;
+    private bool skill5isHitWall = false;
+
 
 
     // Handle Warning Area
@@ -252,6 +274,75 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    public IEnumerator Skill5ControllerIE()
+    {
+        // Initialize state
+        isAttacking = true;
+
+        // Create warning area
+        float elapsedTime = 0;
+        Vector2 skillDirection = new Vector2(0, 0);
+        Vector2 target = new Vector2(0, 0);
+
+        GameObject spawnedLine = Instantiate(skill2WarningAreaLine, new Vector2(0, 0), Quaternion.identity);
+        LineRenderer warningAreaLineRenderer = spawnedLine.GetComponent<LineRenderer>();
+        bool activeBlink = false;
+
+        while (elapsedTime < skill2WarningDuration - (skill2WarningDuration - skill2DelayDuration) * 0.6f)
+        {
+            // Setup warning area
+            if (elapsedTime < skill2DelayDuration)
+                skillDirection = (player.transform.position - transform.position).normalized;
+
+            // Attack player in this raycast
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, skillDirection, Mathf.Infinity, wallLayer);
+            if (hit.collider != null)
+                target = hit.point;
+            else
+                target = (Vector2)transform.position + skillDirection * DefaultRaycastDistance;
+
+            if (!activeBlink)
+            {
+                activeBlink = true;
+                StartCoroutine(BlinkLine(warningAreaLineRenderer, skill2BlinkColor, skill2WarningAreaTransparent));
+            }
+
+            yield return DrawLine(warningAreaLineRenderer, target, IEUpdateInterval);
+
+            elapsedTime += IEUpdateInterval;
+        }
+        Destroy(spawnedLine);
+
+        yield return new WaitForSeconds((skill2WarningDuration - skill2DelayDuration) * 0.4f);
+
+        RaycastHit2D playerHit = Physics2D.Raycast(transform.position, skillDirection, Vector2.Distance(transform.position, target), playerLayer);
+
+        GameObject attackLine = Instantiate(skill2AttackLine, new Vector2(0, 0), Quaternion.identity);
+        LineRenderer attackLineRenderer = attackLine.GetComponent<LineRenderer>();
+        yield return DrawLine(attackLineRenderer, target, 0.15f);
+        Destroy(attackLine);
+
+        if (playerHit.collider != null)
+        {
+            // Damage the player
+            if (playerHit.collider != null)
+            {
+                playerHit.collider.GetComponent<PlayerController>().TakeDamage(skill2Damage);
+                playerHit.collider.GetComponent<PlayerMovement>().TakeKnockback((target - (Vector2)transform.position).normalized * skill2Knockback, 0.3f);
+            }
+        }
+        StartCoroutine(ShackCamera(skill2ShakeDuration, skill2ShakeMagnitude));
+
+        // Wait cooldown
+        yield return new WaitForSeconds(skill2Wait);
+        StartCoroutine(CountSkill2CD());
+
+        // Set state to defualt
+        isAttacking = false;
+        currentState = State.Idle;
+    }
+
+
     public IEnumerator Skill4ControllerIE()
     {
         // Initialize
@@ -263,10 +354,11 @@ public class SpiritKing : MonoBehaviour
         // Setup warning area
         BoundsInt bounds = groundTilemap.cellBounds;
         List<Vector3> validPositions = new List<Vector3>();
+        List<GameObject> warningAreas = new List<GameObject>();
 
-        for (int x = bounds.xMin; x < bounds.xMax; x++)
+        for (int x = bounds.xMin; x < bounds.xMax; x += 3)
         {
-            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            for (int y = bounds.yMin; y < bounds.yMax; y += 3)
             {
                 Vector3Int cellPosition = new Vector3Int(x, y, 0);
 
@@ -292,20 +384,39 @@ public class SpiritKing : MonoBehaviour
             Vector3 spawnPosition = validPositions[randomIndex];
 
             // Spawn the object
-            Instantiate(skill4WarningAreaPrefab, spawnPosition, Quaternion.identity);
+            GameObject warningArea = Instantiate(skill4WarningAreaPrefab, spawnPosition, Quaternion.identity);
+
+            warningAreas.Add(warningArea);
 
             // Remove the position to avoid duplicate spawns
             validPositions.RemoveAt(randomIndex);
         }
 
+        // Add Blink componet
+        foreach (GameObject warningArea in warningAreas)
+        {
+            StartCoroutine(BlinkWarningArea(warningArea, skill4WarningDuration, skill4WarningBlinkInterval, blinkColor));
+        }
+
+        yield return new WaitForSeconds(skill4WarningDuration + 0.5f);
+
+        StartCoroutine(ShackCamera(skill4ShakeDuration, skill4ShakeMagnitude));
+        for (int i = warningAreas.Count - 1; i >= 0; i--)
+        {
+            StartCoroutine(SpawnMeteor(skill4MeteorPrefab, skill4AreaAttackPrefab, warningAreas[i].transform.position));
+            Destroy(warningAreas[i]);
+        }
+
         // Wait cooldown
-        yield return new WaitForSeconds(skill4Wait);
+        yield return new WaitForSeconds(skill4Wait * 3);
         StartCoroutine(CountSkill4CD());
 
         // Set state to defualt
         isAttacking = false;
         currentState = State.Idle;
     }
+
+
 
     public IEnumerator Skill3ControllerIE()
     {
@@ -473,6 +584,7 @@ public class SpiritKing : MonoBehaviour
 
 
         // Initialize and manage to moving target state
+        StartCoroutine(ShackCamera(skill1ShakeDuration, skill1ShakeMagnitude));
         bool isHitPlayer = false;
         bool isHitWall = false;
         for (int i = 0; i < 2; i++)
@@ -490,7 +602,7 @@ public class SpiritKing : MonoBehaviour
             {
                 if (isHitWall)
                 {
-                    StartCoroutine(Skill1AreaAttackIE());
+                    Skill1AreaAttackIE();
                     StartCoroutine(ShackCamera(skill1ShakeDuration, skill1ShakeMagnitude));
                     isback = true;
                     durationCal = 0.15f;
@@ -502,7 +614,7 @@ public class SpiritKing : MonoBehaviour
             {
                 if (isHitPlayer)
                 {
-                    StartCoroutine(Skill1AreaAttackIE());
+                    Skill1AreaAttackIE();
                     StartCoroutine(ShackCamera(skill1ShakeDuration, skill1ShakeMagnitude));
                 }
 
@@ -510,7 +622,7 @@ public class SpiritKing : MonoBehaviour
                 break;
             }
 
-            skill2isDashing = true;
+            skill1isDashing = true;
             isHitWall = false;
 
             // Dash manager
@@ -538,9 +650,9 @@ public class SpiritKing : MonoBehaviour
 
                     if (!isback)
                     {
-                        if (skill2isHitWall)
+                        if (skill1isHitWall)
                         {
-                            skill2isHitWall = false; // Set param to default for next wall hit
+                            skill1isHitWall = false; // Set param to default for next wall hit
                             isHitWall = true;
                             break;
                         }
@@ -550,7 +662,7 @@ public class SpiritKing : MonoBehaviour
                 yield return new WaitForSeconds(IEUpdateInterval);
                 elapsedTime += IEUpdateInterval;
             }
-            skill2isDashing = false;
+            skill1isDashing = false;
         }
         rb.velocity = new Vector2(0, 0);
 
@@ -563,23 +675,40 @@ public class SpiritKing : MonoBehaviour
         currentState = State.Idle;
     }
 
-    private IEnumerator Skill1AreaAttackIE()
+    private void Skill1AreaAttackIE()
     {
         GameObject currentAreaAttact = Instantiate(skill1AreaAttackPrefab, transform.position, Quaternion.identity);
-        currentAreaAttact.AddComponent<AreaAttack>();
+    }
 
-        float elapsedTime = 0f;
-        while (elapsedTime < 10f)
+    public IEnumerator SpawnMeteor(GameObject meteorPrefab, GameObject meterorArea, Vector3 targetPosition, float spawnHeightOffset = 15.8f, float meteorSpeed = 25, float angle = 30)
+    {
+        // Calculate spawn position above the camera
+        Vector3 spawnPosition = new Vector3(
+                targetPosition.x - spawnHeightOffset / Mathf.Tan(Mathf.Deg2Rad * (angle + Random.Range(-20, 20))),
+                playerCamera.transform.position.y + spawnHeightOffset,
+                targetPosition.z
+        );
+
+        // Instantiate the meteor
+        GameObject meteor = Instantiate(meteorPrefab, spawnPosition, Quaternion.identity);
+        Transform meteorTranform = meteor.GetComponent<Transform>();
+
+        // Rotate the meteor to face the target
+        Vector3 direction = (targetPosition - spawnPosition).normalized;
+        float angleFace = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        meteor.transform.rotation = Quaternion.Euler(0, 0, angleFace);
+
+        Rigidbody2D meteorRb = meteor.GetComponent<Rigidbody2D>();
+
+        while (meteorTranform.position.y > targetPosition.y)
         {
-            foreach (GameObject player in currentAreaAttact.GetComponent<AreaAttack>().playersInZone)
-            {
-                player.GetComponent<PlayerController>().TakeDamage(5f);
-            }
-
-            yield return new WaitForSeconds(0.2f);
-            elapsedTime += 0.2f;
+            meteorRb.velocity = direction * meteorSpeed;
+            yield return new WaitForSeconds(IEUpdateInterval);
         }
-        Destroy(currentAreaAttact);
+
+        StartCoroutine(ShackCamera(0.1f, 1f));
+        GameObject meteorAttack = Instantiate(meterorArea, targetPosition, Quaternion.identity);
+        Destroy(meteor);
     }
 
     private IEnumerator ShackCamera(float duration, float magnitude)
@@ -603,11 +732,11 @@ public class SpiritKing : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (skill2isDashing)
+        if (skill1isDashing)
         {
             if (collision.gameObject.CompareTag("Wall"))
             {
-                skill2isHitWall = true;
+                skill1isHitWall = true;
             }
         }
     }
@@ -660,16 +789,19 @@ public class SpiritKing : MonoBehaviour
 
     private IEnumerator BlinkWarningArea(GameObject _warningArea, float warningDuration, float warningBlinkInterval, Color blinkColor)
     {
-        float elapsedTime = 0f;
-        SpriteRenderer warningSprite = _warningArea.GetComponent<SpriteRenderer>();
-        Color oldColor = warningSprite.color;
-        while (elapsedTime < warningDuration)
+        if (_warningArea != null)
         {
-            warningSprite.color = blinkColor;
-            yield return new WaitForSeconds(warningBlinkInterval);
-            warningSprite.color = oldColor;
-            yield return new WaitForSeconds(warningBlinkInterval);
-            elapsedTime += warningBlinkInterval * 2;
+            float elapsedTime = 0f;
+            SpriteRenderer warningSprite = _warningArea.GetComponent<SpriteRenderer>();
+            Color oldColor = warningSprite.color;
+            while (elapsedTime < warningDuration)
+            {
+                warningSprite.color = blinkColor;
+                yield return new WaitForSeconds(warningBlinkInterval);
+                warningSprite.color = oldColor;
+                yield return new WaitForSeconds(warningBlinkInterval);
+                elapsedTime += warningBlinkInterval * 2;
+            }
         }
     }
 

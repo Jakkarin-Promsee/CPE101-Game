@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7364893402981081712}
   - component: {fileID: 4017672608174647187}
   m_Layer: 0
-  m_Name: Skill3
+  m_Name: Skill5WarningArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 76.8, y: -55.2, z: 0}
-  m_LocalScale: {x: 18.032595, y: 7.3395257, z: 0.9527}
+  m_LocalScale: {x: 39.871475, y: 29.7369, z: 0.9527}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0.54422647, b: 0, a: 0.45882353}
+  m_Color: {r: 1, g: 0, b: 0.82660675, a: 0.06666667}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
