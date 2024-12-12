@@ -231,6 +231,7 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+
     private void Idle()
     {
         if (testSkill != Attack.Null)
