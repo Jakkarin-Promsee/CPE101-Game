@@ -109,7 +109,6 @@ public class SpiritKing : MonoBehaviour
     public float skill4Wait = 1f;
     public float skill4WarningDuration = 2f;
     public float skill4WarningBlinkInterval = 0.3f;
-    public float skill4AreaAttackDuration = 15f;
     public float skill4ShakeDuration = 4f;
     public float skill4ShakeMagnitude = 2f;
     private bool nextSkill4 = true;
@@ -120,19 +119,18 @@ public class SpiritKing : MonoBehaviour
     public float skill5Wait = 1f;
     public float skill5WarningDuration = 2f;
     public float skill5WarningBlinkInterval = 0.3f;
-    public float skill5DelayDuration = 1.5f;
+    public float skill5AttackAngle = 540;
     public float skill5Damage = 40f;
     public float skill5Knockback = 20f;
+    public GameObject skill5WarningAreaPrefab;
     public GameObject skill5WarningAreaLine;
     public GameObject skill5AttackLine;
     public Color skill5BlinkColor = Color.white;
     public float skill5WarningAreaTransparent = 0.5f;
     public float skill5ShakeDuration = 2f;
     public float skill5ShakeMagnitude = 1f;
+    public float skill5AttackLineSpeed = 5f;
     private bool nextSkill5 = true;
-    private bool skill5isDashing = false;
-    private bool skill5isHitWall = false;
-
 
 
     // Handle Warning Area
@@ -220,6 +218,10 @@ public class SpiritKing : MonoBehaviour
                             StartCoroutine(Skill4ControllerIE());
                             break;
 
+                        case Attack.Skill5:
+                            StartCoroutine(Skill5ControllerIE());
+                            break;
+
                         default:
                             break;
                     }
@@ -236,6 +238,12 @@ public class SpiritKing : MonoBehaviour
             currentState = State.Attack;
             currentAttack = testSkill;
             return;
+        }
+
+        if (nextSkill5)
+        {
+            currentState = State.Attack;
+            currentAttack = Attack.Skill5;
         }
 
         if (nextSkill4)
@@ -278,70 +286,82 @@ public class SpiritKing : MonoBehaviour
     {
         // Initialize state
         isAttacking = true;
+        Vector2 skillDirection = new Vector2(1, 0);
+        Vector2 target;
 
-        // Create warning area
-        float elapsedTime = 0;
-        Vector2 skillDirection = new Vector2(0, 0);
-        Vector2 target = new Vector2(0, 0);
+        // Create warning area prefab at center of map
+        GameObject warningArea = Instantiate(skill5WarningAreaPrefab, new Vector2(75.82343f, -53.70882f), Quaternion.identity);
 
-        GameObject spawnedLine = Instantiate(skill2WarningAreaLine, new Vector2(0, 0), Quaternion.identity);
-        LineRenderer warningAreaLineRenderer = spawnedLine.GetComponent<LineRenderer>();
-        bool activeBlink = false;
+        // Create warning line prefab
+        GameObject warningLine = Instantiate(skill5WarningAreaLine, new Vector2(0, 0), Quaternion.identity);
+        LineRenderer warningLineRenderer = warningLine.GetComponent<LineRenderer>();
 
-        while (elapsedTime < skill2WarningDuration - (skill2WarningDuration - skill2DelayDuration) * 0.6f)
+        // Calculate warning line length
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, skillDirection, Mathf.Infinity, wallLayer);
+        if (hit.collider != null)
+            target = hit.point;
+        else
+            target = (Vector2)transform.position + skillDirection * DefaultRaycastDistance;
+
+        // Blink warning line
+        StartCoroutine(DrawLine(warningLineRenderer, target, skill5WarningDuration));
+        StartCoroutine(BlinkLine(warningLineRenderer, skill5BlinkColor, skill5WarningAreaTransparent));
+
+        // Blink warning prefab
+        yield return StartCoroutine(BlinkWarningArea(warningArea, skill5WarningDuration, skill5WarningBlinkInterval, blinkColor));
+
+        // Delete warning element
+        Destroy(warningArea);
+        Destroy(warningLine);
+
+        yield return new WaitForSeconds(skill5WarningDuration * 0.4f);
+
+        // Create attack line
+        GameObject attackLine = Instantiate(skill5AttackLine, new Vector2(0, 0), Quaternion.identity);
+        float angle = 0;
+
+        // Move attack line on skill5 angle
+        while (angle < skill5AttackAngle)
         {
-            // Setup warning area
-            if (elapsedTime < skill2DelayDuration)
-                skillDirection = (player.transform.position - transform.position).normalized;
+            float angle2Radius = angle * Mathf.Deg2Rad;
+            skillDirection = new Vector2(Mathf.Cos(angle2Radius), Mathf.Sin(angle2Radius));
 
-            // Attack player in this raycast
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, skillDirection, Mathf.Infinity, wallLayer);
+            hit = Physics2D.Raycast(transform.position, skillDirection, Mathf.Infinity, wallLayer);
             if (hit.collider != null)
                 target = hit.point;
             else
                 target = (Vector2)transform.position + skillDirection * DefaultRaycastDistance;
 
-            if (!activeBlink)
-            {
-                activeBlink = true;
-                StartCoroutine(BlinkLine(warningAreaLineRenderer, skill2BlinkColor, skill2WarningAreaTransparent));
-            }
+            RaycastHit2D playerHit = Physics2D.Raycast(transform.position, skillDirection, Vector2.Distance(transform.position, target), playerLayer);
 
-            yield return DrawLine(warningAreaLineRenderer, target, IEUpdateInterval);
+            LineRenderer attackLineRenderer = attackLine.GetComponent<LineRenderer>();
+            StartCoroutine(DrawLine(attackLineRenderer, target, IEUpdateInterval));
 
-            elapsedTime += IEUpdateInterval;
-        }
-        Destroy(spawnedLine);
-
-        yield return new WaitForSeconds((skill2WarningDuration - skill2DelayDuration) * 0.4f);
-
-        RaycastHit2D playerHit = Physics2D.Raycast(transform.position, skillDirection, Vector2.Distance(transform.position, target), playerLayer);
-
-        GameObject attackLine = Instantiate(skill2AttackLine, new Vector2(0, 0), Quaternion.identity);
-        LineRenderer attackLineRenderer = attackLine.GetComponent<LineRenderer>();
-        yield return DrawLine(attackLineRenderer, target, 0.15f);
-        Destroy(attackLine);
-
-        if (playerHit.collider != null)
-        {
-            // Damage the player
             if (playerHit.collider != null)
             {
-                playerHit.collider.GetComponent<PlayerController>().TakeDamage(skill2Damage);
-                playerHit.collider.GetComponent<PlayerMovement>().TakeKnockback((target - (Vector2)transform.position).normalized * skill2Knockback, 0.3f);
+                // Damage the player
+                if (playerHit.collider != null)
+                {
+                    StartCoroutine(ShackCamera(skill5ShakeDuration, skill5ShakeMagnitude));
+                    playerHit.collider.GetComponent<PlayerController>().TakeDamage(skill5Damage);
+                    playerHit.collider.GetComponent<PlayerMovement>().TakeKnockback((target - (Vector2)transform.position).normalized * skill5Knockback, 0.3f);
+                }
             }
+
+            yield return new WaitForSeconds(IEUpdateInterval);
+            angle += skill5AttackLineSpeed;
         }
-        StartCoroutine(ShackCamera(skill2ShakeDuration, skill2ShakeMagnitude));
+
+        Destroy(attackLine);
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill2Wait);
+        yield return new WaitForSeconds(skill5Wait);
         StartCoroutine(CountSkill2CD());
 
         // Set state to defualt
         isAttacking = false;
         currentState = State.Idle;
     }
-
 
     public IEnumerator Skill4ControllerIE()
     {
@@ -375,7 +395,7 @@ public class SpiritKing : MonoBehaviour
         }
 
         // Randomly spawn objects at valid positions
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < skill2spawnAmount; i++)
         {
             if (validPositions.Count == 0) break;
 
@@ -415,8 +435,6 @@ public class SpiritKing : MonoBehaviour
         isAttacking = false;
         currentState = State.Idle;
     }
-
-
 
     public IEnumerator Skill3ControllerIE()
     {
@@ -881,39 +899,46 @@ public class SpiritKing : MonoBehaviour
         rb.AddForce(rb.mass * frictionForce);
     }
 
-    IEnumerator CountNormalAttackCD()
+    private IEnumerator CountNormalAttackCD()
     {
         nextNomalAttack = false;
         yield return new WaitForSeconds(normalAttackCD);
         nextNomalAttack = true;
     }
 
-    IEnumerator CountSkill1CD()
+    private IEnumerator CountSkill1CD()
     {
         nextSkill1 = false;
         yield return new WaitForSeconds(skill1CD);
         nextSkill1 = true;
     }
 
-    IEnumerator CountSkill2CD()
+    private IEnumerator CountSkill2CD()
     {
         nextSkill2 = false;
         yield return new WaitForSeconds(skill2CD);
         nextSkill2 = true;
     }
 
-    IEnumerator CountSkill3CD()
+    private IEnumerator CountSkill3CD()
     {
         nextSkill3 = false;
         yield return new WaitForSeconds(skill3CD);
         nextSkill3 = true;
     }
 
-    IEnumerator CountSkill4CD()
+    private IEnumerator CountSkill4CD()
     {
         nextSkill4 = false;
         yield return new WaitForSeconds(skill4CD);
         nextSkill4 = true;
+    }
+
+    private IEnumerator CountSkill5CD()
+    {
+        nextSkill5 = false;
+        yield return new WaitForSeconds(skill5CD);
+        nextSkill5 = true;
     }
 
     private bool ChasePlayer(float chaseLength, float speed)
