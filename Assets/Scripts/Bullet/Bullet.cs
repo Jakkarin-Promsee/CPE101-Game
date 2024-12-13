@@ -8,13 +8,11 @@ public class Bullet : MonoBehaviour
 {
     public RangeWeaponConfig weaponConfig;
     public string weaponOwnerTag = "";
-    private int bounce = 0;
     private bool hasReflected = false;
     private Vector2 direction;
 
     public virtual void Start()
     {
-        bounce = 0;
         direction = new Vector2(1, 0); // Set bullet direct to move forward
         Destroy(gameObject, weaponConfig.lifespan);  // Destroy after a certain time
     }

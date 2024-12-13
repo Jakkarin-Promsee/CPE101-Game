@@ -1,0 +1,6 @@
+[submodule "submodule/NavMeshPlus"]
+	path = submodule/NavMeshPlus
+	url = https://github.com/h8man/NavMeshPlus.git
+[submodule "Assets/Submodule/NavMeshPlus"]
+	path = Assets/Submodule/NavMeshPlus
+	url = https://github.com/h8man/NavMeshPlus.git

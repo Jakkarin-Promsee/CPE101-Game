@@ -55,46 +55,50 @@ public class HUD_Controller : MonoBehaviour
         UpdateHUD();
     }
 
-    private void UpdateHUD(){
+    private void UpdateHUD()
+    {
         changeIcon();
         changeText();
         changeBarLength();
     }
 
-    private void changeIcon(){
+    private void changeIcon()
+    {
         // Health icon
-        if (playerController.hp/playerController.MAX_HP >= 0.7f)
+        if (playerController.hp / playerController.MAX_HP >= 0.7f)
             healthIcon.sprite = fullHealthSprite;
-        else if (playerController.hp/playerController.MAX_HP >= 0.3f)
+        else if (playerController.hp / playerController.MAX_HP >= 0.3f)
             healthIcon.sprite = halfHealthSprite;
         else
             healthIcon.sprite = lowHealthSprite;
-        
+
 
         // Shield icon
-        if (playerController.shield/playerController.MAX_SHIELD >= 0.7f)
+        if (playerController.shield / playerController.MAX_SHIELD >= 0.7f)
             shieldIcon.sprite = fullShieldSprite;
-        else if (playerController.shield/playerController.MAX_SHIELD >= 0.3f)
+        else if (playerController.shield / playerController.MAX_SHIELD >= 0.3f)
             shieldIcon.sprite = halfShieldSprite;
         else
             shieldIcon.sprite = lowShieldSprite;
 
         // Mana icon
-        if (playerController.mana/playerController.MAX_MANA >= 0.7f)
+        if (playerController.mana / playerController.MAX_MANA >= 0.7f)
             manaIcon.sprite = fullManaSprite;
-        else if (playerController.mana/playerController.MAX_MANA >= 0.3f)
+        else if (playerController.mana / playerController.MAX_MANA >= 0.3f)
             manaIcon.sprite = halfManaSprite;
         else
             manaIcon.sprite = lowManaSprite;
     }
 
-    private void changeText(){
+    private void changeText()
+    {
         healthText.text = playerController.hp + " / " + playerController.MAX_HP;
         shieldText.text = playerController.shield + " / " + playerController.MAX_SHIELD;
         manaText.text = playerController.mana + " / " + playerController.MAX_MANA;
     }
 
-    private void changeBarLength(){
+    private void changeBarLength()
+    {
         // Bar length
         healthImage.fillAmount = Mathf.Clamp01(playerController.hp / playerController.MAX_HP);
         shieldImage.fillAmount = Mathf.Clamp01(playerController.shield / playerController.MAX_SHIELD);
