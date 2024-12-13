@@ -16,6 +16,9 @@ public class SpiritKing : MonoBehaviour
     public Tilemap groundTilemap;
     public Tilemap wallTilemap;
     public Tilemap obstacleTilemap;
+    public GameObject[] enemyPrefab;
+    public float GroundWarningCenterX = 75.82343f;
+    public float GroundWarningCenterY = -53.70882f;
 
 
     [Header("General Setting")]
@@ -104,7 +107,7 @@ public class SpiritKing : MonoBehaviour
     public GameObject skill4MeteorPrefab;
     public GameObject skill4WarningAreaPrefab;
     public GameObject skill4AreaAttackPrefab;
-    public int skill2spawnAmount = 5;
+    public int skill4spawnAmount = 5;
     public float skill4CD = 2f;
     public float skill4Wait = 1f;
     public float skill4WarningDuration = 2f;
@@ -131,6 +134,20 @@ public class SpiritKing : MonoBehaviour
     public float skill5ShakeMagnitude = 1f;
     public float skill5AttackLineSpeed = 5f;
     private bool nextSkill5 = true;
+
+    // Skill 6
+    [Header("Skill6 Setting")]
+    public float skill6CD = 5f;
+    public float skill6Wait = 1f;
+    public float skill6WarningDuration = 2f;
+    public float skill6WarningBlinkInterval = 0.3f;
+    public float skill6SpawnBlinkDuration = 2f;
+    public GameObject skill6WarningAreaPrefab;
+    public GameObject skill6SpawnAreaPrefab;
+    public float skill6ShakeDuration = 4f;
+    public float skill6ShakeMagnitude = 2f;
+    public int skill6spawnAmount = 5;
+    private bool nextSkill6 = true;
 
 
     // Handle Warning Area
@@ -222,6 +239,10 @@ public class SpiritKing : MonoBehaviour
                             StartCoroutine(Skill5ControllerIE());
                             break;
 
+                        case Attack.Skill6:
+                            StartCoroutine(Skill6ControllerIE());
+                            break;
+
                         default:
                             break;
                     }
@@ -239,6 +260,12 @@ public class SpiritKing : MonoBehaviour
             currentState = State.Attack;
             currentAttack = testSkill;
             return;
+        }
+
+        if (nextSkill6)
+        {
+            currentState = State.Attack;
+            currentAttack = Attack.Skill6;
         }
 
         if (nextSkill5)
@@ -283,6 +310,89 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    public IEnumerator Skill6ControllerIE()
+    {
+        // Initialize
+        isAttacking = true;
+
+        // Shank camera
+        StartCoroutine(ShackCamera(skill6ShakeDuration, skill6ShakeMagnitude));
+
+        // Setup warning area
+        BoundsInt bounds = groundTilemap.cellBounds;
+        List<Vector3> validPositions = new List<Vector3>();
+        List<GameObject> spawnAreas = new List<GameObject>();
+
+        for (int x = bounds.xMin; x < bounds.xMax; x += 3)
+        {
+            for (int y = bounds.yMin; y < bounds.yMax; y += 3)
+            {
+                Vector3Int cellPosition = new Vector3Int(x, y, 0);
+
+                // Check if the tile is on the ground layer and not obstructed
+                if (groundTilemap.HasTile(cellPosition) &&
+                    !wallTilemap.HasTile(cellPosition) &&
+                    !obstacleTilemap.HasTile(cellPosition))
+                {
+                    // Convert cell position to world position and add to the valid list
+                    Vector3 worldPosition = groundTilemap.CellToWorld(cellPosition) + groundTilemap.tileAnchor;
+                    validPositions.Add(worldPosition);
+                }
+            }
+        }
+
+        // Setup warning area
+        GameObject warningArea = Instantiate(skill5WarningAreaPrefab, new Vector2(GroundWarningCenterX, GroundWarningCenterY), Quaternion.identity);
+
+        yield return BlinkWarningArea(warningArea, skill6WarningDuration, skill6WarningBlinkInterval, blinkColor);
+
+        Destroy(warningArea);
+
+        // Randomly spawn objects at valid positions
+        for (int i = 0; i < skill6spawnAmount; i++)
+        {
+            if (validPositions.Count == 0) break;
+
+            // Select a random position
+            int randomIndex = Random.Range(0, validPositions.Count);
+            Vector3 spawnPosition = validPositions[randomIndex];
+
+            // Spawn the object
+            GameObject spawnArea = Instantiate(skill6SpawnAreaPrefab, spawnPosition, Quaternion.identity);
+
+            spawnAreas.Add(spawnArea);
+
+            // Remove the position to avoid duplicate spawns
+            validPositions.RemoveAt(randomIndex);
+        }
+
+        // Add Blink componet
+        foreach (GameObject spawnArea in spawnAreas)
+        {
+            StartCoroutine(BlinkWarningArea(spawnArea, skill6SpawnBlinkDuration, skill6WarningBlinkInterval, blinkColor));
+        }
+
+        yield return new WaitForSeconds(skill6SpawnBlinkDuration + 0.5f);
+
+        StartCoroutine(ShackCamera(skill6ShakeDuration, skill6ShakeMagnitude));
+        for (int i = spawnAreas.Count - 1; i >= 0; i--)
+        {
+            int j = Random.Range(0, enemyPrefab.Length);
+            GameObject enemy = Instantiate(enemyPrefab[j], spawnAreas[i].transform.position, Quaternion.identity);
+            enemy.GetComponent<EnemyActionController>().IsAttacked();
+
+            Destroy(spawnAreas[i]);
+        }
+
+        // Wait cooldown
+        yield return new WaitForSeconds(skill6Wait);
+        StartCoroutine(CountSkill4CD());
+
+        // Set state to defualt
+        isAttacking = false;
+        currentState = State.Idle;
+    }
+
     public IEnumerator Skill5ControllerIE()
     {
         // Initialize state
@@ -291,7 +401,7 @@ public class SpiritKing : MonoBehaviour
         Vector2 target;
 
         // Create warning area prefab at center of map
-        GameObject warningArea = Instantiate(skill5WarningAreaPrefab, new Vector2(75.82343f, -53.70882f), Quaternion.identity);
+        GameObject warningArea = Instantiate(skill5WarningAreaPrefab, new Vector2(GroundWarningCenterX, GroundWarningCenterY), Quaternion.identity);
 
         // Create warning line prefab
         GameObject warningLine = Instantiate(skill5WarningAreaLine, new Vector2(0, 0), Quaternion.identity);
@@ -396,7 +506,7 @@ public class SpiritKing : MonoBehaviour
         }
 
         // Randomly spawn objects at valid positions
-        for (int i = 0; i < skill2spawnAmount; i++)
+        for (int i = 0; i < skill4spawnAmount; i++)
         {
             if (validPositions.Count == 0) break;
 
@@ -429,7 +539,7 @@ public class SpiritKing : MonoBehaviour
         }
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill4Wait * 3);
+        yield return new WaitForSeconds(skill4Wait);
         StartCoroutine(CountSkill4CD());
 
         // Set state to defualt
@@ -940,6 +1050,13 @@ public class SpiritKing : MonoBehaviour
         nextSkill5 = false;
         yield return new WaitForSeconds(skill5CD);
         nextSkill5 = true;
+    }
+
+    private IEnumerator CountSKill6CD()
+    {
+        nextSkill6 = false;
+        yield return new WaitForSeconds(skill6CD);
+        nextSkill6 = true;
     }
 
     private bool ChasePlayer(float chaseLength, float speed)

@@ -32284,12 +32284,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8197174eb32320d4ca0a46d1419929b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testSkill: 3
+  testSkill: 6
   player: {fileID: 0}
   playerCamera: {fileID: 519420028}
-  groundTilemap: {fileID: 0}
-  wallTilemap: {fileID: 0}
-  obstacleTilemap: {fileID: 0}
+  groundTilemap: {fileID: 920116847}
+  wallTilemap: {fileID: 171798899}
+  obstacleTilemap: {fileID: 1241344603}
+  enemyPrefab:
+  - {fileID: 8416368581815251967, guid: 493c4ac0987f00c4681a33b8090df4da, type: 3}
+  - {fileID: 8416368581815251967, guid: 59e7e5fcf0f8a9746949023ed700e0da, type: 3}
+  - {fileID: 8416368581815251967, guid: 884252a364afb164da5fbb000760e283, type: 3}
+  - {fileID: 8416368581815251967, guid: 9e05a15626dd3934f99fbb78873e74ab, type: 3}
+  - {fileID: 8416368581815251967, guid: b0d28506276fe5148a67aee53f43ce0b, type: 3}
+  GroundWarningCenterX: 75.82343
+  GroundWarningCenterY: -53.70882
   moveFrictionCoefficient: 1
   moveSpeed: 3.5
   currentState: 0
@@ -32344,16 +32352,41 @@ MonoBehaviour:
   skill3HitKnockBack: 15
   skill3ShakeDuration: 0.2
   skill3ShakeMagnitude: 1
-  skill4WarningAreaPrefab: {fileID: 0}
-  skill4AreaAttackPrefab: {fileID: 0}
-  skill2spawnAmount: 5
+  skill4MeteorPrefab: {fileID: 7096452089889314423, guid: a890153e714bbfd4ba411a912e928dd0, type: 3}
+  skill4WarningAreaPrefab: {fileID: 7096452089889314423, guid: 89568afdcb7a27346a50015ea2e070ae, type: 3}
+  skill4AreaAttackPrefab: {fileID: 7096452089889314423, guid: 98842c9a708881d418d06e6c4da88e07, type: 3}
+  skill4spawnAmount: 5
   skill4CD: 2
   skill4Wait: 1
   skill4WarningDuration: 2
   skill4WarningBlinkInterval: 0.3
-  skill4AreaAttackDuration: 15
   skill4ShakeDuration: 2
   skill4ShakeMagnitude: 0.3
+  skill5CD: 5
+  skill5Wait: 1
+  skill5WarningDuration: 2
+  skill5WarningBlinkInterval: 0.3
+  skill5AttackAngle: 540
+  skill5Damage: 40
+  skill5Knockback: 20
+  skill5WarningAreaPrefab: {fileID: 2523449000850455852, guid: c359e335a7a16374b96531d9855f973a, type: 3}
+  skill5WarningAreaLine: {fileID: 3648400271137279541, guid: 1fd995d997641254488821b38942af8e, type: 3}
+  skill5AttackLine: {fileID: 3648400271137279541, guid: a8bcf4e513641a846a38dd03c9269c6d, type: 3}
+  skill5BlinkColor: {r: 1, g: 1, b: 1, a: 1}
+  skill5WarningAreaTransparent: 0.5
+  skill5ShakeDuration: 2
+  skill5ShakeMagnitude: 1
+  skill5AttackLineSpeed: 5
+  skill6CD: 5
+  skill6Wait: 1
+  skill6WarningDuration: 2
+  skill6WarningBlinkInterval: 0.3
+  skill6SpawnBlinkDuration: 3
+  skill6WarningAreaPrefab: {fileID: 2523449000850455852, guid: c359e335a7a16374b96531d9855f973a, type: 3}
+  skill6SpawnAreaPrefab: {fileID: 7096452089889314423, guid: d4e6c124ab55b694bae1489972b1b3f9, type: 3}
+  skill6ShakeDuration: 1
+  skill6ShakeMagnitude: 0.2
+  skill6spawnAmount: 5
   blinkColor: {r: 1, g: 1, b: 1, a: 0.27450982}
   wallLayer:
     serializedVersion: 2
