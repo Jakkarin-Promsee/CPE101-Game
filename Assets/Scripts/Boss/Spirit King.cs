@@ -171,21 +171,58 @@ public class SpiritKing : MonoBehaviour
 
     // State Setting
     private enum State { Idle, Chase, Attack };
-    private enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6, Null }
+    public enum Attack { NormalAttack, Skill1, Skill2, Skill3, Skill4, Skill5, Skill6, Null };
     /* Attack Idea
-        Idle => Rest Stand
-        Chase => run to player
-        NormalAttack => Fencing straight down with medium red area
-        Skill1 => Quick Dash to player direction (less caution time)
-        Skill2 => Flip Bullet Sword Technique => walk to player
-        Skill3 => Mega Slice => large red area with continuous explosions on the ground
-        Skill4 => Frequency Slice Sword Wave to player
-        Skill5 => Sword Laser 540 anagle
-        Skill6 => Summon black hole area attack
+        Idle => Just Idle, what is your expect?
+
+        NormalAttack => medium warning area and straight fence sword
+
+        Skill1 => direction warning area and dash to this direction
+                  if hit something, spawn area attack
+
+        Skill2 => direction warning area and shoot player with laser
+
+        Skill3 => dash to player, large warning area, mega straight fence sword
+
+        Skill4 => random large warning area, spawn meteor, make area attack
+
+        Skill5 => all map warning area, shoot laser for 540 degree
+
+        Skill6 => all map warning area, spawn random enemy
     */
-    private enum NormalAttackState { Initial, Chase, Warning, Attack, CoolDown };
-    [SerializeField] private NormalAttackState normalAttackState = NormalAttackState.Initial;
     private bool isAttacking = false;
+
+    // Boss phase setting
+    public Attack[] phase1 = {
+        Attack.Skill6,
+        Attack.Skill6,
+        Attack.NormalAttack,
+        Attack.Skill2,
+        Attack.Skill2,
+        Attack.Skill1,
+        Attack.Skill1,
+        Attack.Skill1,
+        };
+
+    public Attack[] phase2 = {
+        Attack.Skill6,
+        Attack.Skill4,
+        Attack.Skill3,
+        Attack.Skill3,
+        Attack.Skill4,
+        Attack.Skill5,
+        };
+
+    public Attack[] phase3 =
+    {
+        Attack.Skill1,
+        Attack.Skill2
+    };
+
+    public float[] hp2ActivePhase = { 100f, 50f, 20f };
+    [SerializeField] private int currentPhase = 1;
+    [SerializeField] private int phaseIdx = 1;
+
 
     void Start()
     {
@@ -200,60 +237,106 @@ public class SpiritKing : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    private bool isCall = true;
     void Update()
     {
-        ApplyFriction();
-
-        switch (currentState)
+        if (!isCall)
         {
-            case State.Idle:
-                Idle();
-                break;
+            ApplyFriction();
 
-            case State.Attack:
-                if (!isAttacking)
-                {
-                    switch (currentAttack)
+            switch (currentState)
+            {
+                case State.Idle:
+                    Idle();
+                    break;
+
+                case State.Attack:
+                    if (!isAttacking)
                     {
-                        case Attack.NormalAttack:
-                            StartCoroutine(NormalAttackControllerIE());
-                            break;
+                        switch (currentAttack)
+                        {
+                            case Attack.NormalAttack:
+                                StartCoroutine(NormalAttackControllerIE());
+                                break;
 
-                        case Attack.Skill1:
-                            StartCoroutine(Skill1ControllerIE());
-                            break;
+                            case Attack.Skill1:
+                                StartCoroutine(Skill1ControllerIE());
+                                break;
 
-                        case Attack.Skill2:
-                            StartCoroutine(Skill2ControllerIE());
-                            break;
+                            case Attack.Skill2:
+                                StartCoroutine(Skill2ControllerIE());
+                                break;
 
-                        case Attack.Skill3:
-                            StartCoroutine(Skill3ControllerIE());
-                            break;
+                            case Attack.Skill3:
+                                StartCoroutine(Skill3ControllerIE());
+                                break;
 
-                        case Attack.Skill4:
-                            StartCoroutine(Skill4ControllerIE());
-                            break;
+                            case Attack.Skill4:
+                                StartCoroutine(Skill4ControllerIE());
+                                break;
 
-                        case Attack.Skill5:
-                            StartCoroutine(Skill5ControllerIE());
-                            break;
+                            case Attack.Skill5:
+                                StartCoroutine(Skill5ControllerIE());
+                                break;
 
-                        case Attack.Skill6:
-                            StartCoroutine(Skill6ControllerIE());
-                            break;
+                            case Attack.Skill6:
+                                StartCoroutine(Skill6ControllerIE());
+                                break;
 
-                        default:
-                            break;
+                            default:
+                                break;
+                        }
                     }
-                }
 
-                break;
+                    break;
+            }
         }
+        isCall = false;
     }
 
 
     private void Idle()
+    {
+        // OldSkillController();
+        NewSkillController();
+    }
+
+    private void ChangePhase(int newPhase)
+    {
+        currentPhase = newPhase;
+        phaseIdx = 0;
+    }
+
+    private void NewSkillController()
+    {
+        Attack[] localAttackPhase = null;
+
+        switch (currentPhase)
+        {
+            case 1:
+                localAttackPhase = phase1;
+                break;
+            case 2:
+                localAttackPhase = phase2;
+                break;
+            case 3:
+                localAttackPhase = phase3;
+                break;
+        }
+
+        if (localAttackPhase != null)
+        {
+            if (phaseIdx >= localAttackPhase.Length)
+                phaseIdx = 0;
+
+            currentState = State.Attack;
+            currentAttack = localAttackPhase[phaseIdx];
+
+            phaseIdx++;
+        }
+    }
+
+    private void OldSkillController()
     {
         if (testSkill != Attack.Null)
         {
@@ -375,14 +458,22 @@ public class SpiritKing : MonoBehaviour
         yield return new WaitForSeconds(skill6SpawnBlinkDuration + 0.5f);
 
         StartCoroutine(ShackCamera(skill6ShakeDuration, skill6ShakeMagnitude));
+
+        List<GameObject> enemies = new List<GameObject>();
         for (int i = spawnAreas.Count - 1; i >= 0; i--)
         {
-            int j = Random.Range(0, enemyPrefab.Length);
+            int j = Random.Range(0, enemyPrefab.Length - 1);
             GameObject enemy = Instantiate(enemyPrefab[j], spawnAreas[i].transform.position, Quaternion.identity);
-            enemy.GetComponent<EnemyActionController>().IsAttacked();
+
+
+            Debug.Log($"Calling IsAttacked on enemy: {enemy.name}");
+            if (enemy)
+                enemies.Add(enemy);
 
             Destroy(spawnAreas[i]);
         }
+
+        yield return AddIsAttacked2Enemies(enemies);
 
         // Wait cooldown
         yield return new WaitForSeconds(skill6Wait);
@@ -391,6 +482,16 @@ public class SpiritKing : MonoBehaviour
         // Set state to defualt
         isAttacking = false;
         currentState = State.Idle;
+    }
+
+    public IEnumerator AddIsAttacked2Enemies(List<GameObject> enemies)
+    {
+        yield return null;
+
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyActionController>().IsAttacked();
+        }
     }
 
     public IEnumerator Skill5ControllerIE()
