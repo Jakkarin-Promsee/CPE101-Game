@@ -195,6 +195,16 @@ public class SpiritKing : MonoBehaviour
     // Boss phase setting
     public Attack[] phase1 = {
         Attack.Skill6,
+        Attack.NormalAttack,
+        Attack.Skill1,
+        Attack.NormalAttack,
+        Attack.Skill2,
+        Attack.Skill2,
+        Attack.Skill1,
+        };
+
+    public Attack[] phase2 = {
+        Attack.Skill6,
         Attack.Skill6,
         Attack.NormalAttack,
         Attack.Skill2,
@@ -204,19 +214,14 @@ public class SpiritKing : MonoBehaviour
         Attack.Skill1,
         };
 
-    public Attack[] phase2 = {
+    public Attack[] phase3 =
+    {
         Attack.Skill6,
         Attack.Skill4,
         Attack.Skill3,
         Attack.Skill3,
         Attack.Skill4,
         Attack.Skill5,
-        };
-
-    public Attack[] phase3 =
-    {
-        Attack.Skill1,
-        Attack.Skill2
     };
 
     public float[] hp2ActivePhase = { 100f, 50f, 20f };
