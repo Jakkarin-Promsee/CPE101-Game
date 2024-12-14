@@ -50,6 +50,21 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        if (other.CompareTag("Boss") && weaponOwnerTag != "Enemy")
+        {
+            other.gameObject.GetComponent<SpiritKing>().TakeDamage(weaponConfig.damage);
+
+            // Spon explosion prefab at bullet direction
+            if (weaponConfig.explosionPrefab)
+            {
+                Instantiate(weaponConfig.explosionPrefab, (transform.position + other.transform.position) / 2, Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z));
+            }
+
+            // If bullet don't move through enemy, destroy it
+            if (!weaponConfig.isMoveThroughObject)
+                Destroy(gameObject);  // Destroy the bullet after collision 
+        }
+
         if (other.CompareTag("Enemy") && weaponOwnerTag != "Enemy")
         {
             // Take enemy damage

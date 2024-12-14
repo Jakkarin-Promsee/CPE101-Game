@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - Wall
   - Collectable
+  - Boss
   layers:
   - Default
   - TransparentFX

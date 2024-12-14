@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,6 +9,8 @@ using UnityEngine.Tilemaps;
 
 public class SpiritKing : MonoBehaviour
 {
+    public event Action<float> OnHpChanged;
+
     [Header("References")]
     [SerializeField] private Attack testSkill;
     [SerializeField] private Transform player;
@@ -192,7 +195,11 @@ public class SpiritKing : MonoBehaviour
     */
     private bool isAttacking = false;
 
+
     // Boss phase setting
+    [Header("Boss Phase Setting")]
+    public float maxHp = 1000f;
+    public float currentHp;
     public Attack[] phase1 = {
         Attack.Skill6,
         Attack.NormalAttack,
@@ -227,10 +234,18 @@ public class SpiritKing : MonoBehaviour
     public float[] hp2ActivePhase = { 100f, 50f, 20f };
     [SerializeField] private int currentPhase = 1;
     [SerializeField] private int phaseIdx = 1;
+    private SpriteRenderer spriteRenderer;
+    public Color flashColor = Color.white;  // Color to flash
+    public float flashDuration = 0.1f;      // Duration of flash in seconds
+    private Color originalColor;            // Original color to reset back to
 
 
     void Start()
     {
+        currentHp = maxHp;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         player = GameObject.FindWithTag("Player").transform;
 
         agent = GetComponent<NavMeshAgent>();
@@ -243,6 +258,31 @@ public class SpiritKing : MonoBehaviour
     }
 
     private bool isCall = true;
+
+    public void TakeDamage(float damage)
+    {
+        OnHpChanged?.Invoke(currentHp / maxHp);
+
+        if (currentHp <= 0)
+            Destroy(gameObject);
+        else
+            currentHp -= damage;
+        StartCoroutine(FlashWhite());
+    }
+
+    private IEnumerator FlashWhite()
+    {
+        // Set the sprite color to the flash color (white)
+        originalColor = spriteRenderer.color;
+        spriteRenderer.color = flashColor;
+
+        // Wait for the specified flash duration
+        yield return new WaitForSeconds(flashDuration);
+
+        // Reset the color back to the original color
+        spriteRenderer.color = originalColor;
+    }
+
     void Update()
     {
         if (!isCall)
@@ -442,7 +482,7 @@ public class SpiritKing : MonoBehaviour
             if (validPositions.Count == 0) break;
 
             // Select a random position
-            int randomIndex = Random.Range(0, validPositions.Count);
+            int randomIndex = UnityEngine.Random.Range(0, validPositions.Count);
             Vector3 spawnPosition = validPositions[randomIndex];
 
             // Spawn the object
@@ -467,11 +507,9 @@ public class SpiritKing : MonoBehaviour
         List<GameObject> enemies = new List<GameObject>();
         for (int i = spawnAreas.Count - 1; i >= 0; i--)
         {
-            int j = Random.Range(0, enemyPrefab.Length - 1);
+            int j = UnityEngine.Random.Range(0, enemyPrefab.Length - 1);
             GameObject enemy = Instantiate(enemyPrefab[j], spawnAreas[i].transform.position, Quaternion.identity);
 
-
-            Debug.Log($"Calling IsAttacked on enemy: {enemy.name}");
             if (enemy)
                 enemies.Add(enemy);
 
@@ -617,7 +655,7 @@ public class SpiritKing : MonoBehaviour
             if (validPositions.Count == 0) break;
 
             // Select a random position
-            int randomIndex = Random.Range(0, validPositions.Count);
+            int randomIndex = UnityEngine.Random.Range(0, validPositions.Count);
             Vector3 spawnPosition = validPositions[randomIndex];
 
             // Spawn the object
@@ -919,7 +957,7 @@ public class SpiritKing : MonoBehaviour
     {
         // Calculate spawn position above the camera
         Vector3 spawnPosition = new Vector3(
-                targetPosition.x - spawnHeightOffset / Mathf.Tan(Mathf.Deg2Rad * (angle + Random.Range(-20, 20))),
+                targetPosition.x - spawnHeightOffset / Mathf.Tan(Mathf.Deg2Rad * (angle + UnityEngine.Random.Range(-20, 20))),
                 playerCamera.transform.position.y + spawnHeightOffset,
                 targetPosition.z
         );
@@ -955,8 +993,8 @@ public class SpiritKing : MonoBehaviour
         {
             Vector3 originalPos = camTransform.position;
 
-            float offsetX = Random.Range(-1f, 1f) * magnitude;
-            float offsetY = Random.Range(-1f, 1f) * magnitude;
+            float offsetX = UnityEngine.Random.Range(-1f, 1f) * magnitude;
+            float offsetY = UnityEngine.Random.Range(-1f, 1f) * magnitude;
 
             camTransform.localPosition = new Vector3(originalPos.x + offsetX, originalPos.y + offsetY, originalPos.z);
 
