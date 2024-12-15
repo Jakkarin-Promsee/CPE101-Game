@@ -25,9 +25,9 @@ Transform:
   m_GameObject: {fileID: 1769810348145023233}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.022, y: -0.042, z: -0.524}
-  m_LocalScale: {x: 0.08, y: 0.08, z: 0}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -0.06, y: -0.54, z: -0.524}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6521803605782720554}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -64,7 +64,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.006972514, z: 0, w: 0.9999757}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.0099697, y: 6.0099697, z: 12.019939}
+  m_LocalScale: {x: 1, y: 1, z: 11.17001}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1718910343663480186}
@@ -111,12 +111,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1875250981, guid: 7c842414431db604a8b32c06ed472e64, type: 3}
+  m_Sprite: {fileID: 1370633901, guid: 0e099322a9f0dee47bfd4f99c2674668, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.31, y: 0.27}
+  m_DrawMode: 1
+  m_Size: {x: 2.3, y: 2.4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -254,8 +254,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a2b0e8fb887d344b24de4415f09b82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 160
-  shield: 80
+  hp: 200
+  shield: 100
   mana: 200
   timeToStartRegeneration: 10
   shieldRegenRate: 8

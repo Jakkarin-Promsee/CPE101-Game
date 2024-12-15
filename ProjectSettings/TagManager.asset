@@ -49,3 +49,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Scene
+    uniqueID: 2244567987
+    locked: 0

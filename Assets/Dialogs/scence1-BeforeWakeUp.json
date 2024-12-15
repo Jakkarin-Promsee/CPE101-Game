@@ -1,8 +1,8 @@
 {
-    "_comment": "This is a comment",
+    "_comment": "Player is waking up on the under ground",
     "dialog": [
         {
-            "speaker": "Player",
+            "speaker": "None",
             "text": {
                 "en": "Hello, Boss. Are you ready?",
                 "th": "สวัสดี, บอส"
