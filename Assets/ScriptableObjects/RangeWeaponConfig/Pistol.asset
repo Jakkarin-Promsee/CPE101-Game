@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Pistol
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: 6dc3d592f481ac04cbefba3ad4aa31c3, type: 3}
-  damage: 20
+  damage: 40
   fireRate: 0.4
   recoil: 5
   recoilTime: 0.1
   knockback: 1
-  knockbackTime: 0.1
+  knockbackTime: 0.2
   isMoveThroughObject: 0
-  speed: 15
+  speed: 30
   lifespan: 20
   bulletBounce: 1
   explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}

@@ -14,10 +14,10 @@ public class MapManager : MonoBehaviour
     public Tilemap obstructionTilemap;  // Reference to the obstruction tilemap
     public GameObject[] enemyPrefab;
 
-    private List<GameObject> enemyInwave = new List<GameObject>();
+    [SerializeField] private List<GameObject> enemyInwave = new List<GameObject>();
     public int[] waveEnemy;
     private int currentWave = 0;
-    private bool isStageClear = false;
+    public bool isStageClear = false;
 
 
     // Start is called before the first frame update
@@ -27,9 +27,17 @@ public class MapManager : MonoBehaviour
 
         UnActiveEnemies();
         OpenTheDoor();
+
+        foreach (GameObject enemy in setupEnemies)
+        {
+            enemyInwave.Add(enemy);
+        }
+
+        InvokeRepeating(nameof(UpdateEnemy), 0f, 1f);
+        InvokeRepeating(nameof(UpdateEnemyList), 0f, 1f);
     }
 
-    void Update()
+    void UpdateEnemy()
     {
         if (setupEnemies.Count <= 2 && enemyInwave.Count <= 2)
         {
@@ -45,7 +53,6 @@ public class MapManager : MonoBehaviour
             }
         }
 
-        InvokeRepeating(nameof(UpdateEnemyList), 0f, 1f);
     }
 
     private void UpdateEnemyList()

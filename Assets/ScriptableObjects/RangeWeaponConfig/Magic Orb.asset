@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Magic Orb
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 6226276864569040743, guid: ecc621e25dcfc1642a7450cc11fe8b60, type: 3}
-  damage: 20
+  damage: 25
   fireRate: 0.5
   recoil: 0.75
   recoilTime: 0.1
   knockback: 0.25
   knockbackTime: 0.1
   isMoveThroughObject: 1
-  speed: 6
+  speed: 15
   lifespan: 20
+  bulletBounce: 1
   explosionPrefab: {fileID: 6226276864569040743, guid: fc5f7dcbc0ad4da4b9254cc1414377a6, type: 3}
