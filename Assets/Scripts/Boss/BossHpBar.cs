@@ -7,6 +7,17 @@ public class BossHpBar : MonoBehaviour
 {
     public Slider slider;
     private SpiritKing bossScript;
+    public GameObject hpBar;
+
+    public void ShowHpBar()
+    {
+        hpBar.SetActive(true);
+    }
+
+    public void CloseHpBar()
+    {
+        hpBar.SetActive(false);
+    }
 
     private void Start()
     {

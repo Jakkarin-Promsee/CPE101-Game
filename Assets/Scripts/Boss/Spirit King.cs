@@ -198,6 +198,7 @@ public class SpiritKing : MonoBehaviour
 
     // Boss phase setting
     [Header("Boss Phase Setting")]
+    public bool isActive = true;
     public float maxHp = 1000f;
     public float currentHp;
     public Attack[] phase1 = {
@@ -283,60 +284,74 @@ public class SpiritKing : MonoBehaviour
         spriteRenderer.color = originalColor;
     }
 
+    public void Active()
+    {
+        isActive = true;
+    }
+
+    public void UnActive()
+    {
+        isActive = false;
+    }
+
     void Update()
     {
-        if (!isCall)
+        if (isActive)
         {
-            ApplyFriction();
-
-            switch (currentState)
+            if (!isCall)
             {
-                case State.Idle:
-                    Idle();
-                    break;
+                ApplyFriction();
 
-                case State.Attack:
-                    if (!isAttacking)
-                    {
-                        switch (currentAttack)
+                switch (currentState)
+                {
+                    case State.Idle:
+                        Idle();
+                        break;
+
+                    case State.Attack:
+                        if (!isAttacking)
                         {
-                            case Attack.NormalAttack:
-                                StartCoroutine(NormalAttackControllerIE());
-                                break;
+                            switch (currentAttack)
+                            {
+                                case Attack.NormalAttack:
+                                    StartCoroutine(NormalAttackControllerIE());
+                                    break;
 
-                            case Attack.Skill1:
-                                StartCoroutine(Skill1ControllerIE());
-                                break;
+                                case Attack.Skill1:
+                                    StartCoroutine(Skill1ControllerIE());
+                                    break;
 
-                            case Attack.Skill2:
-                                StartCoroutine(Skill2ControllerIE());
-                                break;
+                                case Attack.Skill2:
+                                    StartCoroutine(Skill2ControllerIE());
+                                    break;
 
-                            case Attack.Skill3:
-                                StartCoroutine(Skill3ControllerIE());
-                                break;
+                                case Attack.Skill3:
+                                    StartCoroutine(Skill3ControllerIE());
+                                    break;
 
-                            case Attack.Skill4:
-                                StartCoroutine(Skill4ControllerIE());
-                                break;
+                                case Attack.Skill4:
+                                    StartCoroutine(Skill4ControllerIE());
+                                    break;
 
-                            case Attack.Skill5:
-                                StartCoroutine(Skill5ControllerIE());
-                                break;
+                                case Attack.Skill5:
+                                    StartCoroutine(Skill5ControllerIE());
+                                    break;
 
-                            case Attack.Skill6:
-                                StartCoroutine(Skill6ControllerIE());
-                                break;
+                                case Attack.Skill6:
+                                    StartCoroutine(Skill6ControllerIE());
+                                    break;
 
-                            default:
-                                break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                }
             }
+            else
+                isCall = false;
         }
-        isCall = false;
     }
 
 
