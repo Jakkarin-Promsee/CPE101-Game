@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
@@ -19,6 +20,21 @@ public class FireArea : Explosion
 
     // Update is called once per frame
     protected override void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy") && Time.time > nextBurn)
+        {
+            nextBurn = Time.time + burnRate;
+            other.gameObject.GetComponent<EnemyController>().TakeDamage(burnDamage);
+        }
+
+        if (other.CompareTag("Boss") && Time.time > nextBurn)
+        {
+            nextBurn = Time.time + burnRate;
+            other.gameObject.GetComponent<SpiritKing>().TakeDamage(burnDamage);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Enemy") && Time.time > nextBurn)
         {

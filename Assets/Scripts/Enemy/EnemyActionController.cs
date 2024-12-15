@@ -101,6 +101,8 @@ public class EnemyActionController : MonoBehaviour
             SetUpMeleeWeapon();
 
         _currentWeapon.transform.localPosition = new Vector3(0, 0, -3);
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void SetUpRangeWeapon()
@@ -142,6 +144,7 @@ public class EnemyActionController : MonoBehaviour
 
         // Avoid being equipped by player
         _currentWeapon.tag = "Untagged";
+
     }
 
     void Update()
@@ -157,7 +160,14 @@ public class EnemyActionController : MonoBehaviour
             case State.Random: CheckAttack(); Walk(); RandomMove(); CheckWall(); break;
             case State.Dodge: Walk(); Dodge(); break;
         }
+
+        if (rb.velocity.x < 0)
+            spriteRenderer.flipX = true;
+        else if (rb.velocity.x > 0)
+            spriteRenderer.flipX = false;
     }
+
+    private SpriteRenderer spriteRenderer;
 
     public void Walk()
     {

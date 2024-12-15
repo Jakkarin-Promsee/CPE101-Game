@@ -170,6 +170,7 @@ public class SpiritKing : MonoBehaviour
     // Other
     private const float IEUpdateInterval = 0.05f;
     private Rigidbody2D rb;
+    private Animator animator;
 
 
     // State Setting
@@ -256,6 +257,8 @@ public class SpiritKing : MonoBehaviour
         currentState = State.Idle;
         currentAttack = Attack.NormalAttack;
         rb = GetComponent<Rigidbody2D>();
+        originalColor = spriteRenderer.color;
+        animator = GetComponent<Animator>();
     }
 
     private bool isCall = true;
@@ -274,7 +277,6 @@ public class SpiritKing : MonoBehaviour
     private IEnumerator FlashWhite()
     {
         // Set the sprite color to the flash color (white)
-        originalColor = spriteRenderer.color;
         spriteRenderer.color = flashColor;
 
         // Wait for the specified flash duration
@@ -296,6 +298,12 @@ public class SpiritKing : MonoBehaviour
 
     void Update()
     {
+        Vector2 direction = player.position - transform.position;
+        if (direction.x < 0)
+            spriteRenderer.flipX = true;
+        else if (direction.x > 0)
+            spriteRenderer.flipX = false;
+
         if (isActive)
         {
             if (!isCall)
@@ -484,6 +492,9 @@ public class SpiritKing : MonoBehaviour
             }
         }
 
+        yield return StartCoroutine(CallAnimation("S4", 0.5f));
+        StartCoroutine(CallAnimationRepeater("S4", 2f));
+
         // Setup warning area
         GameObject warningArea = Instantiate(skill5WarningAreaPrefab, new Vector2(GroundWarningCenterX, GroundWarningCenterY), Quaternion.identity);
 
@@ -534,7 +545,7 @@ public class SpiritKing : MonoBehaviour
         yield return AddIsAttacked2Enemies(enemies);
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill6Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill6Wait));
         StartCoroutine(CountSkill4CD());
 
         // Set state to defualt
@@ -586,6 +597,8 @@ public class SpiritKing : MonoBehaviour
 
         yield return new WaitForSeconds(skill5WarningDuration * 0.4f);
 
+        yield return StartCoroutine(CallAnimation("S5", 0.25f));
+
         // Create attack line
         GameObject attackLine = Instantiate(skill5AttackLine, new Vector2(0, 0), Quaternion.identity);
         float angle = 0;
@@ -625,7 +638,7 @@ public class SpiritKing : MonoBehaviour
         Destroy(attackLine);
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill5Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill5Wait));
         StartCoroutine(CountSkill2CD());
 
         // Set state to defualt
@@ -664,6 +677,9 @@ public class SpiritKing : MonoBehaviour
             }
         }
 
+        yield return StartCoroutine(CallAnimation("S4", 0.5f));
+        StartCoroutine(CallAnimationRepeater("S4", 2f));
+
         // Randomly spawn objects at valid positions
         for (int i = 0; i < skill4spawnAmount; i++)
         {
@@ -698,7 +714,7 @@ public class SpiritKing : MonoBehaviour
         }
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill4Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill4Wait));
         StartCoroutine(CountSkill4CD());
 
         // Set state to defualt
@@ -715,7 +731,7 @@ public class SpiritKing : MonoBehaviour
         isAttacking = true;
 
         // Chase Player
-        while (!ChasePlayer(0.5f, skill3MoveSpeed))
+        while (!ChasePlayer(3f, skill3MoveSpeed))
         {
             skill3MoveSpeed += Time.deltaTime;
             yield return new WaitForSeconds(IEUpdateInterval);
@@ -739,6 +755,8 @@ public class SpiritKing : MonoBehaviour
         StartCoroutine(DelayMoveAngle(currentWarningArea, skill3DelayDuration, skill3lengthOffset));
         yield return StartCoroutine(BlinkWarningArea(currentWarningArea, skill3WarningDuration, skill3WarningBlinkInterval, blinkColor));
 
+        yield return StartCoroutine(CallAnimation("S3", 0.25f));
+
         // Save waring area data and destroy this gameobject
         playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
         Destroy(currentWarningArea);
@@ -752,7 +770,7 @@ public class SpiritKing : MonoBehaviour
         StartCoroutine(ShackCamera(skill3ShakeDuration, skill3ShakeMagnitude));
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill3Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill3Wait));
         StartCoroutine(CountSkill3CD());
 
         // Set state to defualt
@@ -803,10 +821,13 @@ public class SpiritKing : MonoBehaviour
 
         yield return new WaitForSeconds((skill2WarningDuration - skill2DelayDuration) * 0.4f);
 
+        yield return StartCoroutine(CallAnimation("S2", 0.15f));
+
         RaycastHit2D playerHit = Physics2D.Raycast(transform.position, skillDirection, Vector2.Distance(transform.position, target), playerLayer);
 
         GameObject attackLine = Instantiate(skill2AttackLine, new Vector2(0, 0), Quaternion.identity);
         LineRenderer attackLineRenderer = attackLine.GetComponent<LineRenderer>();
+
         yield return DrawLine(attackLineRenderer, target, 0.15f);
         Destroy(attackLine);
 
@@ -822,7 +843,7 @@ public class SpiritKing : MonoBehaviour
         StartCoroutine(ShackCamera(skill2ShakeDuration, skill2ShakeMagnitude));
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill2Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill2Wait));
         StartCoroutine(CountSkill2CD());
 
         // Set state to defualt
@@ -913,6 +934,8 @@ public class SpiritKing : MonoBehaviour
             skill1isDashing = true;
             isHitWall = false;
 
+            animator.SetTrigger("S1");
+
             // Dash manager
             while (elapsedTime < durationCal)
             {
@@ -955,7 +978,7 @@ public class SpiritKing : MonoBehaviour
         rb.velocity = new Vector2(0, 0);
 
         // Wait cooldown
-        yield return new WaitForSeconds(skill2Wait);
+        yield return StartCoroutine(CallAnimationRepeater("T", skill1Wait));
         StartCoroutine(CountSkill1CD());
 
         // Set state to defualt
@@ -1118,7 +1141,7 @@ public class SpiritKing : MonoBehaviour
         isAttacking = true;
 
         // Chase Player
-        while (!ChasePlayer(0.5f, normalAttackMoveSpeed))
+        while (!ChasePlayer(3f, normalAttackMoveSpeed))
         {
             normalAttackMoveSpeed += Time.deltaTime;
             yield return new WaitForSeconds(IEUpdateInterval);
@@ -1139,6 +1162,8 @@ public class SpiritKing : MonoBehaviour
         StartCoroutine(DelayMoveAngle(currentWarningArea, normalAttackDelayDuration, normalAttacklengthOffset));
         yield return StartCoroutine(BlinkWarningArea(currentWarningArea, normalAttackWarningDuration, normalAttackWarningBlinkInterval, blinkColor));
 
+        yield return StartCoroutine(CallAnimation("N", 0.3f));
+
         // Save waring area data and destroy this gameobject
         playerInZone = new List<GameObject>(currentWarningArea.GetComponent<AreaAttack>().playersInZone);
         Destroy(currentWarningArea);
@@ -1152,8 +1177,9 @@ public class SpiritKing : MonoBehaviour
 
         StartCoroutine(ShackCamera(normalAttackShakeDuration, normalAttackShakeMagnitude));
 
+
         // Wait cooldown
-        yield return new WaitForSeconds(normalAttackWait);
+        yield return StartCoroutine(CallAnimationRepeater("T", normalAttackWait));
         StartCoroutine(CountNormalAttackCD());
 
         // Set state to defualt
@@ -1161,6 +1187,24 @@ public class SpiritKing : MonoBehaviour
         isAttacking = false;
         currentState = State.Idle;
     }
+
+    private IEnumerator CallAnimationRepeater(string triggerName, float time)
+    {
+        float lapseTime = 0f;
+        while (lapseTime < time)
+        {
+            animator.SetTrigger(triggerName);
+            yield return new WaitForSeconds(IEUpdateInterval);
+            lapseTime += IEUpdateInterval;
+        }
+    }
+
+    private IEnumerator CallAnimation(string triggerName, float time)
+    {
+        animator.SetTrigger(triggerName);
+        yield return new WaitForSeconds(time);
+    }
+
 
     private void ApplyFriction()
     {
