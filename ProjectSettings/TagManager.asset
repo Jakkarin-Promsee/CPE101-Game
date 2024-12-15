@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - Collectable
   - Boss
+  - Prop
   layers:
   - Default
   - TransparentFX

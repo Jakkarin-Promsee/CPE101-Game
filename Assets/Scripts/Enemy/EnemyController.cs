@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -11,14 +12,24 @@ public class EnemyController : MonoBehaviour
     public float flashDuration = 0.1f;      // Duration of flash in seconds
     private Color originalColor;            // Original color to reset back to
 
+    public RuntimeAnimatorController closeGuardAnimator;
+    public Sprite closeGuardSprite;
+
     void Start()
     {
+        bool isCloseguard = Random.Range(0, 2) == 0;
+        if (isCloseguard)
+        {
+            GetComponent<SpriteRenderer>().sprite = closeGuardSprite;
+            GetComponent<Animator>().runtimeAnimatorController = closeGuardAnimator;
+        }
+
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;  // Store the original color
     }
 
     public void TakeDamage(float damage)
-    {   
+    {
         if (hp <= 0) Destroy(gameObject);
         else hp -= damage;
         StartCoroutine(FlashWhite());

@@ -20,11 +20,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 dashTarget;
     private float nextDashTime = 0f;
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
     private Vector2 movement;
     private float nextMovement = 0f;
 
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         // Get the Rigidbody2D component for physics-based movement
         rb = GetComponent<Rigidbody2D>();
 
@@ -45,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator CountDashDuration()
     {
+
+
         nextDash = false;
         isDashing = true;
         yield return new WaitForSeconds(dashDuration);
@@ -76,6 +81,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (movement.x < 0)
+            spriteRenderer.flipX = true;
+        else if (movement.x > 0)
+            spriteRenderer.flipX = false;
+
+
         if (Time.time > nextMovement)
             rb.velocity = movement * moveSpeed * (isDashing ? dashMultiple : 1);
 

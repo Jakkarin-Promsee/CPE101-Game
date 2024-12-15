@@ -12,6 +12,7 @@ public class EnemyActionController : MonoBehaviour
     // General setting
     [Header("General Setting. Important!")]
     public Transform player;
+    public Transform weaponPivot;
     public EnemyStatusConfig enemyStatusConfig;
     public bool active = true;
 
@@ -19,6 +20,7 @@ public class EnemyActionController : MonoBehaviour
     private enum State { Idle, Chase, Attack, Circle, Random, Dodge, retreat }
     public enum ItemType { Gun, Melee }
     private GameObject _currentWeapon;
+    private Animator animator;
     private Rigidbody2D rb;
     private EnemyController enemyController;
     private State _currentState;
@@ -77,6 +79,7 @@ public class EnemyActionController : MonoBehaviour
 
         _currentState = State.Idle;
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         enemyController = GetComponent<EnemyController>();
         _patrolSponPosition = transform.position;
 
@@ -89,7 +92,7 @@ public class EnemyActionController : MonoBehaviour
         StartCoroutine(CountDodgeCD((float)Random.Range(0, 11) / 2));
 
         // Set up weapon
-        _currentWeapon = Instantiate(enemyStatusConfig.weaponPrefab, transform.position, Quaternion.identity, transform);
+        _currentWeapon = Instantiate(enemyStatusConfig.weaponPrefab, weaponPivot.position, Quaternion.identity, weaponPivot);
 
         // Weapon setup
         if (_currentWeapon.GetComponent<Gun>())
@@ -136,7 +139,7 @@ public class EnemyActionController : MonoBehaviour
         // Optionally, you can store the pivot for further use if needed
         _currentWeapon.GetComponentInChildren<Melee>().player = gameObject;
         _currentWeapon.GetComponentInChildren<Melee>().weaponOwnerTag = gameObject.tag;
-        
+
         // Avoid being equipped by player
         _currentWeapon.tag = "Untagged";
     }
@@ -150,10 +153,16 @@ public class EnemyActionController : MonoBehaviour
             case State.Idle: Patrol(); CheckForPlayer(); break;
             case State.Chase: CheckAttack(); CheckForPlayer(); ChasePlayer(); break;
             case State.Attack: Attack(); break;
-            case State.Circle: CheckAttack(); CircleMove(); CheckWall(); break;
-            case State.Random: CheckAttack(); RandomMove(); CheckWall(); break;
-            case State.Dodge: Dodge(); break;
+            case State.Circle: CheckAttack(); Walk(); CircleMove(); CheckWall(); break;
+            case State.Random: CheckAttack(); Walk(); RandomMove(); CheckWall(); break;
+            case State.Dodge: Walk(); Dodge(); break;
         }
+    }
+
+    public void Walk()
+    {
+        if (animator)
+            animator.SetTrigger("walk");
     }
 
     public void IsAttacked()

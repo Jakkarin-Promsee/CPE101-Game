@@ -53,13 +53,21 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (hp <= 0)
-            Destroy(gameObject);
-        else if (shield > 0)
+
+        if (shield > 0)
+        {
             shield -= damage;
+            if (shield < 0) shield = 0;
+
+            StartCoroutine(FlashRed());
+        }
         else
         {
             hp -= damage;
+
+            if (hp <= 0)
+                Destroy(gameObject);
+
             StartCoroutine(FlashRed());
         }
 

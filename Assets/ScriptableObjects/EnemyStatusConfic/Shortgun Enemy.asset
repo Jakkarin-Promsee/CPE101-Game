@@ -17,9 +17,9 @@ MonoBehaviour:
   rangeWeaponConfig: {fileID: 11400000, guid: 41b5e619cee51f346a3965bdd0707dbc, type: 2}
   meleeWeaponConfig: {fileID: 0}
   attackCD: 5
-  eyeRange: 12
-  attackRange: 5
-  chaseRange: 4
+  eyeRange: 16
+  attackRange: 8
+  chaseRange: 8
   moveSpeed: 2.5
   moveFrictionCoefficient: 1
   moveLeastStoppingDistance: 0.1
