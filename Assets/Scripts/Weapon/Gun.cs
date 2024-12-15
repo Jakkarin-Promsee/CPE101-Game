@@ -29,6 +29,8 @@ public class Gun : MonoBehaviour
 
     public virtual void Fire(Vector3 targetPosition)
     {
+        GetComponent<Animator>().SetTrigger("fire");
+
         if (weaponOwnerTag == "Player")
         {
             if (Time.time > nextFireTime)

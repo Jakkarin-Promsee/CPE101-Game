@@ -4031,7 +4031,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &164228416
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15161,7 +15161,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &493130111
 RectTransform:
   m_ObjectHideFlags: 0
@@ -71201,7 +71201,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1685473999
 RectTransform:
   m_ObjectHideFlags: 0
@@ -91607,6 +91607,18 @@ PrefabInstance:
       propertyPath: pickupItemText
       value: 
       objectReference: {fileID: 400690770}
+    - target: {fileID: 5688429846321048537, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
+      propertyPath: inventory.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5688429846321048537, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
+      propertyPath: inventory.Array.data[0]
+      value: Bow
+      objectReference: {fileID: 0}
+    - target: {fileID: 5688429846321048537, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
+      propertyPath: inventory.Array.data[3]
+      value: Rocket Launcher
+      objectReference: {fileID: 0}
     - target: {fileID: 5688429846321048537, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
       propertyPath: inventorySlotImage.Array.data[0]
       value: 

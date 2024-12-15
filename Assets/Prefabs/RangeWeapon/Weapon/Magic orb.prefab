@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 5489632865579385423}
   - component: {fileID: 66713048676243091}
   - component: {fileID: 1518121294265233962}
+  - component: {fileID: 95430577824341724}
   m_Layer: 0
   m_Name: Magic orb
   m_TagString: Collectable
@@ -144,8 +145,8 @@ Transform:
   m_GameObject: {fileID: 7102781951068588039}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -3}
-  m_LocalScale: {x: 1, y: 1, z: 1.6053668}
+  m_LocalPosition: {x: 0, y: 0, z: -2.8765}
+  m_LocalScale: {x: 0.25225383, y: 0.25225383, z: 0.40495995}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4730327678400836474}
@@ -196,15 +197,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 0, g: 0.1500074, b: 0.79607844, a: 1}
+  m_Sprite: {fileID: -152749124, guid: fbd22ef95e0d5e048bcf22b5432cd41c, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 4.07, y: 4.99}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &5489632865579385423
@@ -272,16 +273,37 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 4.07, y: 4.99}
+    newSize: {x: 4.07, y: 4.99}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!95 &95430577824341724
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7102781951068588039}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7163da60d6f0c27499585238afa7ac36, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7190414304713363273
 GameObject:
   m_ObjectHideFlags: 0

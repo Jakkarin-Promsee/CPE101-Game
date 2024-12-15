@@ -21,6 +21,8 @@ public class WeaponAim : MonoBehaviour
         Vector3 direction = mousePosition - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
+        if (gameObject.name == "Bow(Clone)") angle += 45.387f;
+
         if (angle > 90 || angle < -90)
         {
             angle -= 180;
