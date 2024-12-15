@@ -365,8 +365,8 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
-        OldSkillController();
-        // NewSkillController();
+        // OldSkillController();
+        NewSkillController();
     }
 
     private void ChangePhase(int newPhase)
@@ -597,7 +597,7 @@ public class SpiritKing : MonoBehaviour
 
         yield return new WaitForSeconds(skill5WarningDuration * 0.4f);
 
-        yield return StartCoroutine(CallAnimation("S5", 0.25f));
+        StartCoroutine(CallAnimationRepeater("S5", 3f));
 
         // Create attack line
         GameObject attackLine = Instantiate(skill5AttackLine, new Vector2(0, 0), Quaternion.identity);
