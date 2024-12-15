@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 7102781951068588039, guid: 11b19ca585e1c4c4a96783dd4079cb36, type: 3}
   itemName: Shotgun
   itemType: 0
-  itemSprite: {fileID: 21300000, guid: 8139101700e605b4d81c21e89df3d270, type: 3}
+  itemSprite: {fileID: 21300000, guid: a71522a90d5226740bbd89bacc2286db, type: 3}

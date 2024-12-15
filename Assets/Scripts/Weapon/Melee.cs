@@ -12,6 +12,7 @@ public class Melee : MonoBehaviour
 
     [Header("Itself Setting. Not necessary to setup.")]
     public GameObject player;
+    public Animator effectAnimator;
 
     private Collider2D meleeCollider;
     private Animator animator;
@@ -27,7 +28,7 @@ public class Melee : MonoBehaviour
         animator = GetComponent<Animator>();
         meleeCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        if(player != null)
+        if (player != null)
             playerController = player.GetComponent<PlayerController>();
     }
 
@@ -35,6 +36,7 @@ public class Melee : MonoBehaviour
     {
         if (!preventSwing)
         {
+            effectAnimator.SetTrigger("fire");
             animator.SetTrigger("swordSwing");
             meleeCollider.enabled = true;
             StartCoroutine(DelaySwing());

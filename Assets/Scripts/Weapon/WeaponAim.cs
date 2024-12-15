@@ -21,15 +21,16 @@ public class WeaponAim : MonoBehaviour
         Vector3 direction = mousePosition - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        if (gameObject.name == "Bow(Clone)") angle += 45.387f;
 
         if (angle > 90 || angle < -90)
         {
             angle -= 180;
+            if (gameObject.name == "Bow(Clone)") angle -= 45.387f;
             if (transform.localScale.x > 0) transform.localScale = new Vector3(transform.localScale.x * (-1), transform.localScale.y, transform.localScale.z);
         }
         else
         {
+            if (gameObject.name == "Bow(Clone)") angle += 45.387f;
             if (transform.localScale.x < 0) transform.localScale = new Vector3(transform.localScale.x * (-1), transform.localScale.y, transform.localScale.z);
         }
 

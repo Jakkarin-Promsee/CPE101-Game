@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RocketLauncher
+  m_Name: Sword
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 1281538780, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
+      value: {fileID: -1857826288, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
     - time: 0.083333336
-      value: {fileID: 1270883672, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
+      value: {fileID: 473114088, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
     - time: 0.16666667
-      value: {fileID: 1176742396, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
+      value: {fileID: 1720853270, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -48,9 +48,9 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 1281538780, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
-    - {fileID: 1270883672, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
-    - {fileID: 1176742396, guid: 995b35162c17afc409aeb2188bc7cd9a, type: 3}
+    - {fileID: -1857826288, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
+    - {fileID: 473114088, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
+    - {fileID: 1720853270, guid: 9c2c839b0c7be9644a62e9092d070035, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
