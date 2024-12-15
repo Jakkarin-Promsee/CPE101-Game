@@ -1,0 +1,51 @@
+{
+    "_comment": "This is a comment",
+    "dialog": [
+        {
+            "speaker": "Player",
+            "text": {
+                "en": "Hello, Boss. Are you ready?",
+                "th": "สวัสดี, บอส"
+            },
+            "scene": "boss and player",
+            "audioClip": "playerHelloClip"
+        },
+        {
+            "speaker": "Boss",
+            "text": {
+                "en": "What up?",
+                "th": "มีอะไรว่ามา"
+            },
+            "scene": "boss and player",
+            "audioClip": "bossReadyClip"
+        },
+        {
+            "speaker": "Player",
+            "text": {
+                "en": "I’m ready. Let’s do this.",
+                "th": "ฉันพร้อมแล้ว เริ่มกันเถอะ"
+            },
+            "scene": "boss and player",
+            "audioClip": "playerReadyClip"
+        },
+        {
+            "speaker": "Boss",
+            "text": {
+                "en": "Great, let’s go.",
+                "th": "เยี่ยม ไปกันเถอะ"
+            },
+            "scene": "boss and player",
+            "audioClip": "bossGoClip"
+        }
+    ],
+    "choice": [
+        {
+            "speaker": "Player",
+            "text": {
+                "en": "Let's go.",
+                "th": "โอเค"
+            },
+            "nextScene": "scene3A"
+        }
+    ]
+}

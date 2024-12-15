@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 0}
-  moveSpeed: 4.5
+  moveSpeed: 6
   dashCd: 3
   dashDuration: 0.6
   dashMultiple: 2.5
