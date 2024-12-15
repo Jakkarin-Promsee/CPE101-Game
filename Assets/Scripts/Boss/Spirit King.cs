@@ -357,8 +357,8 @@ public class SpiritKing : MonoBehaviour
 
     private void Idle()
     {
-        // OldSkillController();
-        NewSkillController();
+        OldSkillController();
+        // NewSkillController();
     }
 
     private void ChangePhase(int newPhase)

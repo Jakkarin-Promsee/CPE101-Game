@@ -5768,7 +5768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8197174eb32320d4ca0a46d1419929b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testSkill: 6
+  testSkill: 4
   player: {fileID: 0}
   playerCamera: {fileID: 519420028}
   groundTilemap: {fileID: 1463026467}
@@ -5878,7 +5878,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  isActive: 0
+  isActive: 1
   maxHp: 2000
   currentHp: 0
   phase1: 0600000006000000000000000200000002000000010000000100000001000000
@@ -20938,16 +20938,6 @@ Tilemap:
   m_GameObject: {fileID: 628633319}
   m_Enabled: 1
   m_Tiles:
-  - first: {x: -53, y: -31, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 14
-      m_TileSpriteIndex: 14
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
   - first: {x: -24, y: -11, z: 0}
     second:
       serializedVersion: 2
@@ -21618,7 +21608,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 90cf817e3d267074287e2999ca5b03ee, type: 2}
   - m_RefCount: 8
     m_Data: {fileID: 11400000, guid: a225417f158894b4f87557ed7de9f96b, type: 2}
-  - m_RefCount: 11
+  - m_RefCount: 10
     m_Data: {fileID: 11400000, guid: 3bd06695bc8e47341b4805db7ad572a4, type: 2}
   - m_RefCount: 8
     m_Data: {fileID: 11400000, guid: 1b73248cc02c9be4e84344c0c49882b8, type: 2}
@@ -21651,12 +21641,12 @@ Tilemap:
     m_Data: {fileID: 725898978, guid: 3535c6c3b33e34943b824e8941535c1b, type: 3}
   - m_RefCount: 8
     m_Data: {fileID: -658732329, guid: 3535c6c3b33e34943b824e8941535c1b, type: 3}
-  - m_RefCount: 11
+  - m_RefCount: 10
     m_Data: {fileID: 1886217768, guid: 3535c6c3b33e34943b824e8941535c1b, type: 3}
   - m_RefCount: 8
     m_Data: {fileID: -1574520812, guid: 3535c6c3b33e34943b824e8941535c1b, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 65
+  - m_RefCount: 64
     m_Data:
       e00: 1
       e01: 0
@@ -21675,7 +21665,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 65
+  - m_RefCount: 64
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -91782,15 +91772,15 @@ PrefabInstance:
       objectReference: {fileID: 550317425}
     - target: {fileID: 6521803605782720554, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 36.9
+      value: 178.5
       objectReference: {fileID: 0}
     - target: {fileID: 6521803605782720554, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.6
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6521803605782720554, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.27
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6521803605782720554, guid: e3ec1576313578b4aa5278226fd26812, type: 3}
       propertyPath: m_LocalRotation.w

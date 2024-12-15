@@ -25,5 +25,11 @@ public class FireArea : Explosion
             nextBurn = Time.time + burnRate;
             other.gameObject.GetComponent<EnemyController>().TakeDamage(burnDamage);
         }
+
+        if (other.CompareTag("Boss") && Time.time > nextBurn)
+        {
+            nextBurn = Time.time + burnRate;
+            other.gameObject.GetComponent<SpiritKing>().TakeDamage(burnDamage);
+        }
     }
 }

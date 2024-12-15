@@ -46,6 +46,12 @@ public class Bullet : MonoBehaviour
     {
         if (other.CompareTag("Wall"))
         {
+            // Spon explosion prefab at bullet direction
+            if (weaponConfig.explosionPrefab)
+            {
+                Instantiate(weaponConfig.explosionPrefab, transform.position, Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z));
+            }
+
             Destroy(gameObject);
             return;
         }
