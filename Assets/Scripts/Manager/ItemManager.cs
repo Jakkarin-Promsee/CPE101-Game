@@ -71,7 +71,8 @@ public class ItemManager : MonoBehaviour
 
     void Update()
     {
-        if(currentItem != null){
+        if (currentItem != null)
+        {
             // Check 'left hold'
             if (Input.GetMouseButton(0))
             {
@@ -87,22 +88,26 @@ public class ItemManager : MonoBehaviour
                 }
             }
             // Check for F
-            if (Input.GetKeyDown(KeyCode.F)){
+            if (Input.GetKeyDown(KeyCode.F))
+            {
                 // Start Bullet reflecting skill
-                if(currentItemType == ItemType.Melee)
+                if (currentItemType == ItemType.Melee)
                     currentItem.GetComponentInChildren<Melee>().Reflect();
             }
         }
 
         // Drop item
-        if (Input.GetKeyDown(dropItemKey)){
-            if(currentItem != null){
+        if (Input.GetKeyDown(dropItemKey))
+        {
+            if (currentItem != null)
+            {
                 DropItem();
             }
         }
 
         // Pick up item
-        if (Input.GetKeyDown(pickupItemKey) && isInPickupArea){
+        if (Input.GetKeyDown(pickupItemKey) && isInPickupArea)
+        {
             PickupItem(itemToPickUp);
         }
 
@@ -120,23 +125,29 @@ public class ItemManager : MonoBehaviour
         }
 
         // Item slots
-        for(int i=0; i<3; i++){
-            if(i<inventory.Count){
+        for (int i = 0; i < 3; i++)
+        {
+            if (i < inventory.Count)
+            {
                 // Set border to black if it's current item
-                if(i == currentItemIndex)
+                if (i == currentItemIndex)
                     inventoryBorderImage[i].sprite = pickedBorderSprite;
                 else
                     inventoryBorderImage[i].sprite = normalBorderSprite;
-                
+
                 // Set sprite image
                 inventorySlotImage[i].sprite = itemInstantiate[inventory[i]].GetComponent<ItemPickable>().itemScriptableObject.itemSprite;
-            }else{
+            }
+            else
+            {
                 // Remove image and border if it doesn't exist
                 inventorySlotImage[i].sprite = emptySlotSprite;
                 inventoryBorderImage[i].sprite = normalBorderSprite;
             }
         }
     }
+
+    public Transform weaponPivot;
 
     void EquipItem(int index)
     {
@@ -146,8 +157,8 @@ public class ItemManager : MonoBehaviour
             if (currentItem != null) Destroy(currentItem);
 
             // Instantiate the new weapon as a child of the player at position (0,0)
-            currentItem = Instantiate(itemInstantiate[inventory[index]], playerTransform.position, Quaternion.identity, playerTransform);
-            
+            currentItem = Instantiate(itemInstantiate[inventory[index]], weaponPivot.position, Quaternion.identity, weaponPivot);
+
             // Set item type
             currentItemType = currentItem.GetComponent<ItemPickable>().itemScriptableObject.itemType;
 
@@ -174,7 +185,8 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    private void DropItem(){
+    private void DropItem()
+    {
         // Instantiate the item at the player's current position (or in front, based on your choice)
         Vector3 dropPosition = playerTransform.position;
         GameObject droppedItem = Instantiate(itemInstantiate[inventory[currentItemIndex]], dropPosition, Quaternion.identity);
@@ -192,8 +204,10 @@ public class ItemManager : MonoBehaviour
         currentItem = null;
 
         // Equip another item instead
-        if(inventory.Count > 0){
-            if(currentItemIndex >= inventory.Count){
+        if (inventory.Count > 0)
+        {
+            if (currentItemIndex >= inventory.Count)
+            {
                 currentItemIndex--;
             }
             EquipItem(currentItemIndex);
@@ -201,14 +215,18 @@ public class ItemManager : MonoBehaviour
     }
 
     // Pick up item function
-    private void PickupItem(GameObject other){
-        if(other != null){
+    private void PickupItem(GameObject other)
+    {
+        if (other != null)
+        {
             // If Inventory full, drop holding item to pick another one instead
-            if(inventory.Count == 3){
+            if (inventory.Count == 3)
+            {
                 DropItem();
             }
             IPickable item = other.GetComponent<IPickable>();
-            if(item != null){
+            if (item != null)
+            {
                 // Add into inventory
                 inventory.Add(other.GetComponent<ItemPickable>().itemScriptableObject.itemName);
                 // Remove the item in the scene
@@ -218,9 +236,11 @@ public class ItemManager : MonoBehaviour
     }
 
     // Player enter pick item area
-    private void OnTriggerEnter2D(Collider2D other){
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         // Pick up item
-        if(other.CompareTag("Collectable")) {
+        if (other.CompareTag("Collectable"))
+        {
             itemToPickUp = other.gameObject;
             isInPickupArea = true;
 
@@ -231,7 +251,8 @@ public class ItemManager : MonoBehaviour
     }
 
     // Prevent picking up item after left the area
-    private void OnTriggerExit2D(Collider2D other){
+    private void OnTriggerExit2D(Collider2D other)
+    {
         // If the player leaves the pickup area
         if (other.CompareTag("Collectable"))
         {
@@ -246,6 +267,7 @@ public class ItemManager : MonoBehaviour
 
 // Interface to work on a script that's on different object
 // In this case work with ItemPickable script on item(Weapons, Misc...)
-public interface IPickable{
+public interface IPickable
+{
     void PickupItem();
 }
