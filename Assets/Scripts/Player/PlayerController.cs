@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // Update HUD on stats change event
+    public GameObject deadCanvas;
     public event Action OnStatsChanged;
 
     public float hp;
@@ -66,7 +67,7 @@ public class PlayerController : MonoBehaviour
             hp -= damage;
 
             if (hp <= 0)
-                Destroy(gameObject);
+                deadCanvas.SetActive(true);
 
             StartCoroutine(FlashRed());
         }
