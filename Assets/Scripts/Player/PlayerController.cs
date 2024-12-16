@@ -37,8 +37,12 @@ public class PlayerController : MonoBehaviour
         // Initialize player stats
         MAX_HP = hp;
         MAX_SHIELD = shield;
-        MAX_MANA = mana;
+        // MAX_MANA = mana;
+        MAX_MANA = GetComponent<PlayerMovement>().dashCd;
+        mana = MAX_MANA = GetComponent<PlayerMovement>().dashCd;
     }
+
+    bool isResetMana = false;
 
     void Update()
     {
@@ -52,6 +56,23 @@ public class PlayerController : MonoBehaviour
             isRegeneratingShield = true;
             StartCoroutine(RegenerateShield());
         }
+
+        if (!GetComponent<PlayerMovement>().nextDash)
+        {
+            if (!isResetMana)
+            {
+                mana = 0;
+                isResetMana = true;
+            }
+
+            if (mana < MAX_MANA)
+                mana += Time.deltaTime;
+            else
+                mana = MAX_MANA;
+            OnStatsChanged?.Invoke();
+        }
+        else
+            isResetMana = false;
     }
 
     public void TakeDamage(float damage)

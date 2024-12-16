@@ -94,7 +94,7 @@ public class HUD_Controller : MonoBehaviour
     {
         healthText.text = playerController.hp + " / " + playerController.MAX_HP;
         shieldText.text = playerController.shield + " / " + playerController.MAX_SHIELD;
-        manaText.text = playerController.mana + " / " + playerController.MAX_MANA;
+        manaText.text = $"{playerController.mana:F2} / {playerController.MAX_MANA:F2}";
     }
 
     private void changeBarLength()

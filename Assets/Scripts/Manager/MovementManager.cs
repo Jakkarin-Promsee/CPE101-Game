@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isforce = false;
     private bool isDashing = false;
-    private bool nextDash = true;
+    public bool nextDash = true;
     private Vector3 dashTarget;
     private float nextDashTime = 0f;
     private Rigidbody2D rb;
