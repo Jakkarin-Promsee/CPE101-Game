@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestMap-beforeMerge.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TileMap 1.unity
     guid: 676b7b377bbc9244f9e942feabafeb68
+  - enabled: 1
+    path: Assets/Scenes/TileMap1.unity
+    guid: b6d2ef0d5d22a0e48bf0f96006e5a7f1
   m_configObjects: {}

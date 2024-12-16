@@ -5,12 +5,12 @@ using UnityEngine.Tilemaps;
 
 public class MapBossManager : MonoBehaviour
 {
+    public PlayerController player;
     public GameObject doorActiveObj;
     public GameObject openDoorObj;
     public GameObject closeDoorObj;
     public GameObject boss;
     private bool isStageClear = false;
-
 
     void Start()
     {
@@ -48,6 +48,26 @@ public class MapBossManager : MonoBehaviour
             openDoorObj.GetComponent<TilemapCollider2D>().isTrigger = true;
             closeDoorObj.GetComponent<TilemapRenderer>().sortingOrder = 0;
             closeDoorObj.GetComponent<TilemapCollider2D>().isTrigger = false;
+        }
+    }
+
+    public GameObject goodEnding;
+    public GameObject badEnding;
+
+    void Update()
+    {
+        if (boss == null) Ending();
+    }
+
+    public void Ending()
+    {
+        if (player.ending == 0 || player.ending == -1) // Good
+        {
+            badEnding.SetActive(true);
+        }
+        else if (player.ending == 1) // Bad
+        {
+            goodEnding.SetActive(true);
         }
     }
 }

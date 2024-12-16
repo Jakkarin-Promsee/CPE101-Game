@@ -149,7 +149,7 @@ public class SpiritKing : MonoBehaviour
     public GameObject skill6SpawnAreaPrefab;
     public float skill6ShakeDuration = 4f;
     public float skill6ShakeMagnitude = 2f;
-    public int skill6spawnAmount = 5;
+    public int skill6spawnAmount = 4;
     private bool nextSkill6 = true;
 
 
@@ -231,9 +231,10 @@ public class SpiritKing : MonoBehaviour
         Attack.Skill3,
         Attack.Skill4,
         Attack.Skill5,
+        Attack.Skill4,
     };
 
-    public float[] hp2ActivePhase = { 100f, 50f, 20f };
+    public float[] hp2ActivePhase = { 100f, 80f, 40f };
     [SerializeField] private int currentPhase = 1;
     [SerializeField] private int phaseIdx = 1;
     private SpriteRenderer spriteRenderer;
@@ -265,13 +266,30 @@ public class SpiritKing : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        float pt = currentHp / maxHp;
         OnHpChanged?.Invoke(currentHp / maxHp);
 
         if (currentHp <= 0)
+        {
+            foreach (GameObject enemy in enemies)
+            {
+                Destroy(enemy);
+            }
+
             Destroy(gameObject);
+        }
+
         else
             currentHp -= damage;
         StartCoroutine(FlashWhite());
+
+        // public float[] hp2ActivePhase = { 100f, 80f, 40f };
+        if (pt < 0.4f)
+            ChangePhase(3);
+        else if (pt < 0.8f)
+            ChangePhase(2);
+        else
+            ChangePhase(1);
     }
 
     private IEnumerator FlashWhite()
@@ -372,7 +390,7 @@ public class SpiritKing : MonoBehaviour
     private void ChangePhase(int newPhase)
     {
         currentPhase = newPhase;
-        phaseIdx = 0;
+        // phaseIdx = 0;
     }
 
     private void NewSkillController()
@@ -461,6 +479,8 @@ public class SpiritKing : MonoBehaviour
         }
     }
 
+    List<GameObject> enemies = new List<GameObject>();
+
     public IEnumerator Skill6ControllerIE()
     {
         // Initialize
@@ -530,7 +550,6 @@ public class SpiritKing : MonoBehaviour
 
         StartCoroutine(ShackCamera(skill6ShakeDuration, skill6ShakeMagnitude));
 
-        List<GameObject> enemies = new List<GameObject>();
         for (int i = spawnAreas.Count - 1; i >= 0; i--)
         {
             int j = UnityEngine.Random.Range(0, enemyPrefab.Length - 1);

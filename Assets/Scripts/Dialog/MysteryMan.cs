@@ -29,6 +29,7 @@ public class MysteryMan : MonoBehaviour
     public GameObject choicePanel;
     public TextMeshProUGUI choiceText;
     private int currentIndex = 0;
+    private GameObject playerGameobject;
 
     [System.Serializable]
     public class Choice
@@ -105,6 +106,7 @@ public class MysteryMan : MonoBehaviour
         {
             if (other.gameObject.CompareTag("Player"))
             {
+                playerGameobject = other.gameObject;
                 active = true;
                 StartDialog();
             }
@@ -134,6 +136,7 @@ public class MysteryMan : MonoBehaviour
     public void AcceptMysteryMan()
     {
         EndDialog();
+        playerGameobject.GetComponent<PlayerController>().ending = 0;
 
         Instantiate(leftWeapon, leftAreaPivot.position, Quaternion.identity);
         Instantiate(rightWeapon, rightAreaPivot.position, Quaternion.identity);
@@ -141,6 +144,7 @@ public class MysteryMan : MonoBehaviour
     public void UnAcceptMysteryMan()
     {
         EndDialog();
+        playerGameobject.GetComponent<PlayerController>().ending = 1;
 
         Instantiate(rightWeapon, rightAreaPivot.position, Quaternion.identity);
     }

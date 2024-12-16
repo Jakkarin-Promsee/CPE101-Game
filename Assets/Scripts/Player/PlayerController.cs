@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     public float MAX_SHIELD;
     public float MAX_MANA;
 
+    public int ending = -1;
+
 
     void Start()
     {
@@ -67,7 +69,10 @@ public class PlayerController : MonoBehaviour
             hp -= damage;
 
             if (hp <= 0)
+            {
                 deadCanvas.SetActive(true);
+            }
+
 
             StartCoroutine(FlashRed());
         }
